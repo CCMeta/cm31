@@ -8,6 +8,11 @@
 
 [/prebuilts/pac-binary/]    sl8581e-nand-marlin3e-mifi.xml
 
+[V2-230725]
+- 已经烧录golang进入，约等于20MB
+- 添加开机启动脚本关联golang，可以开机自动进入后台执行并且目录正确
+- RNDIS用地址42.1已经可以访问main.html，接下来优化后端API即可
+
 [V1-230720]
 - 添加DEMO模块到console，可以运行
 - 添加开机启动脚本DEMO，可以开机自动执行
