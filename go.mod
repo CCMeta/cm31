@@ -1,4 +1,4 @@
-module wm24_api
+module cm31_api
 
 go 1.18
 

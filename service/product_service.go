@@ -6,8 +6,8 @@ import (
 	"reflect"
 	"strings"
 
-	"wm24_api/entity"
-	"wm24_api/sql"
+	"cm31_api/entity"
+	"cm31_api/sql"
 )
 
 // ProductService represents the product entity service.

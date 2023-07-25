@@ -1,8 +1,8 @@
-# WM24 README
+# cm31 README
 
 ## TAKE CARE
 
-要小心！！这个wm24_api的可执行文件需要这个本地目录
+要小心！！这个cm31_api的可执行文件需要这个本地目录
 所以我们需要先cd到这个目录 再执行这个 否则就会出现找不到资源的问题
 
 ``` text
@@ -16,7 +16,7 @@ shell: go env -w GOOS=linux
 ```
 
 ``` text
-build: go build -o wm24
+build: go build -o cm31
 ```
 
 ## CONFIGS

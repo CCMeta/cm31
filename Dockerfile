@@ -1,5 +1,5 @@
-# docker build -t wm24_api . 
-# docker run --rm -it -p 8080:8080 wm24_api:latest
+# docker build -t cm31_api . 
+# docker run --rm -it -p 8080:8080 cm31_api:latest
 FROM golang:latest AS builder
 RUN apt-get update
 ENV GO111MODULE=on \
@@ -13,5 +13,5 @@ COPY . .
 RUN go install
 
 FROM scratch
-COPY --from=builder /go/bin/wm24_api .
-ENTRYPOINT ["./wm24_api"]
+COPY --from=builder /go/bin/cm31_api .
+ENTRYPOINT ["./cm31_api"]

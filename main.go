@@ -1,6 +1,7 @@
 package main // Look README.md
 
 import (
+	"cm31_api/sql"
 	"embed"
 	"encoding/json"
 	"encoding/xml"
@@ -13,7 +14,6 @@ import (
 	"os/exec"
 	"strconv"
 	"strings"
-	"wm24_api/sql"
 
 	"github.com/kataras/iris/v12"
 )
@@ -90,7 +90,7 @@ func getenv(key string, def string) string {
 <WifiConfigStoreData>
 <int name="Version" value="3" />
 <SoftAp>
-<string name="WifiSsid">&quot;Wm24&quot;</string>
+<string name="WifiSsid">&quot;cm31&quot;</string>
 <boolean name="HiddenSSID" value="false" />
 <int name="SecurityType" value="2" />
 <string name="Passphrase">88888888</string>

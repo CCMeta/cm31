@@ -1,9 +1,9 @@
 package api
 
 import (
-	"wm24_api/entity"
-	"wm24_api/service"
-	"wm24_api/sql"
+	"cm31_api/entity"
+	"cm31_api/service"
+	"cm31_api/sql"
 
 	"github.com/kataras/iris/v12"
 )

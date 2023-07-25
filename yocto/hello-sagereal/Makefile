@@ -14,8 +14,8 @@ SRCS = src/main.c
 
 hello-sagereal1:
 	$(CC) $(CFLAGS) -o $(TARGET) $(SRCS)
-	# cp src/wm24_api $(OBJ_DIR)/wm24_api
-	# cp src/wm24_api-init $(OBJ_DIR)/wm24_api-init
+	# cp src/cm31_api $(OBJ_DIR)/cm31_api
+	# cp src/cm31_api-init $(OBJ_DIR)/cm31_api-init
 	rm -f *.o
 
 clean:

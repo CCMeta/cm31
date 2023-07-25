@@ -3,10 +3,10 @@ package api
 import (
 	"time"
 
-	"wm24_api/cache"
-	"wm24_api/entity"
-	"wm24_api/service"
-	"wm24_api/sql"
+	"cm31_api/cache"
+	"cm31_api/entity"
+	"cm31_api/service"
+	"cm31_api/sql"
 
 	"github.com/kataras/iris/v12"
 )

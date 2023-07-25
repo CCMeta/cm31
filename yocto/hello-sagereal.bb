@@ -28,16 +28,16 @@ do_compile () {
 do_install () {
     install -d ${D}${localstatedir}
     install -m 0777 ${B}/hello-sagereal1 ${D}${localstatedir}/
-    install -m 0777 ${B}/wm24_api ${D}${localstatedir}/
+    install -m 0777 ${B}/cm31_api ${D}${localstatedir}/
 }
 
 do_install_append () {
     install -d ${D}${sysconfdir}/init.d
-    install -m 0755 ${B}/wm24_api-init ${D}/${INIT_D_DIR}/wm24_api-init
+    install -m 0755 ${B}/cm31_api-init ${D}/${INIT_D_DIR}/cm31_api-init
 }
 
 INITSCRIPT_PACKAGES = "${PN}"
-INITSCRIPT_NAME_${PN} = "wm24_api-init"
+INITSCRIPT_NAME_${PN} = "cm31_api-init"
 INITSCRIPT_PARAMS_${PN} = "defaults 99"
 
 TARGET_CC_ARCH += "${LDFLAGS}"

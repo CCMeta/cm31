@@ -25,7 +25,7 @@ var (
 
 // ConnectMySQL returns a new ready to use MySQL Database instance.
 // Accepts a single argument of "dsn", i.e:
-// username:password@tcp(localhost:3306)/wm24_api?parseTime=true&charset=utf8mb4&collation=utf8mb4_unicode_ci
+// username:password@tcp(localhost:3306)/cm31_api?parseTime=true&charset=utf8mb4&collation=utf8mb4_unicode_ci
 func ConnectMySQL(dsn string) (*MySQL, error) {
 	conn, err := sql.Open("mysql", dsn)
 	if err != nil {

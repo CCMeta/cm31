@@ -6,8 +6,8 @@ services:
     command: --default-authentication-plugin=mysql_native_password
     environment:
       MYSQL_ROOT_PASSWORD: dbpassword
-      MYSQL_DATABASE: wm24_api
-      MYSQL_USER: user_wm24_api
+      MYSQL_DATABASE: cm31_api
+      MYSQL_USER: user_cm31_api
       MYSQL_PASSWORD: dbpassword
     tty: true
     volumes:
@@ -18,9 +18,9 @@ services:
       - 8080:8080
     environment:
       PORT: 8080
-      MYSQL_USER: user_wm24_api
+      MYSQL_USER: user_cm31_api
       MYSQL_PASSWORD: dbpassword
-      MYSQL_DATABASE: wm24_api
+      MYSQL_DATABASE: cm31_api
       MYSQL_HOST: db
     restart: on-failure
     healthcheck:

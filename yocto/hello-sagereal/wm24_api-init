@@ -3,11 +3,11 @@
 DIR=/var
 
 do_start() {
-      cd $DIR && ./wm24_api &
+      cd $DIR && ./cm31_api &
 }
 
 do_stop() {
-      start-stop-daemon --stop --name wm24_api --quiet
+      start-stop-daemon --stop --name cm31_api --quiet
 }
 
 case "$1" in

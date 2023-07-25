@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"reflect"
 
-	"wm24_api/entity"
-	"wm24_api/sql"
+	"cm31_api/entity"
+	"cm31_api/sql"
 )
 
 // CategoryService represents the category entity service.

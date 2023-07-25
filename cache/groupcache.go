@@ -7,8 +7,8 @@ import (
 	"strconv"
 	"time"
 
-	"wm24_api/entity"
-	"wm24_api/sql"
+	"cm31_api/entity"
+	"cm31_api/sql"
 
 	"github.com/mailgun/groupcache/v2"
 )
