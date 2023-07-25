@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge ; IE=11">
+    <title>MobiConnect Portal</title>
+<!--    <link rel="shortcut icon" href="image/logo.png">-->
+<!--    <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.3.1/css/bootstrap.min.css">-->
+    <link rel="stylesheet" href="css/bootstrap-min.css">
+    <link rel="stylesheet" href="css/common.css">
+    <style>
+        input::-ms-clear,input::-ms-reveal{display: none;}
+        .wifiInput{border: none;border-radius: 10px; background-color: #272830;color: #fff;padding: 0;width: 180px;height: 35px}
+        .wifiInput:focus-visible{outline: none}
+        .password{width: 80%;height: 100%;border: none; background-color: #272830;color: #fff;border-radius: 10px;}
+        .password:focus-visible{outline: none}
+        .row1{margin-left: 0;height: 15%}
+        .wifiTable tr{height: 12%}
+        .select-container input{width: 132px}
+        .select-container ul{width: 132px;left: 66px;text-align: left}
+        .select-container span{left: 172px}
+        .select-container{text-align: right}
+        .open{background: linear-gradient(270deg, #4D68EE 0%, #9B46E4 98.64%);}
+    </style>
+</head>
+<body>
+<div style="display: none">
+    <label id="wifi-tip1" i18n="Setup succeed">Setup succeed</label><label id="wifi-tip2" i18n="tis">There is something wrong</label>
+    <label id="wifi-tip3" i18n="wifi-SSID">The length of SSID Name is 1-32, can contain letters,numbers, but can not contain punctuation</label>
+    <label id="wifi-tip4" i18n="wifi-tpl">The length of the WiFi Key is 8-63, can contain letters,numbers, but can not contain punctuation</label>
+    <label id="wifi-tip5" i18n="wifi-oaps">Open Access Point success</label>
+    <label id="wifi-tip6" i18n="wifi-caps">Close Access Point success</label>
+</div>
+<div class="container" style="height: 100%;width: 100%;max-width: 100%;">
+    <div class="row  align-items-center" style="height: 10%;min-height: 60px">
+        <a href="main.html" >
+        <svg  viewBox="0 0 400 300" width="160px" style="margin-left: 80px;margin-top: 35px" >
+            <defs><style>.cls-1{fill:#003b76;}
+            .cls-2{fill:#fff;}.cls-3{fill:#8ec31f;}
+            </style></defs><g id="图层_2" data-name="图层 2">
+            <g id="Calque_1" data-name="Calque 1">
+                <rect class="cls-1" x="1.6" y="1.6" width="248.58" height="248.58" rx="18.63"/>
+<!--                <path class="cls-2" d="M231.55,251.78H20.24A20.26,20.26,0,0,1,0,231.55V20.24A20.26,20.26,0,0,1,20.24,0H231.55a20.25,20.25,0,0,1,20.23,20.24V231.55A20.25,20.25,0,0,1,231.55,251.78ZM20.24,3.2a17.05,17.05,0,0,0-17,17V231.55a17.05,17.05,0,0,0,17,17H231.55a17,17,0,0,0,17-17V20.24a17.05,17.05,0,0,0-17-17Z"/>-->
+                <path class="cls-3" d="M208,70.81a10,10,0,0,0-1.15-.77l-.43-.25A32,32,0,0,0,159.06,89a1,1,0,0,0-.06.23,1.11,1.11,0,0,0,.17.75,1.08,1.08,0,0,0,1.62.21l.11-.11a22.21,22.21,0,0,1,22-5.53,22.41,22.41,0,0,1,7.9,4.28,12.51,12.51,0,1,0,17.11-18Z"/>
+                <path class="cls-3" d="M73.2,180.19c-.37.27-.76.53-1.15.77l-.44.24A32,32,0,0,1,24.29,162a1.55,1.55,0,0,1-.05-.23,1,1,0,0,1,.16-.74A1.08,1.08,0,0,1,26,160.8l.11.11a22.14,22.14,0,0,0,30,1.25,12.66,12.66,0,0,1,7.36-4.28,12.39,12.39,0,0,1,5.37.2,12.51,12.51,0,0,1,4.39,22.11Z"/>
+                <path class="cls-2" d="M53.69,142.3s-4.95,4.94-11.38,4.94a11.64,11.64,0,0,1-8.7-3.58,12.19,12.19,0,0,1-3.23-8.43c0-6.86,4.88-11.85,11.61-11.85a15.3,15.3,0,0,1,10,4.15l.5.52,5-7.8-.27-.32c-.21-.25-5.24-6.18-15.85-6.18a22.6,22.6,0,0,0-16.28,6.39,22.09,22.09,0,0,0,0,30.43c4.11,4.13,9.74,6.3,16.27,6.3,10.91,0,16.7-6.44,16.94-6.71l.27-.31-4.42-8.1Z"/>
+                <path class="cls-2" d="M83,113.75a20.7,20.7,0,0,0-15.07,6A22,22,0,0,0,62,135.31c0,12.5,9.3,21.56,22.11,21.56A25.41,25.41,0,0,0,100.64,151l.32-.3-4.4-8.17L96,143c0,.05-5,4.27-11.18,4.27a12.09,12.09,0,0,1-7.66-2.56,10.56,10.56,0,0,1-3.73-6.91H101l0-.52c0-.11.24-2.71.24-3.9,0-5.57-1.63-10.36-4.7-13.87C93.33,115.73,88.61,113.75,83,113.75Zm-.23,8.85c4.22,0,7,2.74,7.33,7.18H73.83C74.9,125.27,78.18,122.6,82.72,122.6Z"/>
+                <rect class="cls-2" x="160.14" y="98.97" width="11.05" height="10.26"/><rect class="cls-2" x="160.14" y="113.71" width="11.13" height="43.16"/>
+                <rect class="cls-2" x="181.13" y="98.97" width="11.05" height="10.26"/><rect class="cls-2" x="181.13" y="113.71" width="11.13" height="43.16"/>
+                <path class="cls-2" d="M217.75,130.89c-3.47-1.39-6.46-2.59-6.46-4.46,0-2.25,2.44-3.05,4.53-3.05a14.83,14.83,0,0,1,9.44,3.31l.56.52,4.22-8.44-.28-.29c-.19-.19-4.68-4.73-13.86-4.73-9.51,0-15.9,5-15.9,12.36,0,8.06,7.12,11,12.85,13.32,3.57,1.47,6.65,2.73,6.65,4.76s-2.36,3.05-4.7,3.05A16.25,16.25,0,0,1,204.28,143l-.5-.5-5.19,8,.31.33a22.8,22.8,0,0,0,16,6.07c9.36,0,15.91-5.18,15.91-12.6C230.79,136.13,223.56,133.23,217.75,130.89Z"/>
+                <rect class="cls-2" x="107.85" y="98.97" width="11.16" height="57.91"/><path class="cls-2" d="M153.11,146.7l-.7.15a9.05,9.05,0,0,1-1.68.14c-6.41,0-7.37-4.37-7.37-7V122.8h9.12v-9.09h-9.12V102.16h-10.9v11.55H127v9.09h5.19v18.47c0,6.07,2.19,10.48,6.52,13.08a21.16,21.16,0,0,0,10.72,2.59,18.21,18.21,0,0,0,3.18-.24l.46-.1v-9.9Z"/>
+            </g>
+        </g>
+
+        </svg>
+        </a>
+<!--        <a href="main.html" style="margin-left: 4%;color: #4d68ee;font-size: 24px;font-family: 'Nunito-Bold',sans-serif;">MobiWire</a>-->
+        <div class="btn-group-vertical1">
+            <button class="bat-active">
+                <svg class="img-fluid" width="45px" height="54px" viewBox="0 0 16 16" id="battery">
+                    <path d="M0 6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6zm2-1a1 1 0 0 0-1 1v4a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1H2zm14 3a1.5 1.5 0 0 1-1.5 1.5v-3A1.5 1.5 0 0 1 16 8z"></path>
+                    <path d="M2 6h10v4H2V6z" style="transition: 0.3s"></path>
+                </svg>
+            </button>
+            <button class="bat-hide"><span id="batteryNumber">100%</span></button>
+        </div>
+        <div class="btn-group-vertical">
+            <button class="lang-active">EN</button>
+            <button class="lang-hide">ES</button>
+            <button class="lang-hide">FR</button>
+        </div>
+    </div>
+    <!--上侧导航栏-->
+    <div class="row main nav-icon-top justify-content-center align-items-center">
+        <table class="nav-network">
+            <tr>
+                <td class="nav-icon grey-icon">
+                    <a class="nav-icon" id="v-network" href="network.html">
+                        <svg x="0px" y="0px" viewBox="0 0 90 90" class="nav-col-svg" xml:space="preserve">
+                            <style type="text/css">.nt0{fill:#ffffff33;}  .nt1{fill-rule:evenodd;clip-rule:evenodd;fill:#ffffff33;}</style>
+                            <path class="nt0" d="M45,89.5c-24.5,0-44.5-20-44.5-44.5S20.5,0.5,45,0.5s44.5,20,44.5,44.5S69.5,89.5,45,89.5z M45,3.5 C22.1,3.5,3.5,22.1,3.5,45S22.1,86.5,45,86.5S86.5,67.9,86.5,45S67.9,3.5,45,3.5z"/>
+                            <path class="nt0" d="M51,32.2c2-1.7,3.3-4.2,3.3-7c0-5.1-4.2-9.3-9.3-9.3s-9.3,4.2-9.3,9.3c0,2.8,1.3,5.3,3.3,7 c-7.4,0.3-13.4,6.5-13.4,14v20.3c0,0.8,0.7,1.5,1.5,1.5c0.8,0,1.5-0.7,1.5-1.5V46.2c0-6.1,4.9-11,11-11h10.8c6.1,0,11,4.9,11,11
+                            v20.3c0,0.8,0.7,1.5,1.5,1.5c0.8,0,1.5-0.7,1.5-1.5V46.2C64.4,38.7,58.4,32.6,51,32.2z M45,18.8c3.5,0,6.3,2.8,6.3,6.3 s-2.8,6.3-6.3,6.3s-6.3-2.8-6.3-6.3S41.5,18.8,45,18.8z"/>
+                            <g>
+                                <path class="nt1" d="M34.5,73.2L34.5,73.2c-1.1,0-2-0.9-2-2v-4.8c0-1.1,0.9-2,2-2l0,0c1.1,0,2,0.9,2,2v4.8 C36.5,72.3,35.6,73.2,34.5,73.2z"/>
+                                <path class="nt1" d="M41.5,73.2L41.5,73.2c-1.1,0-2-0.9-2-2v-8.1c0-1.1,0.9-2,2-2l0,0c1.1,0,2,0.9,2,2v8.1 C43.4,72.3,42.6,73.2,41.5,73.2z"/>
+                                <path class="nt1" d="M48.5,73.2L48.5,73.2c-1.1,0-2-0.9-2-2V59.8c0-1.1,0.9-2,2-2l0,0c1.1,0,2,0.9,2,2v11.4 C50.4,72.3,49.6,73.2,48.5,73.2z"/>
+                                <path class="nt1" d="M55.5,73.3L55.5,73.3c-1.1,0-2-0.9-2-2V55c0-1.1,0.9-2,2-2l0,0c1.1,0,2,0.9,2,2v16.3 C57.4,72.4,56.6,73.3,55.5,73.3z"/>
+                            </g>
+                        </svg>
+                    </a>
+                    <div i18n="Network">Network</div>
+                </td>
+                <td class="nav-icon">
+                    <a class="nav-icon" id="v-wifi" href="wifi.html">
+                        <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 90 90" class="nav-col-svg" xml:space="preserve">
+                            <style type="text/css">
+                                .wf0{fill:#4D68EE;}
+                                .wf1{fill:#FFFFFF;}
+                                .wf2{fill-rule:evenodd;clip-rule:evenodd;fill:#FFFFFF;}
+                            </style>
+                            <circle class="wf0" cx="45.3" cy="44.5" r="42.3"/>
+                            <path class="wf0" d="M45,89.5c-24.5,0-44.5-20-44.5-44.5c0-24.5,20-44.5,44.5-44.5s44.5,20,44.5,44.5C89.5,69.5,69.5,89.5,45,89.5z
+                                 M45,3.5C22.1,3.5,3.5,22.1,3.5,45c0,22.9,18.6,41.5,41.5,41.5S86.5,67.9,86.5,45C86.5,22.1,67.9,3.5,45,3.5z"/>
+                            <g>
+                                <path class="wf1" d="M40.9,32.7c-0.8,0-1.5-0.7-1.5-1.5V17.4L33.7,23c-0.6,0.6-1.5,0.6-2.1,0s-0.6-1.5,0-2.1l8.2-8.2
+                                    c0.4-0.4,1.1-0.6,1.6-0.3c0.6,0.2,0.9,0.8,0.9,1.4v17.5C42.4,32,41.7,32.7,40.9,32.7z"/>
+                                <path class="wf1" d="M49.7,41.4c-0.2,0-0.4,0-0.6-0.1c-0.6-0.2-0.9-0.8-0.9-1.4V22.5c0-0.8,0.7-1.5,1.5-1.5s1.5,0.7,1.5,1.5v13.8
+                                    l5.6-5.6c0.6-0.6,1.5-0.6,2.1,0s0.6,1.5,0,2.1L50.8,41C50.5,41.3,50.1,41.4,49.7,41.4z"/>
+                            </g>
+                            <path class="wf2" d="M41.4,65.7c-2,1.9-2,5.1,0,7.1c1.9,2,5.1,2,7.1,0c2-1.9,2-5.1,0-7.1C46.6,63.8,43.4,63.8,41.4,65.7z M34.4,58.6
+                                c0,0-1.7,1.8,0,3.5c1.7,1.7,3.5,0,3.5,0c3.9-3.9,10.3-3.9,14.2,0c0,0,1.8,1.8,3.5,0c1.8-1.8,0-3.5,0-3.5
+                                C49.8,52.8,40.2,52.8,34.4,58.6L34.4,58.6L34.4,58.6z M27.3,51.5c0,0-1.8,1.8,0,3.5c1.8,1.8,3.5,0,3.5,0c7.8-7.8,20.5-7.8,28.3,0.1
+                                c0,0,1.8,1.8,3.5,0c1.8-1.8,0-3.5,0-3.5C53,41.8,37.1,41.8,27.3,51.5L27.3,51.5z"/>
+                        </svg>
+                    </a>
+                    <div style="color: #4D68EE" i18n="WiFi">WiFi</div>
+                </td>
+                <td class="nav-icon grey-icon">
+                    <a class="nav-icon" href="security.html" title="security">
+                        <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 90 90" class="nav-col-svg" xml:space="preserve">
+                            <style type="text/css">
+                                .se0{fill:#ffffff33;}
+                            </style>
+                            <path class="se0" d="M45,89.5c-24.5,0-44.5-20-44.5-44.5c0-24.5,20-44.5,44.5-44.5s44.5,20,44.5,44.5C89.5,69.5,69.5,89.5,45,89.5z
+                                 M45,3.5C22.1,3.5,3.5,22.1,3.5,45c0,22.9,18.6,41.5,41.5,41.5S86.5,67.9,86.5,45C86.5,22.1,67.9,3.5,45,3.5z"/>
+                            <path class="se0" d="M55.7,68.3H34.3c-2.8,0-5-2.2-5-5V45.9c0-2.8,2.2-5,5-5h21.4c2.8,0,5,2.2,5,5v17.4C60.7,66,58.5,68.3,55.7,68.3 z"/>
+                            <path class="se0" d="M60.7,38.9c-0.8,0-1.5-0.7-1.5-1.5c0-7.8-6.4-14.2-14.2-14.2c-7.8,0-14.2,6.4-14.2,14.2c0,0.8-0.7,1.5-1.5,1.5
+                                s-1.5-0.7-1.5-1.5c0-9.5,7.7-17.2,17.2-17.2c9.5,0,17.2,7.7,17.2,17.2C62.2,38.2,61.5,38.9,60.7,38.9z"/>
+                        </svg>
+                    </a>
+                    <div i18n="Security">Security</div>
+                </td>
+                <td class="nav-icon grey-icon">
+                    <a class="nav-icon" href="system.html" title="system">
+                        <svg x="0px" y="0px" viewBox="0 0 90 90" class="nav-col-svg" xml:space="preserve">
+                        <style type="text/css">.sys0{fill:#ffffff33;}</style>
+                            <path class="sys0" d="M45,0.5C20.5,0.5,0.5,20.5,0.5,45s20,44.5,44.5,44.5s44.5-20,44.5-44.5S69.5,0.5,45,0.5z M60,83.69
+                            c-2.12,0.82-4.33,1.49-6.6,1.96V55.86c1.24-0.57,2.1-1.81,2.1-3.26c0-1.99-1.61-3.6-3.6-3.6s-3.6,1.61-3.6,3.6
+                            c0,1.45,0.86,2.69,2.1,3.26v30.27c-1.77,0.23-3.57,0.36-5.4,0.36c-0.34,0-0.67-0.02-1-0.03V42.4c0-1.2-0.4-2.4-1.3-3.3l-7.9-8.2
+                            c-0.3-0.3-0.5-0.7-0.5-1.2v-7.14c1.24-0.57,2.1-1.81,2.1-3.26c0-1.99-1.61-3.6-3.6-3.6s-3.6,1.61-3.6,3.6c0,1.45,0.86,2.69,2.1,3.26
+                            v7.14c0,1.2,0.4,2.4,1.3,3.3l7.9,8.3c0.3,0.3,0.5,0.7,0.5,1.2v43.8c-5.64-0.54-10.95-2.22-15.7-4.79V55.7c0-1.2-0.6-2.5-1.5-3.4
+                            l-6.97-6.77C16.93,45.2,17,44.86,17,44.5c0-1.99-1.61-3.6-3.6-3.6s-3.6,1.61-3.6,3.6s1.61,3.6,3.6,3.6c0.5,0,0.98-0.1,1.41-0.29
+                            l6.89,6.69c0.3,0.3,0.5,0.8,0.5,1.3v23.85C10.94,72.23,3.5,59.48,3.5,45c0-11.82,4.96-22.48,12.9-30.04V28.1c0,1.3,0.5,2.5,1.4,3.4
+                            l14.3,14.1c0.3,0.4,0.5,0.8,0.5,1.3v23.54c-1.24,0.57-2.1,1.81-2.1,3.26c0,1.99,1.61,3.6,3.6,3.6s3.6-1.61,3.6-3.6
+                            c0-1.49-0.91-2.77-2.2-3.32V46.9c0-1.3-0.5-2.5-1.4-3.4L19.9,29.4c-0.3-0.4-0.5-0.8-0.5-1.3V12.36c6.88-5.41,15.51-8.69,24.9-8.84
+                            V25.4c0,1.3,0.5,2.4,1.3,3.3l13.9,15.1c0.3,0.3,0.5,0.7,0.5,1.2V83.69z M69.5,78.48c-2.04,1.49-4.21,2.81-6.5,3.92
+                            c0-4.09,0-37.4,0-37.4c0-1.3-0.5-2.4-1.3-3.3L47.8,26.6c-0.3-0.3-0.5-0.7-0.5-1.2V3.57c2.08,0.11,4.11,0.38,6.1,0.79V18.1
+                            c0,1.2,0.4,2.3,1.2,3.2l14.5,16.5c0.2,0.3,0.4,0.8,0.4,1.2V78.48z M78.3,41.2c-1.99,0-3.6,1.61-3.6,3.6c0,1.45,0.86,2.69,2.1,3.26
+                            v7.14c0,1.2,0.4,2.4,1.3,3.3l4.31,4.48c-2.41,5-5.8,9.43-9.91,13.08V39c0-1.2-0.4-2.3-1.2-3.2L56.8,19.3c-0.2-0.3-0.4-0.8-0.4-1.2
+                            v-13C73.76,10.06,86.5,26.05,86.5,45c0,5.27-1,10.31-2.79,14.95L80.3,56.4c-0.3-0.3-0.5-0.7-0.5-1.2v-7.14
+                            c1.24-0.57,2.1-1.81,2.1-3.26C81.9,42.81,80.29,41.2,78.3,41.2z"/>
+                        </svg>
+                    </a>
+                    <div i18n="System">System</div>
+                </td>
+                <td class="nav-icon grey-icon">
+                    <a class="nav-icon" href="message.html" title="message">
+                        <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 90 90" class="nav-col-svg" xml:space="preserve">
+                            <style type="text/css">
+                                .me0{fill:#ffffff33;}
+                            </style>
+                            <path class="me0" d="M45,89.5c-24.5,0-44.5-20-44.5-44.5c0-24.5,20-44.5,44.5-44.5s44.5,20,44.5,44.5C89.5,69.5,69.5,89.5,45,89.5zM45,3.5C22.1,3.5,3.5,22.1,3.5,45c0,22.9,18.6,41.5,41.5,41.5S86.5,67.9,86.5,45C86.5,22.1,67.9,3.5,45,3.5z"/>
+                            <path class="me0" d="M61.4,62H28.6c-5.5,0-9.9-4.4-9.9-9.9V37.5c0-5.5,4.4-9.9,9.9-9.9h32.9c5.5,0,9.9,4.4,9.9,9.9v14.6
+                                C71.3,57.6,66.9,62,61.4,62z M28.6,30.6c-3.8,0-6.9,3.1-6.9,6.9v14.6c0,3.8,3.1,6.9,6.9,6.9h32.9c3.8,0,6.9-3.1,6.9-6.9V37.5c0-3.8-3.1-6.9-6.9-6.9H28.6z"/>
+                            <path class="me0" d="M45,49.1c-1.6,0-3.3-0.4-4.8-1.2l-10.7-5.7c-0.7-0.4-1-1.3-0.6-2c0.4-0.7,1.3-1,2-0.6l10.7,5.7
+                                c2.2,1.2,4.8,1.1,7-0.1l9.6-5.6c0.7-0.4,1.6-0.2,2.1,0.5c0.4,0.7,0.2,1.6-0.5,2.1l-9.6,5.6C48.6,48.6,46.8,49.1,45,49.1z"/>
+                        </svg>
+                    </a>
+                    <div i18n="SMS">SMS</div>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <!--下侧内容-->
+    <div class="row main nav-btn-bottom justify-content-center align-items-center">
+        <table style="width:553px;">
+            <tr>
+                <td>
+                    <button class="btn btn-modal" data-toggle="modal" data-target="#wifiModal"><span i18n="WiFi Settings">WiFi Settings</span></button>
+<!--                    <button class="btn btn-modal" data-toggle="modal" data-target="#planModal"><span>WiFi Planner</span></button>-->
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+<!--WIFI Settings弹框-->
+<div class="modal fade wifi-modal" id="wifiModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" style="padding: 0; min-width: 1015px; min-height: 500px">
+            <div class="modal-header">
+                <div style="margin: auto">
+                    <span class="modal-title" i18n="WiFi Settings">WiFi Settings</span>
+                    <button type="button" class="close modal-close" data-dismiss="modal" aria-label="Close" style="padding: 0">
+                        <svg width="30" height="15" viewBox="0 0 30 15" fill="none">
+                            <path d="M2 13.4961L13.789 2.19167C14.571 1.44175 15.808 1.45098 16.5788 2.21248L28 13.4961" stroke="white" stroke-opacity="0.5" stroke-width="3" stroke-linecap="round"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div class="modal-body wifiText diy-scroll" style="margin: 0;color: #fff;font-size: 21px">
+                <div class="row justify-content-center align-items-center" style="font-size: 32px;font-family: 'Nunito-Bold',sans-serif;height: calc(21.4vh)"><span i18n="wifi-aam">AP Attribute Modification</span></div>
+                <div class="row justify-content-center">
+                    <table style="width: 448px;height: 208px;">
+                        <tr>
+                            <td i18n="wifi-WiFi Activation">WiFi Activation</td><td><div class="switchButton" data-check="checked">
+                                <input type="checkbox" id="wifiSwitch" class="chooseBtn2" />
+                                <label for="wifiSwitch" class="choose-label2" style="top: 4px"></label>
+                            </div></td>
+                        </tr>
+                        <tr>
+                            <td i18n="wifi-SSID Display">SSID Display</td><td><div class="switchButton" data-check="checked">
+                                <input type="checkbox" id="ssidSwitch" class="chooseBtn2" />
+                                <label for="ssidSwitch" class="choose-label2" style="top: 4px"></label>
+                            </div></td>
+                        </tr>
+                        <tr><td>SSID</td><td><input class="wifiInput" autocomplete="off" style="border: none;width: 100%;padding-left: 10px" id="ssidName"></td></tr>
+                        <tr class="wifi-pwd"><td i18n="wifi-Password">Password</td><td width="200px">
+                            <div class="form-inline wifiInput" style="width: 200px">
+                                <input type="password" class="password" style="width: 80%;height: 100%;border: none;padding-left: 10px" id="ssidPassword" minlength="8">
+                                <button style="width: 15%;height: 100%;border:none;background-color: #272830;padding: 0;line-height: 100%" id="control">
+                                    <svg width="70%" viewBox="0 0 30 20" id="showPassword" style="display: none">
+                                        <defs><style>.show1{fill:#acacb1;}</style></defs>
+                                        <g><g>
+                                            <path class="show1" d="M15,2c5.76,0,11,5.6,13,8-2,2.4-7.24,8-13,8S4,12.4,2,10C4,7.6,9.24,2,15,2Zm0-2C8.12,0,2.3,6.56.33,9.05a1.53,1.53,0,0,0,0,1.9C2.3,13.44,8.12,20,15,20s12.7-6.56,14.67-9a1.53,1.53,0,0,0,0-1.9C27.7,6.56,21.88,0,15,0Zm0,7a3,3,0,1,1-3,3A3,3,0,0,1,15,7Zm0-2a5,5,0,1,0,5,5,5,5,0,0,0-5-5Z"/>
+                                        </g></g>
+                                    </svg>
+                                    <svg width="70%" viewBox="0 0 30 26.04" id="hidePassword">
+                                        <defs><style>.hide1{fill:#fff;}</style></defs>
+                                        <g><g>
+                                            <rect class="hide1" x="13.78" y="-4.98" width="2" height="36" rx="1" transform="translate(-4.88 14.27) rotate(-45)"/><path class="hide1" d="M19.72,20.13A11,11,0,0,1,15,21.3c-5.76,0-11-5.6-13-8A30.61,30.61,0,0,1,7.61,8L6.2,6.62A32,32,0,0,0,.33,12.35a1.52,1.52,0,0,0,0,1.89c2,2.5,7.79,9.06,14.67,9.06a13.34,13.34,0,0,0,6.2-1.68Z"/>
+                                            <path class="hide1" d="M15,8.3h0a5,5,0,0,0-2.3.57l1.53,1.54A2.81,2.81,0,0,1,15,10.3a3,3,0,0,1,3,3,3.17,3.17,0,0,1-.11.76l1.54,1.54A5,5,0,0,0,15,8.3Z"/><path class="hide1" d="M11.46,16.83a5,5,0,0,0,5.45,1.09c.14-.06.26-.13.39-.2l-1.53-1.53a3.25,3.25,0,0,1-.77.11,3,3,0,0,1-3-3,3.25,3.25,0,0,1,.11-.77L10.58,11c-.07.12-.14.25-.2.38A5,5,0,0,0,11.46,16.83Z"/>
+                                            <path class="hide1" d="M29.67,12.35c-2-2.49-7.79-9-14.67-9A13.34,13.34,0,0,0,8.8,5l1.49,1.48A11.06,11.06,0,0,1,15,5.3c5.76,0,11,5.6,13,8a30.62,30.62,0,0,1-5.61,5.27L23.8,20a31.67,31.67,0,0,0,5.87-5.74A1.52,1.52,0,0,0,29.67,12.35Z"/>
+                                        </g></g></svg>
+                                </button>
+                            </div>
+                        </td></tr>
+                    </table>
+                </div>
+                <div class="row justify-content-center align-items-center" style="font-size: 32px;font-family: 'Nunito-Bold',sans-serif;height: calc(21.4vh)"><span i18n="wifi-Settings">Settings</span></div>
+                <div class="row justify-content-center">
+                    <table style="width: 448px;height: 208px;">
+                        <tr>
+                            <td i18n="wifi-WiFi Bandwidth">WiFi Bandwidth</td><td width="200px">
+                            <!--修改选择框样式 llh 20220615 start-->
+                            <div class="select-container">
+                                <span>
+                                    <svg width="15" height="9" viewBox="0 0 15 9" fill="none">
+                                        <path d="M1.00005 1.36001L6.07791 6.97796C6.87861 7.86382 8.27212 7.85521 9.06182 6.95953L13.9988 1.36002" stroke="white" stroke-width="2"/>
+                                    </svg>
+                                </span>
+                                <input id="netMode" type="text" readonly="readonly" onclick="showAndHideUL(this)" onblur="showAndHideUL(this, true)"/>
+                                <ul>
+                                    <li><a href="javascript:" data-value="0">Auto</a></li>
+                                    <li><a href="javascript:" data-value="1">20M</a></li>
+                                    <li><a href="javascript:" data-value="2">40M</a></li>
+                                </ul>
+                            </div>
+                            <!--修改选择框样式 llh 20220615 end-->
+                        </tr>
+                        <tr>
+                            <td i18n="wifi-Channel">Channel</td>
+                            <td>
+                                <!--修改选择框样式 llh 20220615 start-->
+                                <div class="select-container">
+                                    <span>
+                                        <svg width="15" height="9" viewBox="0 0 15 9" fill="none">
+                                            <path d="M1.00005 1.36001L6.07791 6.97796C6.87861 7.86382 8.27212 7.85521 9.06182 6.95953L13.9988 1.36002" stroke="white" stroke-width="2"/>
+                                        </svg>
+                                    </span>
+                                    <input id="channel" type="text" readonly="readonly" onclick="showAndHideUL(this)"
+                                           onblur="showAndHideUL(this, true)"/>
+                                    <ul class="diy-scroll1">
+                                        <li><a href="javascript:" data-value="0">Auto</a></li><li><a href="javascript:" data-value="1">Channel 1</a></li><li><a href="javascript:" data-value="2">Channel 2</a></li>
+                                        <li><a href="javascript:" data-value="3">Channel 3</a></li><li><a href="javascript:" data-value="4">Channel 4</a></li><li><a href="javascript:" data-value="5">Channel 5</a></li>
+                                        <li><a href="javascript:" data-value="6">Channel 6</a></li><li><a href="javascript:" data-value="7">Channel 7</a></li><li><a href="javascript:" data-value="8">Channel 8</a></li>
+                                        <li><a href="javascript:" data-value="9">Channel 9</a></li><li><a href="javascript:" data-value="10">Channel 10</a></li><li><a href="javascript:" data-value="11">Channel 11</a></li>
+                                        <li><a href="javascript:" data-value="12">Channel 12</a></li><li><a href="javascript:" data-value="13">Channel 13</a></li>
+                                    </ul>
+                                </div>
+                                <!--修改选择框样式 llh 20220615 end-->
+                            </td>
+                        </tr>
+                        <tr>
+                            <td i18n="wifi-Security Mode">Security Mode</td><td>
+                            <!--修改选择框样式 llh 20220615 start-->
+                            <div class="select-container">
+                                <span>
+                                    <svg width="15" height="9" viewBox="0 0 15 9" fill="none">
+                                        <path d="M1.00005 1.36001L6.07791 6.97796C6.87861 7.86382 8.27212 7.85521 9.06182 6.95953L13.9988 1.36002" stroke="white" stroke-width="2"/>
+                                    </svg>
+                                </span>
+                                <input id="security" type="text" readonly="readonly" onclick="showAndHideUL(this)"
+                                       onblur="showAndHideUL(this, true)"/>
+                                <ul>
+                                    <li><a href="javascript:" data-value="0">OPEN</a></li>
+                                    <li><a href="javascript:" data-value="3">WPA2</a></li>
+                                </ul>
+                            </div>
+                            <!--修改选择框样式 llh 20220615 end-->
+                        </td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="row justify-content-center align-items-center" style="height: calc(18vh) ;">
+                    <button class="btn btnRun" onclick="saveWifi()" i18n="Save">Save</button>
+                </div>
+                <div class="row justify-content-center align-items-center" style="padding-bottom: 70px">
+                    <button class="button1" id="IsolationBtn" onclick="setApIsolation(this)" i18n="wifi-api">Access Point Isolation</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--提示框-->
+<div class="modal fade" id="wifiTipModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="width: 381px;height: 172px;min-width: 381px">
+        <div class="modal-content" style="padding: 0; color: #fff;width: 381px;height: 172px;background: linear-gradient(270deg, #4D68EE 0%, #9B46E4 98.64%);box-shadow: 0px 4px 15px #000000;">
+            <div class="modal-body container" style="margin: 0; max-width: 100%;font-size: 21px">
+                <div class="row justify-content-center align-items-center">
+                    <div class="col-12 text-center" style="height: 80px;line-height: 80px"><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span><span></span></div>
+                    <div class="col-12 text-center" i18n="wifi-sip">Setup in process...</div>
+                    <div class="col-12 text-center" i18n="wifi-pw">please wait</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="js/jquery.js" charset="UTF-8"></script>
+<script src="js/bootstrap-min.js"></script>
+<script src="js/utils.js"></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+        switchLanguageToSet();
+        $("[i18n]").css("visibility", "visible")
+    })
+    $("#ssidName").attr("oninput", "if(value.length>31) value=value.slice(0,31);");
+    $("#ssidPassword").attr("oninput", "if(value.length>63) value=value.slice(0,63);");
+    //设置弹框位于窗口正中间
+    toastr.options.positionClass = 'toast-center-center';
+
+    let $wifiModal = $(".wifi-modal"), $main = $(".main"), $show = $("#showPassword"), $hide = $("#hidePassword"), showFlag = 0, $wifiSwitch = $("#wifiSwitch");
+    $wifiModal.on("shown.bs.modal", function () {$main.addClass("blur");})
+    $wifiModal.on("hidden.bs.modal", function () {$main.removeClass("blur");})
+    $("#wifiTipModal").on("shown.bs.modal", function () {$wifiModal.addClass("blur");})
+    $("#wifiTipModal").on("hidden.bs.modal", function () {$wifiModal.removeClass("blur");$main.addClass("blur");})
+    /*控制密码显示与隐藏*/
+    $("#control").on("click", function () {
+        if(showFlag === 0) {$show.css("display", "block"); $hide.css("display", "none"); $("#ssidPassword").attr("type","text"); showFlag = 1;}
+        else {$show.css("display", "none"); $hide.css("display", "block"); $("#ssidPassword").attr("type","password"); showFlag = 0;}
+    })
+    //wifi关闭时其他输入框不可用
+    $wifiSwitch.on("change", function () {checkedWifi();})
+    function checkedWifi() {
+        if ($wifiSwitch.prop("checked")) {$(".wifiText input").removeAttr("disabled");$(".wifiText select").removeAttr("disabled");}
+        else {$(".wifiText input").attr("disabled", "disabled");$(".wifiText select").attr("disabled", "disabled");$wifiSwitch.removeAttr("disabled");}
+    }
+    window.onload = function () {getWifiInfo();checkedWifi();getBattery("/wifi.html");}
+    //获取wifi信息
+    let $ssidSwitch = $("#ssidSwitch"), $ssidName = $("#ssidName"), $ssidPassword = $("#ssidPassword"),
+        $netMode = $("#netMode"), $channel = $("#channel"), $security = $("#security"), $iso = $("#IsolationBtn");
+    //监听Security选择框 llh 20220610 start
+    $security.bind("change", function () {
+        if($security.val() === "OPEN") {$(".wifi-pwd").css("visibility", "hidden");} else {$(".wifi-pwd").css("visibility", "visible");}
+    })
+    //监听Security选择框 llh 20220610 start
+    $("#wifiModal").on("hide.bs.modal", function () {getWifiInfo();})
+    function getWifiInfo() {
+        XmlAjax({
+            url: "/api/get_wifi_settings",
+            data: {"get_wifi_settings":0},
+            success: function (result) {
+                console.log("wifiResult:" + result);
+                let data = JSON.parse(result);
+                $ssidSwitch.prop("checked", true);
+                if(data.status===1){$wifiSwitch.prop("checked",true);}else{$wifiSwitch.prop("checked",false);}
+                if(data.hideSSID===0){$ssidSwitch.prop("checked", true); } else {$ssidSwitch.prop("checked", false);}
+                $ssidName.val(data.SSIDName);
+                $ssidPassword.val(data.password);
+                //修改选择框设置 llh 20220615 start
+                if (data.bandwidthMode == "0") {$netMode.val("Auto");$netMode.attr("data-value","0");}
+                else if (data.bandwidthMode == "1") {$netMode.val("20M");$netMode.attr("data-value","1");}
+                else {$netMode.val("40M");$netMode.attr("data-value","2");}
+                if (data.channel == "0") {$channel.val("Auto");$channel.attr("data-value", "0");}
+                else {$channel.val("Channel" + data.channel);$channel.attr("data-value", data.channel);}
+                if (data.security == "0") {$security.val("OPEN");$security.attr("data-value", "0")}
+                else {$security.val("WPA2");$security.attr("data-value", "3")}
+                //修改选择框设置 llh 20220615 end
+                if(data.security === 0) {$(".wifi-pwd").css("visibility", "hidden");} else {$(".wifi-pwd").css("visibility", "visible");}
+                if(data.apIsolation===1){$iso.addClass("open");} else {$iso.removeClass("open");}
+                checkedWifi();
+            },
+            error: function () {
+                $(".wifiText input").val("");
+                $(".wifiText select").prop("checked", false);
+                toastr.error($("#wifi-tip2").html());
+            }
+        })
+    }
+    //设置wifi
+    function saveWifi() {
+        let reg = /^[\w+]{8,63}$/, reg1 = /^[\w+]{1,31}$/;
+        if($ssidName.val()) {
+            if(!reg.test($ssidPassword.val()) && $security.attr("data-value") == 3) {
+                toastr.warning($("#wifi-tip4").html());
+            } else if(!reg1.test($ssidName.val())){
+                toastr.warning($("#wifi-tip3").html());
+            }else {
+                $("#wifiTipModal").modal("show");
+                let hideSSID = $ssidSwitch.prop("checked") ? 0 : 1;
+                // let apIso = $iso.prop("checked") ? 1 : 0;
+                let wifiStatus = $wifiSwitch.prop("checked") ? 1 : 0;
+                XmlAjax({
+                    url: "/api/save_wifi_settings",
+                    data:{"save_wifi_settings":JSON.stringify({
+                            "status": wifiStatus,
+                            "hideSSID":hideSSID,"SSIDName":$ssidName.val(),"bandwidthMode":$netMode.attr("data-value"),"channel":$channel.attr("data-value"),
+                            "security":$security.attr("data-value"),"password":$ssidPassword.val(),"autoSleep":0
+                        })},
+                    success: function (result) {
+                        $("#wifiTipModal").modal("hide");
+                        console.log("SaveWIFIResult:\n" + result);
+                        let data = JSON.parse(result);
+                        if(data.result==="ok") {
+                            toastr.success($("#wifi-tip1").html());
+                        } else {
+                            toastr.error($("#wifi-tip2").html());
+                        }
+                    },
+                    error: function () {
+                        $("#wifiTipModal").modal("hide");toastr.error($("#wifi-tip2").html());}
+                })
+            }
+        } else {
+            toastr.error($("#wifi-tip3").html());
+        }
+    }
+
+    //设置隔离点状态
+    function setApIsolation(obj) {
+        let button = $(".open"), apIso;
+        if (button.length == 0) {apIso = 1;} else {apIso = 0;}
+        XmlAjax({
+            url: "/api/set_ap_isolation",
+            data: {"set_ap_isolation": apIso},
+            success: function (result) {
+                console.log("apisolationResult:\n" + result);
+                let data = JSON.parse(result);
+                if(data.result == "ok") {
+                    if(data.apIsolation == 1) {
+                        $(obj).addClass("open");
+                        toastr.success($("#wifi-tip5").html());
+                    } else {
+                        $(obj).removeClass("open");
+                        toastr.success($("#wifi-tip6").html());
+                    }
+                } else {
+                    toastr.error($("#wifi-tip2").html());
+                }
+            }
+        })
+    }
+</script>
+</body>
+</html>

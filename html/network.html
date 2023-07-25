@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MobiConnect Portal</title>
+<!--    <link rel="shortcut icon" href="image/logo.png">-->
+    <link rel="stylesheet" href="css/bootstrap-min.css">
+    <link rel="stylesheet" href="css/common.css">
+    <style>
+        body{font-family: 'Nunito-Regular', sans-serif;}
+        label{margin-bottom: 0;}
+        .greyFont{color: #ffffff4d}
+        /*network模态框内样式*/
+        .net-back{background-color: #6e6e7633;border-radius: 60px;border: none;height: 40px;width: 100%;padding:0;line-height: 40px;font-size: 24px;}
+        .net-font1{color: rgba(255, 255, 255, 0.3);font-size: 16px;margin-top: 60px;margin-bottom: 8px;font-weight: 400;}
+        /*network中svg样式*/
+        .form-control{color: #fff; font-size: 21px;font-weight: 400}
+        .arrow_down{fill:#4d68ee;} .arrow_up{fill:#3ef6ff;}
+        .flow{fill:#70FF00;}
+        .switchButton{ cursor: pointer}
+        .flow-span{margin-left: 148px;font-size: 16px;height: 40px;line-height: 40px}
+        /*config模态框中的样式*/
+        .con-status li {height: 20%;}
+        .con-input{border: 1px solid #a6a6ac; border-radius: 10px; background-color: #272830;color: #FFF;height: 35px}
+        input{border-color: #fff}
+        input:disabled{border-color: #888888}
+        .dns{font-size: 20px;height: 50px;color: #ffffff4d;}
+        .dhcp-addr{height: 30px;width: 338px;background: rgba(110, 110, 118, 0.2);border-radius: 60px;vertical-align: middle;font-size: 14px;color: #fff;padding: 2.5px;margin-left: 27px}
+        .dhcp-addr input{width: 50px;background-color: #4e4e58;border-radius: 10px;text-align: center;color: #fff;border: 1px solid #fff}
+        .dhcp-addr input:disabled{border: 1px solid #888888}
+        #dhcp_select{width: 100px;border: none;color: #fff;border-radius: 15px;background-color: #6e6e7633;height: 30px;text-align: center;margin-left: 27px}
+        .dhcp-lan input{width: 70px;height: 30px;color: #fff;border: none;border-radius: 15px;text-align: center;background-color: #6e6e7633}
+        .td-pad-right{padding-right: 30px;color: #fff}
+        .localTable td{min-height: 82px;font-size: 14px;overflow: hidden;text-overflow: ellipsis;}
+        .localTable th{font-family: "Nunito-Regular", serif;font-weight: 400;font-size: 16px;color: #ffffff33}
+        .localTable thead{height: calc(7vh)}
+        #deviceTable td{height: calc(7vh)}
+        /*提示框样式*/
+        .modal-tips{width: 500px;height: 250px;}
+        .localModalTable td{text-align: center; vertical-align: middle}
+        /*进度条样式*/
+        .mypro{background:rgba(110, 110, 118, 0.2);border:none;width:735px;height:36px;-webkit-appearance: none;border-radius: 35px;}
+        ::-ms-fill{background:linear-gradient(270deg, #4D68EE 0%, #9B46E4 98.64%);border-radius: 35px;box-shadow: inset 7px 7px 10px rgba(0, 0, 0, 0.41);}
+        ::-moz-progress-bar{background:linear-gradient(270deg, #4D68EE 0%, #9B46E4 98.64%);border-radius: 35px;box-shadow: inset 7px 7px 10px rgba(0, 0, 0, 0.41);}
+        ::-webkit-progress-bar{background:rgba(110, 110, 118, 0.2);border-radius: 35px;}
+        ::-webkit-progress-value{background:linear-gradient(270deg, #4D68EE 0%, #9B46E4 98.64%);border-radius: 35px;box-shadow: inset 7px 7px 10px rgba(0, 0, 0, 0.41);}
+        /*add for connection mode jinweiyang 20220520 start */
+        .connectionModeTable_search{margin: 20px auto;text-align: center;}
+        .save{height: 50px;margin: 0 auto;text-align: center;display: flex;}
+        .save button{margin: auto;}
+        .connectionModeSettings{margin: 0 auto;text-align: center;}
+        /*.connectionModeSettings button{display: block;width: 320px;height: 30px;margin: 0 auto;margin-bottom: 10px;line-height: 30px;text-align: center;}*/
+        .connectionModeSettings button{display: block;width: 379px;height: 39px;margin: 0 auto;margin-bottom: 10px;line-height: 39px;text-align: center;}
+        .settingsButton{background: rgba(110, 110, 118, 0.2);border-radius: 25px;color: #fff;border: none;}
+        .settingsButton:hover{background: linear-gradient(270deg, #4D68EE 0%, #9B46E4 98.64%);transition: .5s;transform: scale(1.1);}
+        .settingsButton:disabled:hover{background: rgba(110, 110, 118, 0.2);transition: .5s;transform: scale(1);}
+        .buttonSwitch{background: linear-gradient(270deg, #4D68EE 0%, #9B46E4 98.64%);}
+        /*add for connection mode jinweiyang 20220520 start */
+        /*add for DataThreshold Modal llh 20220601 start */
+        .dataThr-tr {transition: .3s;}
+        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button{-webkit-appearance: none !important;}
+        input[type="number"]{-moz-appearance:textfield;}
+        .dataModal-table select{height: 35px;font-size: 16px}
+        .dataModal-table .select-container input{height: 35px;font-size: 16px}
+        .dataModal-table .select-container ul{top: 15px}
+        .dataModal-table .select-container li a{font-size: 16px}
+        .connectionIcon{height: 70px;text-align: center;margin: 0 auto}
+        #planData{background-color: rgba(110, 110, 118, 0.2);color: #fff;border: 1.5px solid #fff;border-radius: 30px;width: 120px;padding-left: 18px}
+        /*add for DataThreshold Modal llh 20220601 start */
+    </style>
+    <script>
+
+    </script>
+</head>
+<body>
+<div style="display: none">
+    <label id="net-tip1" i18n="Setup succeed">Setup succeed</label><label id="net-tip2" i18n="tis">There is something wrong</label>
+    <label id="net-tip3" i18n="net-tdc">The DHCP IP Address can not be null</label><label id="net-tip4" i18n="net-tda">The DHCP IP Address range is invalid</label>
+    <label id="net-tip5" i18n="net-pcn">Please choose network first</label><label id="net-tip6" i18n="net-snp">Set network parameter failed</label>
+    <label id="net-tip7" i18n="net-sdt">Set Data Threshold failed</label><label id="net-tip8" i18n="net-scm">Set Connection Mode failed</label>
+    <label id="net-tip9" i18n="net-nli">Network list is null, please search again</label><label id="net-tip10" i18n="net-tis">There is no network</label>
+    <label id="net-tip11" i18n="me-atl">It's already the last page</label><label id="net-tip12" i18n="me-atf">It's already the first page</label>
+    <label id="net-tip13" i18n="me-tic">The input can not be null</label>
+</div>
+<div class="container" style="height: 100%;width: 100%;max-width: 100%;">
+    <div class="row  align-items-center" style="height: 10%;min-height: 60px">
+        <a href="main.html" >
+            <svg  viewBox="0 0 400 300" width="160px" style="margin-left: 80px;margin-top: 35px">
+                <defs><style>.cls-1{fill:#003b76;}
+                .cls-2{fill:#fff;}.cls-3{fill:#8ec31f;}
+                </style></defs><g id="图层_2" data-name="图层 2">
+                <g id="Calque_1" data-name="Calque 1">
+                    <rect class="cls-1" x="1.6" y="1.6" width="248.58" height="248.58" rx="18.63"/>
+                    <!--                <path class="cls-2" d="M231.55,251.78H20.24A20.26,20.26,0,0,1,0,231.55V20.24A20.26,20.26,0,0,1,20.24,0H231.55a20.25,20.25,0,0,1,20.23,20.24V231.55A20.25,20.25,0,0,1,231.55,251.78ZM20.24,3.2a17.05,17.05,0,0,0-17,17V231.55a17.05,17.05,0,0,0,17,17H231.55a17,17,0,0,0,17-17V20.24a17.05,17.05,0,0,0-17-17Z"/>-->
+                    <path class="cls-3" d="M208,70.81a10,10,0,0,0-1.15-.77l-.43-.25A32,32,0,0,0,159.06,89a1,1,0,0,0-.06.23,1.11,1.11,0,0,0,.17.75,1.08,1.08,0,0,0,1.62.21l.11-.11a22.21,22.21,0,0,1,22-5.53,22.41,22.41,0,0,1,7.9,4.28,12.51,12.51,0,1,0,17.11-18Z"/>
+                    <path class="cls-3" d="M73.2,180.19c-.37.27-.76.53-1.15.77l-.44.24A32,32,0,0,1,24.29,162a1.55,1.55,0,0,1-.05-.23,1,1,0,0,1,.16-.74A1.08,1.08,0,0,1,26,160.8l.11.11a22.14,22.14,0,0,0,30,1.25,12.66,12.66,0,0,1,7.36-4.28,12.39,12.39,0,0,1,5.37.2,12.51,12.51,0,0,1,4.39,22.11Z"/>
+                    <path class="cls-2" d="M53.69,142.3s-4.95,4.94-11.38,4.94a11.64,11.64,0,0,1-8.7-3.58,12.19,12.19,0,0,1-3.23-8.43c0-6.86,4.88-11.85,11.61-11.85a15.3,15.3,0,0,1,10,4.15l.5.52,5-7.8-.27-.32c-.21-.25-5.24-6.18-15.85-6.18a22.6,22.6,0,0,0-16.28,6.39,22.09,22.09,0,0,0,0,30.43c4.11,4.13,9.74,6.3,16.27,6.3,10.91,0,16.7-6.44,16.94-6.71l.27-.31-4.42-8.1Z"/>
+                    <path class="cls-2" d="M83,113.75a20.7,20.7,0,0,0-15.07,6A22,22,0,0,0,62,135.31c0,12.5,9.3,21.56,22.11,21.56A25.41,25.41,0,0,0,100.64,151l.32-.3-4.4-8.17L96,143c0,.05-5,4.27-11.18,4.27a12.09,12.09,0,0,1-7.66-2.56,10.56,10.56,0,0,1-3.73-6.91H101l0-.52c0-.11.24-2.71.24-3.9,0-5.57-1.63-10.36-4.7-13.87C93.33,115.73,88.61,113.75,83,113.75Zm-.23,8.85c4.22,0,7,2.74,7.33,7.18H73.83C74.9,125.27,78.18,122.6,82.72,122.6Z"/>
+                    <rect class="cls-2" x="160.14" y="98.97" width="11.05" height="10.26"/><rect class="cls-2" x="160.14" y="113.71" width="11.13" height="43.16"/>
+                    <rect class="cls-2" x="181.13" y="98.97" width="11.05" height="10.26"/><rect class="cls-2" x="181.13" y="113.71" width="11.13" height="43.16"/>
+                    <path class="cls-2" d="M217.75,130.89c-3.47-1.39-6.46-2.59-6.46-4.46,0-2.25,2.44-3.05,4.53-3.05a14.83,14.83,0,0,1,9.44,3.31l.56.52,4.22-8.44-.28-.29c-.19-.19-4.68-4.73-13.86-4.73-9.51,0-15.9,5-15.9,12.36,0,8.06,7.12,11,12.85,13.32,3.57,1.47,6.65,2.73,6.65,4.76s-2.36,3.05-4.7,3.05A16.25,16.25,0,0,1,204.28,143l-.5-.5-5.19,8,.31.33a22.8,22.8,0,0,0,16,6.07c9.36,0,15.91-5.18,15.91-12.6C230.79,136.13,223.56,133.23,217.75,130.89Z"/>
+                    <rect class="cls-2" x="107.85" y="98.97" width="11.16" height="57.91"/><path class="cls-2" d="M153.11,146.7l-.7.15a9.05,9.05,0,0,1-1.68.14c-6.41,0-7.37-4.37-7.37-7V122.8h9.12v-9.09h-9.12V102.16h-10.9v11.55H127v9.09h5.19v18.47c0,6.07,2.19,10.48,6.52,13.08a21.16,21.16,0,0,0,10.72,2.59,18.21,18.21,0,0,0,3.18-.24l.46-.1v-9.9Z"/>
+                </g>
+            </g>
+            </svg>
+        </a>
+</button>
+<!--        <a href="main.html" style="margin-left: 4%;color: #4d68ee;font-size: 24px;font-family: 'Nunito-Bold',sans-serif;">MobiWire</a>-->
+        <div class="btn-group-vertical1">
+            <button class="bat-active">
+                <svg class="img-fluid" width="45px" height="54px" viewBox="0 0 16 16" id="battery">
+                    <path d="M0 6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6zm2-1a1 1 0 0 0-1 1v4a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1H2zm14 3a1.5 1.5 0 0 1-1.5 1.5v-3A1.5 1.5 0 0 1 16 8z"></path>
+                    <path d="M2 6h10v4H2V6z" style="transition: 0.3s"></path>
+                </svg>
+            </button>
+            <button class="bat-hide"><span id="batteryNumber">100%</span></button>
+        </div>
+        <div class="btn-group-vertical">
+            <button class="lang-active">EN</button>
+            <button class="lang-hide">ES</button>
+            <button class="lang-hide">FR</button>
+        </div>
+    </div>
+    <!--上侧导航栏-->
+    <div class="row main nav-icon-top justify-content-center align-items-center">
+        <table class="nav-network">
+            <tr>
+                <td class="nav-icon">
+                    <a class="nav-icon" id="v-network" href="network.html" title="network">
+                        <svg x="0px" y="0px" viewBox="0 0 90 90" class="nav-col-svg" xml:space="preserve">
+                        <style type="text/css">.nt0{fill:#4D68EE;}  .nt1{fill:white;}  .nt2{fill-rule:evenodd;clip-rule:evenodd;fill:#FFF;}</style>
+                            <circle class="nt0" cx="45" cy="44.9" r="43.5"/>
+                            <path class="nt0" d="M45,89.5c-24.5,0-44.5-20-44.5-44.5c0-24.5,20-44.5,44.5-44.5s44.5,20,44.5,44.5C89.5,69.5,69.5,89.5,45,89.5z
+                             M45,3.5C22.1,3.5,3.5,22.1,3.5,45c0,22.9,18.6,41.5,41.5,41.5S86.5,67.9,86.5,45C86.5,22.1,67.9,3.5,45,3.5z"/>
+                            <path class="nt1" d="M45,34.5c-5.1,0-9.3-4.2-9.3-9.3s4.2-9.3,9.3-9.3s9.3,4.2,9.3,9.3S50.1,34.5,45,34.5z M45,18.8
+                            c-3.5,0-6.3,2.8-6.3,6.3s2.8,6.3,6.3,6.3s6.3-2.8,6.3-6.3S48.5,18.8,45,18.8z"/>
+                            <path class="nt1" d="M62.9,68c-0.8,0-1.5-0.7-1.5-1.5V46.2c0-6.1-4.9-11-11-11H39.6c-6.1,0-11,4.9-11,11v20.3c0,0.8-0.7,1.5-1.5,1.5
+                            s-1.5-0.7-1.5-1.5V46.2c0-7.7,6.3-14,14-14h10.8c7.7,0,14,6.3,14,14v20.3C64.4,67.3,63.7,68,62.9,68z"/>
+                            <g>
+                                <path class="nt2" d="M34.5,73.2L34.5,73.2c-1.1,0-2-0.9-2-2v-4.8c0-1.1,0.9-2,2-2h0c1.1,0,2,0.9,2,2v4.8
+                                C36.5,72.3,35.6,73.2,34.5,73.2z"/>
+                                <path class="nt2" d="M41.5,73.2L41.5,73.2c-1.1,0-2-0.9-2-2v-8.1c0-1.1,0.9-2,2-2h0c1.1,0,2,0.9,2,2v8.1
+                                C43.4,72.3,42.6,73.2,41.5,73.2z"/>
+                                <path class="nt2" d="M48.5,73.2L48.5,73.2c-1.1,0-2-0.9-2-2V59.8c0-1.1,0.9-2,2-2h0c1.1,0,2,0.9,2,2v11.4
+                                C50.4,72.3,49.6,73.2,48.5,73.2z"/>
+                                <path class="nt2" d="M55.5,73.3L55.5,73.3c-1.1,0-2-0.9-2-2V55c0-1.1,0.9-2,2-2h0c1.1,0,2,0.9,2,2v16.3
+                                C57.4,72.4,56.6,73.3,55.5,73.3z"/>
+                            </g>
+                        </svg>
+                    </a>
+                    <div style="color: #4D68EE" i18n="Network">Network</div>
+                </td>
+                <td class="nav-icon grey-icon">
+                    <a class="nav-icon" id="v-wifi" href="wifi.html" title="wifi">
+                        <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 90 90" class="nav-col-svg" xml:space="preserve">
+                            <style type="text/css">.wf0{fill:#ffffff33;}  .wf1{fill-rule:evenodd;clip-rule:evenodd;fill:#ffffff33;}</style>
+                            <path class="wf0" d="M45,89.5c-24.5,0-44.5-20-44.5-44.5c0-24.5,20-44.5,44.5-44.5s44.5,20,44.5,44.5C89.5,69.5,69.5,89.5,45,89.5z
+                                 M45,3.5C22.1,3.5,3.5,22.1,3.5,45c0,22.9,18.6,41.5,41.5,41.5S86.5,67.9,86.5,45C86.5,22.1,67.9,3.5,45,3.5z"/>
+                            <g>
+                                <path class="wf0" d="M40.9,32.7c-0.8,0-1.5-0.7-1.5-1.5V17.4L33.7,23c-0.6,0.6-1.5,0.6-2.1,0s-0.6-1.5,0-2.1l8.2-8.2
+                                    c0.4-0.4,1.1-0.6,1.6-0.3c0.6,0.2,0.9,0.8,0.9,1.4v17.5C42.4,32,41.7,32.7,40.9,32.7z"/>
+                                <path class="wf0" d="M49.7,41.4c-0.2,0-0.4,0-0.6-0.1c-0.6-0.2-0.9-0.8-0.9-1.4V22.5c0-0.8,0.7-1.5,1.5-1.5s1.5,0.7,1.5,1.5v13.8
+                                    l5.6-5.6c0.6-0.6,1.5-0.6,2.1,0s0.6,1.5,0,2.1L50.8,41C50.5,41.3,50.1,41.4,49.7,41.4z"/>
+                            </g>
+                            <path class="wf1" d="M41.4,65.7c-2,1.9-2,5.1,0,7.1c1.9,2,5.1,2,7.1,0c2-1.9,2-5.1,0-7.1C46.6,63.8,43.4,63.8,41.4,65.7z M34.4,58.6
+                                c0,0-1.7,1.8,0,3.5c1.7,1.7,3.5,0,3.5,0c3.9-3.9,10.3-3.9,14.2,0c0,0,1.8,1.8,3.5,0c1.8-1.8,0-3.5,0-3.5
+                                C49.8,52.8,40.2,52.8,34.4,58.6L34.4,58.6L34.4,58.6z M27.3,51.5c0,0-1.8,1.8,0,3.5c1.8,1.8,3.5,0,3.5,0c7.8-7.8,20.5-7.8,28.3,0.1
+                                c0,0,1.8,1.8,3.5,0c1.8-1.8,0-3.5,0-3.5C53,41.8,37.1,41.8,27.3,51.5L27.3,51.5z"/>
+                        </svg>
+                    </a>
+                    <div i18n="WiFi">WiFi</div>
+                </td>
+                <td class="nav-icon grey-icon">
+                    <a class="nav-icon" href="security.html" title="security">
+                        <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 90 90" class="nav-col-svg" xml:space="preserve">
+                            <style type="text/css">
+                                .se0{fill:#ffffff33;}
+                            </style>
+                            <path class="se0" d="M45,89.5c-24.5,0-44.5-20-44.5-44.5c0-24.5,20-44.5,44.5-44.5s44.5,20,44.5,44.5C89.5,69.5,69.5,89.5,45,89.5z
+                                 M45,3.5C22.1,3.5,3.5,22.1,3.5,45c0,22.9,18.6,41.5,41.5,41.5S86.5,67.9,86.5,45C86.5,22.1,67.9,3.5,45,3.5z"/>
+                            <path class="se0" d="M55.7,68.3H34.3c-2.8,0-5-2.2-5-5V45.9c0-2.8,2.2-5,5-5h21.4c2.8,0,5,2.2,5,5v17.4C60.7,66,58.5,68.3,55.7,68.3 z"/>
+                            <path class="se0" d="M60.7,38.9c-0.8,0-1.5-0.7-1.5-1.5c0-7.8-6.4-14.2-14.2-14.2c-7.8,0-14.2,6.4-14.2,14.2c0,0.8-0.7,1.5-1.5,1.5
+                                s-1.5-0.7-1.5-1.5c0-9.5,7.7-17.2,17.2-17.2c9.5,0,17.2,7.7,17.2,17.2C62.2,38.2,61.5,38.9,60.7,38.9z"/>
+                        </svg>
+                    </a>
+                    <div i18n="Security">Security</div>
+                </td>
+                <td class="nav-icon grey-icon">
+                    <a class="nav-icon" href="system.html" title="system">
+                        <svg x="0px" y="0px" viewBox="0 0 90 90" class="nav-col-svg" xml:space="preserve">
+                        <style type="text/css">.sys0{fill:#ffffff33;}</style>
+                            <path class="sys0" d="M45,0.5C20.5,0.5,0.5,20.5,0.5,45s20,44.5,44.5,44.5s44.5-20,44.5-44.5S69.5,0.5,45,0.5z M60,83.69
+                            c-2.12,0.82-4.33,1.49-6.6,1.96V55.86c1.24-0.57,2.1-1.81,2.1-3.26c0-1.99-1.61-3.6-3.6-3.6s-3.6,1.61-3.6,3.6
+                            c0,1.45,0.86,2.69,2.1,3.26v30.27c-1.77,0.23-3.57,0.36-5.4,0.36c-0.34,0-0.67-0.02-1-0.03V42.4c0-1.2-0.4-2.4-1.3-3.3l-7.9-8.2
+                            c-0.3-0.3-0.5-0.7-0.5-1.2v-7.14c1.24-0.57,2.1-1.81,2.1-3.26c0-1.99-1.61-3.6-3.6-3.6s-3.6,1.61-3.6,3.6c0,1.45,0.86,2.69,2.1,3.26
+                            v7.14c0,1.2,0.4,2.4,1.3,3.3l7.9,8.3c0.3,0.3,0.5,0.7,0.5,1.2v43.8c-5.64-0.54-10.95-2.22-15.7-4.79V55.7c0-1.2-0.6-2.5-1.5-3.4
+                            l-6.97-6.77C16.93,45.2,17,44.86,17,44.5c0-1.99-1.61-3.6-3.6-3.6s-3.6,1.61-3.6,3.6s1.61,3.6,3.6,3.6c0.5,0,0.98-0.1,1.41-0.29
+                            l6.89,6.69c0.3,0.3,0.5,0.8,0.5,1.3v23.85C10.94,72.23,3.5,59.48,3.5,45c0-11.82,4.96-22.48,12.9-30.04V28.1c0,1.3,0.5,2.5,1.4,3.4
+                            l14.3,14.1c0.3,0.4,0.5,0.8,0.5,1.3v23.54c-1.24,0.57-2.1,1.81-2.1,3.26c0,1.99,1.61,3.6,3.6,3.6s3.6-1.61,3.6-3.6
+                            c0-1.49-0.91-2.77-2.2-3.32V46.9c0-1.3-0.5-2.5-1.4-3.4L19.9,29.4c-0.3-0.4-0.5-0.8-0.5-1.3V12.36c6.88-5.41,15.51-8.69,24.9-8.84
+                            V25.4c0,1.3,0.5,2.4,1.3,3.3l13.9,15.1c0.3,0.3,0.5,0.7,0.5,1.2V83.69z M69.5,78.48c-2.04,1.49-4.21,2.81-6.5,3.92
+                            c0-4.09,0-37.4,0-37.4c0-1.3-0.5-2.4-1.3-3.3L47.8,26.6c-0.3-0.3-0.5-0.7-0.5-1.2V3.57c2.08,0.11,4.11,0.38,6.1,0.79V18.1
+                            c0,1.2,0.4,2.3,1.2,3.2l14.5,16.5c0.2,0.3,0.4,0.8,0.4,1.2V78.48z M78.3,41.2c-1.99,0-3.6,1.61-3.6,3.6c0,1.45,0.86,2.69,2.1,3.26
+                            v7.14c0,1.2,0.4,2.4,1.3,3.3l4.31,4.48c-2.41,5-5.8,9.43-9.91,13.08V39c0-1.2-0.4-2.3-1.2-3.2L56.8,19.3c-0.2-0.3-0.4-0.8-0.4-1.2
+                            v-13C73.76,10.06,86.5,26.05,86.5,45c0,5.27-1,10.31-2.79,14.95L80.3,56.4c-0.3-0.3-0.5-0.7-0.5-1.2v-7.14
+                            c1.24-0.57,2.1-1.81,2.1-3.26C81.9,42.81,80.29,41.2,78.3,41.2z"/>
+                        </svg>
+                    </a>
+                    <div i18n="System">System</div>
+                </td>
+                <td class="nav-icon grey-icon">
+                    <a class="nav-icon" href="message.html" title="message">
+                        <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 90 90" class="nav-col-svg" xml:space="preserve">
+                            <style type="text/css">
+                                .me0{fill:#ffffff33;}
+                            </style>
+                            <path class="me0" d="M45,89.5c-24.5,0-44.5-20-44.5-44.5c0-24.5,20-44.5,44.5-44.5s44.5,20,44.5,44.5C89.5,69.5,69.5,89.5,45,89.5zM45,3.5C22.1,3.5,3.5,22.1,3.5,45c0,22.9,18.6,41.5,41.5,41.5S86.5,67.9,86.5,45C86.5,22.1,67.9,3.5,45,3.5z"/>
+                            <path class="me0" d="M61.4,62H28.6c-5.5,0-9.9-4.4-9.9-9.9V37.5c0-5.5,4.4-9.9,9.9-9.9h32.9c5.5,0,9.9,4.4,9.9,9.9v14.6
+                                C71.3,57.6,66.9,62,61.4,62z M28.6,30.6c-3.8,0-6.9,3.1-6.9,6.9v14.6c0,3.8,3.1,6.9,6.9,6.9h32.9c3.8,0,6.9-3.1,6.9-6.9V37.5c0-3.8-3.1-6.9-6.9-6.9H28.6z"/>
+                            <path class="me0" d="M45,49.1c-1.6,0-3.3-0.4-4.8-1.2l-10.7-5.7c-0.7-0.4-1-1.3-0.6-2c0.4-0.7,1.3-1,2-0.6l10.7,5.7
+                                c2.2,1.2,4.8,1.1,7-0.1l9.6-5.6c0.7-0.4,1.6-0.2,2.1,0.5c0.4,0.7,0.2,1.6-0.5,2.1l-9.6,5.6C48.6,48.6,46.8,49.1,45,49.1z"/>
+                        </svg>
+                    </a>
+                    <div i18n="SMS">SMS</div>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <!--下侧内容-->
+    <div class="row main nav-btn-bottom justify-content-center align-items-center">
+        <table style="width:60%;height: 65.3%;min-width: 815px;">
+            <tr>
+                <td>
+                    <a class="list-group-item list-group-item-action active" id="list-basic-tab" data-toggle="list" href="#" role="tab" aria-controls="home" i18n="net-enp">Essential Network Parameters</a>
+                    <a class="list-group-item list-group-item-action" id="list-advance-tab" href="advance_network.html" i18n="net-anp">Advanced Network Parameters</a>
+                </td>
+                <td style="width: 54%">
+                    <button  class="btn btn-modal justify-content-between" onclick="mobileCheck()"><span i18n="net-Mobile Network">Mobile Network</span></button>
+                    <!--                    <button class="btn btn-modal" data-toggle="modal" data-target="#configModal"><span>Network Configuration</span></button>-->
+                    <button class="btn btn-modal" data-toggle="modal" data-target="#localModal"><span i18n="net-Local Network">Local Network</span></button>
+                    <button class="btn btn-modal" data-toggle="modal" data-target="#dhcpModal"><span>DHCP</span></button>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+<!--Mobile Network弹框-->
+<div class="modal fade" id="mobileModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" >
+    <div class="modal-dialog">
+        <div class="modal-content" style="padding: 0;">
+            <!--modify [1.添加mobile network 点击上方栏 整个弹窗消失动作 去掉啦之前我加的modal-header] jwy 20220524 start-->
+            <div class="modal-header" >
+                <!--modify [1.添加mobile network 点击上方栏 整个弹窗消失动作 去掉啦之前我加的id=modal-header] jwy 20220524 end-->
+                <div style="margin: auto">
+                    <span class="modal-title" i18n="net-Mobile Network">Mobile Network</span>
+                    <button type="button" class="close modal-close" data-dismiss="modal" aria-label="Close" style="padding: 0">
+                        <svg width="30" height="15" viewBox="0 0 30 15" fill="none">
+                            <path d="M2 13.4961L13.789 2.19167C14.571 1.44175 15.808 1.45098 16.5788 2.21248L28 13.4961" stroke="white" stroke-opacity="0.5" stroke-width="3" stroke-linecap="round"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div class="modal-body diy-scroll">
+                <div style="height: 100%;min-height:650px">
+                    <div class="row align-items-center justify-content-center" style="height: 127px;width: 100%;color: #fff;"><label class="modal-small-title" i18n="net-Status">Status</label></div>
+                    <div class="row justify-content-center" style="width: 100%">
+                        <table style="width: 858px;color: #ffffff30;table-layout: fixed;height: 503px;font-weight: 400">
+                            <tr><td width="306px"></td><td width="63px"></td><td width="46px"></td><td width="74px"></td><td width="93px"></td><td width="109px"></td><td width="167px"></td></tr>
+                            <tr>
+                                <td colspan="2">
+                                    <label class="net-font1" for="name" style="margin-top: 0" i18n="net-Network Name">Network Name</label><div class="form-control net-back" id="name"><span class="ml-4" id="operatorName"></span></div>
+                                </td><td width="46px"></td>
+                                <td width="74px"></td>
+                                <td colspan="3">
+                                    <label class="net-font1" for="ltee" style="margin-top: 0;" i18n="net-Network Type">Network Type</label><div class="form-control net-back" id="ltee"><span class="ml-4" id="lte"></span></div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label class="net-font1" for="showRate" i18n="net-rtn">Real Time Network</label>
+                                    <div class="form-control form-inline net-back" id="showRate" style="width: 306px">
+                                        <div class="col-6" style="color: #4d68ee;padding: 0;text-align: center">
+                                            <svg width="10px" height="28px" viewBox="0 0 10.76 20.75" style="vertical-align: sub"><g><g>
+                                                <path class="arrow_down" d="M1,20.75a1,1,0,0,1-.38-.08A1,1,0,0,1,0,19.75V1A1,1,0,0,1,2,1V17.32l7.05-7.09a1,1,0,0,1,1.42,0,1,1,0,0,1,0,1.41L1.71,20.45A1,1,0,0,1,1,20.75Z"/>
+                                            </g></g></svg>
+                                            <span id="downSpeed">0</span><span id="downUnit">B/S</span>
+                                        </div>
+                                        <div class="col-6"  style="color: #3ef6ff;padding: 0;text-align: center">
+                                            <svg width="10px" height="28px" viewBox="0 0 10.76 20.75" style="vertical-align: sub"><g><g>
+                                                <path class="arrow_up" d="M9.76,20.75a1,1,0,0,1-1-1V3.42l-7,7.09a1,1,0,0,1-1.42,0,1,1,0,0,1,0-1.42L9.05.29A1,1,0,0,1,10.14.07a1,1,0,0,1,.62.93V19.75A1,1,0,0,1,9.76,20.75Z"/>
+                                            </g></g></svg>
+                                            <span id="upSpeed">0</span><span id="upUnit">B/S</span>
+                                        </div>
+                                    </div>
+                                </td><td colspan="2"></td>
+                                <td colspan="2">
+                                    <label class="net-font1" for="status" i18n="net-Connect Status">Connect Status</label>
+                                    <div class="form-control net-back" id="status" style="width: 167px;text-align: center">
+                                        <svg id="simStatusSvg" style="width: 13px;fill: #80FF00;margin-bottom: 4px" viewBox="0 0 1024 1024"><path d="M512 4.8C232 4.8 4.8 232 4.8 512c0 280 227.2 507.2 507.2 507.2 280 0 507.2-227.2 507.2-507.2C1019.2 232 792 4.8 512 4.8z"></path></svg>
+                                        <span style="color: #fff;font-size: 24px" id="simStatus">On</span>
+                                    </div>
+                                </td><td></td>
+                                <td>
+                                    <label class="net-font1" for="strength" i18n="net-Signal Strength">Signal Strength</label>
+                                    <div class="form-control net-back" id="strength" style="text-align: center;width: 167px">
+                                        <svg width="45px" x="0px" y="0px" viewBox="0 0 79.14 52.64">
+                                            <style type="text/css">.si0{fill:#FFFFFF;} .si2{font-size:50px;}  .strength2{fill-rule:evenodd;clip-rule:evenodd;fill:#20E264;}  .strength3{fill:#20E264;}</style>
+                                            <text id="strengthText" transform="matrix(0.99 0 0 1 51.7661 44.5333)" class="si0 si2">5</text>
+                                            <g>
+                                                <path class="strength2" d="M30.93,29.83L30.93,29.83c4.46-4.46,4.46-11.7,0-16.16c-0.71-0.73-1.88-0.74-2.61-0.03
+                                                    c-0.01,0.01-0.02,0.02-0.03,0.03c-0.74,0.71-0.77,1.89-0.05,2.64c0.02,0.02,0.04,0.04,0.05,0.05c2.96,2.98,2.96,7.79,0,10.78
+                                                    c-0.73,0.75-0.73,1.94,0,2.69C29.03,30.54,30.2,30.54,30.93,29.83z M37.55,35.2c7.37-7.47,7.34-19.5-0.09-26.93
+                                                    c-0.71-0.74-1.88-0.77-2.62-0.06c-0.02,0.02-0.04,0.04-0.06,0.06c-0.75,0.72-0.76,1.92-0.04,2.66c0.01,0.01,0.03,0.03,0.04,0.04
+                                                    c5.93,5.95,5.95,15.57,0.05,21.54c-0.74,0.71-0.77,1.89-0.05,2.64c0.02,0.02,0.04,0.04,0.05,0.05c0.71,0.73,1.87,0.75,2.6,0.04
+                                                    c0.01-0.01,0.03-0.03,0.04-0.04L37.55,35.2z"/>
+                                                <path class="strength2" d="M12.28,29.83c0.74,0.74,1.94,0.75,2.69,0c0.74-0.74,0.75-1.94,0-2.69l0,0c-2.96-2.98-2.96-7.79,0-10.78
+                                                    c0.66-0.81,0.54-2.01-0.27-2.67c-0.69-0.56-1.67-0.57-2.37-0.03C7.86,18.12,7.84,25.35,12.28,29.83L12.28,29.83z M5.66,35.2
+                                                    c0.7,0.74,1.87,0.77,2.61,0.07c0.02-0.02,0.05-0.05,0.07-0.07c0.74-0.72,0.76-1.91,0.04-2.65c-0.01-0.01-0.03-0.03-0.04-0.04
+                                                    C2.45,26.53,2.47,16.92,8.4,10.97c0.75-0.72,0.76-1.92,0.04-2.66C8.42,8.3,8.41,8.29,8.4,8.27C7.68,7.54,6.51,7.53,5.78,8.25
+                                                    C5.77,8.26,5.77,8.26,5.76,8.27C-1.66,15.7-1.69,27.73,5.69,35.2H5.66z"/>
+                                                <ellipse class="strength3" cx="21.59" cy="21.74" rx="3.19" ry="3.21"/>
+                                                <path class="strength3" d="M21.36,21.1h0.46c0.49,0,0.89,0.4,0.89,0.89v22.28c0,0.49-0.4,0.89-0.89,0.89h-0.4 c-0.49,0-0.89-0.4-0.89-0.89V21.99C20.47,21.5,20.87,21.1,21.36,21.1z"/>
+                                            </g>
+                                        </svg>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="7" width="858px">
+                                    <table style="width: 100%;background-color: rgba(110, 110, 118, 0.2);border-radius: 30px;height: 200px;margin-top: 80px">
+                                        <tr style="height: 75px">
+                                            <td colspan="3" style="text-align: center">
+                                                <div>
+                                                    <svg viewBox="0 0 33.24 30.63" width="25px" style="margin-bottom: 8px"><g><g>
+                                                        <path class="flow" d="M33.24,5.6V26.45a4.17,4.17,0,0,1-4.16,4.17H3.27a4.36,4.36,0,0,1-1.7-.26A2.53,2.53,0,0,1,0,27.84V21.45L13.18,14.1a1.31,1.31,0,0,1,1-.15l5.52,1.14a1.4,1.4,0,0,0,1.1-.24ZM31.85,0h0l.25,0h0a1.15,1.15,0,0,1,.31.11,1.31,1.31,0,0,1,.5.4v0l0,0,.06.1L33,.56a1.43,1.43,0,0,1,.28.8v0a1.39,1.39,0,0,1-.14.6,1.42,1.42,0,0,1-.4.51h0L21.6,10.86a1.35,1.35,0,0,1-1.1.25L14.57,9.92a1.35,1.35,0,0,0-.94.15L2.06,16.53a1.39,1.39,0,0,1-1.8-.4L.17,16a1.41,1.41,0,0,1,.41-1.81l.13-.08,12.47-7A1.34,1.34,0,0,1,14.12,7l5.71,1.14a1.35,1.35,0,0,0,1.1-.25l6.77-5.1H23.54a1.39,1.39,0,0,1,0-2.78Z"/>
+                                                    </g></g></svg><span style="color: #fff;font-size: 21px;margin-left: 21px" i18n="net-Flow Statistics">Flow Statistics</span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr><td width="595px"><span class="flow-span" i18n="net-tcs">The Current Session</span></td><td style="color: #fff" id="sessionThre">0</td><td width="180px" id="sessionUnit">GB</td></tr>
+                                        <tr><td><span class="flow-span" i18n="net-tsl">Total Since Last Statistics Reset</span></td><td style="color: #fff" id="totalThre">0</td><td id="totalUnit">GB</td></tr>
+                                        <tr height="75px"><td colspan="3" style="text-align: center;vertical-align: bottom"><button class="btn btnRun" data-toggle="modal" data-target="#delThrModal"><span i18n="net-Clear Statistics">Clear Statistic</span></button></td></tr>
+                                        <tr height="20px"><td></td><td></td><td></td></tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <div style="height: 90%">
+                    <div class="row align-items-center justify-content-center" style="width: 100%;height: 46px;color: #fff;margin-top: 50px"><label class="modal-small-title" i18n="net-Settings">Settings</label></div>
+                    <div class="row" style="margin-top:12px;">
+                        <table style="width: 908px;margin: auto;color: #fff;font-size: 21px;border-collapse:separate; border-spacing:24px;">
+                            <tr><td width="202px"></td><td width="262px"><span i18n="net-Data">Data</span></td>
+                                <td class="text-right" width="120px">
+                                    <div class="switchButton" data-check="checked">
+                                        <input type="checkbox" name="sex" id="data_switch" class="chooseBtn2" />
+                                        <label for="data_switch" class="choose-label2" style="top: 4px"></label>
+                                    </div>
+                                </td>
+                                <td width="202px"></td>
+                            </tr>
+                            <tr><td></td><td><span i18n="net-Roaming">Roaming</span></td>
+                                <td class="text-right">
+                                    <div class="switchButton" data-check="checked">
+                                        <input type="checkbox" name="sex" id="roam_switch" class="chooseBtn2" />
+                                        <label for="roam_switch" class="choose-label2" style="top: 4px"></label>
+                                    </div>
+                                </td>
+                                <td></td>
+                            </tr>
+                            <tr><td></td><td i18n="net-Data Threshold">Data Threshold</td>
+                                <td class="text-right">
+                                    <div class="switchButton" data-check="checked">
+                                        <input type="checkbox" name="sex" id="threshold_switch" class="chooseBtn2" />
+                                        <label for="threshold_switch" class="choose-label2" style="top: 4px"></label>
+                                    </div>
+                                </td>
+                                <td></td>
+                            </tr>
+                            <tr class="dataThr-tr" style="display: none"><td colspan="4">
+                                <table style="background-color: rgba(59, 59, 71, 0.7);border-radius: 35px;width: 858px;height: 33.7vh;text-align: center;font-size: 16px">
+                                    <tr><td style="font-size: 21px" height="103px" i18n="net-mdu">Monthly Data Usage</td></tr>
+                                    <tr><td height="30px">
+                                        <div style="width: 735px;margin-left: 62px;text-align: left;color: #ffffff33"><span i18n="net-Duration">Duration: </span><span id="data-time">00:00:00</span></div>
+                                    </td></tr>
+                                    <tr><td height="46px">
+                                        <progress value="0" max="100" class="mypro" id="dataThrevalue"></progress>
+                                    </td></tr>
+                                    <tr><td height="38px">
+                                        <div style="width: 735px;margin-left: 62px;text-align: left">
+                                            <label style="width: 140px"><span i18n="net-Used">Used: </span><span id="usedValue">0 MB</span></label>
+                                            <label style="margin-left: 440px;width: 140px"><span i18n="Total">Total: </span><span id="totalValue">10 MB</span></label>
+                                        </div></td></tr>
+                                    <tr><td><button class="btn btnRun" data-toggle="modal" data-target="#setThrModal" i18n="net-Edit">Edit</button></td></tr>
+                                </table>
+                            </td></tr>
+                            <tr><td></td><td i18n="net-Network Selection">Network Selection</td>
+                                <td class="text-right">
+                                    <!--修改选择框样式 llh 20220615 start-->
+                                    <div class="select-container" style="display: inline-block">
+                                        <span>
+                                            <svg width="15" height="9" viewBox="0 0 15 9" fill="none">
+                                                <path d="M1.00005 1.36001L6.07791 6.97796C6.87861 7.86382 8.27212 7.85521 9.06182 6.95953L13.9988 1.36002" stroke="white" stroke-width="2"/>
+                                            </svg>
+                                        </span>
+                                        <input id="netSelect" type="text" readonly="readonly" onclick="showAndHideUL(this)"
+                                               onblur="showAndHideUL(this, true)" value="4G/3G" data-value="0"/>
+                                        <ul>
+                                            <li><a href="javascript:" data-value="0" style="text-align:left;text-indent: 18px">4G/3G</a></li>
+                                            <li><a href="javascript:" data-value="1" style="text-align:left;text-indent: 18px">4G</a></li>
+                                            <li><a href="javascript:" data-value="2" style="text-align:left;text-indent: 18px">3G</a></li>
+                                        </ul>
+                                    </div>
+                                    <!--修改选择框样式 llh 20220615 end-->
+                                </td>
+                                <td></td>
+                            </tr>
+                            <tr><td></td><td i18n="net-Connection Mode">Connection Mode</td>
+                                <td class="text-right">
+                                    <!--修改选择框样式 llh 20220615 start-->
+                                    <div class="select-container" style="display: inline-block">
+                                        <span>
+                                            <svg width="15" height="9" viewBox="0 0 15 9" fill="none">
+                                                <path d="M1.00005 1.36001L6.07791 6.97796C6.87861 7.86382 8.27212 7.85521 9.06182 6.95953L13.9988 1.36002" stroke="white" stroke-width="2"/>
+                                            </svg>
+                                        </span>
+                                        <input id="connectSelect" type="text" readonly="readonly" onclick="showAndHideUL(this)" value="Auto" data-value="1"
+                                               onblur="showAndHideUL(this, true)"/>
+                                        <ul>
+                                            <li><a href="javascript:" data-value="1" style="text-align:left;text-indent: 18px">Auto</a></li>
+                                            <li><a href="javascript:" data-value="0" style="text-align:left;text-indent: 18px">Manual</a></li>
+                                        </ul>
+                                    </div>
+                                    <!--修改选择框样式 llh 20220615 end-->
+                                </td><td></td>
+                            </tr>
+                        </table>
+                    </div>
+                    <!--add for connection mode jinweiyang 20220520 start-->
+                    <div id="connectionModeDialog"  style="display: none">
+                        <div class="connectionIcon">
+                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                            <span i18n="net-snf">Searching for networks...  Please wait</span>
+                        </div>
+                        <div class="connectionModeSettings">
+<!--                            <button class="settingsButton">Orange 4G</button>-->
+<!--                            <button class="settingsButton">MobiWire 5G</button>-->
+<!--                            <button class="settingsButton">DDDD_hh 5G</button>-->
+<!--                            <button class="settingsButton">FEGDBK 4G</button>-->
+<!--                            <button class="settingsButton">Change FQSDF 5G</button>-->
+                        </div>
+                        <div class="connectionModeTable_search">
+                            <button class="btnPage connectionBtn" style="background: none;border: none;padding-right: 20px" id="prevDevice1">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                    <path d="M15 1L9.40386 6.67967C8.62855 7.46654 8.638 8.73296 9.42496 9.50817L15 15" stroke="white" stroke-opacity="0.3" stroke-width="2" stroke-linecap="round"/>
+                                    <path d="M7.99902 1L2.40288 6.67967C1.62758 7.46654 1.63703 8.73296 2.42399 9.50817L7.99902 15" stroke="white" stroke-opacity="0.3" stroke-width="2" stroke-linecap="round"/>
+                                </svg>
+                            </button>
+                            <button class="btnPage connectionRefresh" style="background: none;border: none;" onclick="startSearchNetwork()">
+                                <svg width="22" height="22" fill="#888888" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/>
+                                    <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/>
+                                </svg>
+                            </button>
+                            <button class="btnPage connectionBtn" style="background: none;border: none;padding-left: 20px" id="prevDevice2" >
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" color="white">
+                                    <path d="M1 1L6.59614 6.67967C7.37145 7.46654 7.362 8.73296 6.57504 9.50817L1 15" stroke="white"  stroke-opacity="0.3"stroke-width="2" stroke-linecap="round"/>
+                                    <path d="M8.00098 1L13.5971 6.67967C14.3724 7.46654 14.363 8.73296 13.576 9.50817L8.00098 15" stroke="white" stroke-opacity="0.3" stroke-width="2" stroke-linecap="round"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="save" style="margin-top:40px">
+                        <button class="btn btnRun " onclick="setNetwork()" i18n="Save">Save</button>
+                    </div>
+                    <!--add for connection mode jinweiyang 20220520 end-->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--Local Network弹框-->
+<div class="modal fade" id="localModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" style="padding: 0;color: #fff">
+            <div class="modal-header">
+                <div style="margin: auto">
+                    <span class="modal-title" i18n="net-Local Network">Local Network</span>
+                    <button type="button" class="close modal-close" data-dismiss="modal" aria-label="Close" style="padding: 0">
+                        <svg width="30" height="15" viewBox="0 0 30 15" fill="none">
+                            <path d="M2 13.4961L13.789 2.19167C14.571 1.44175 15.808 1.45098 16.5788 2.21248L28 13.4961" stroke="white" stroke-opacity="0.5" stroke-width="3" stroke-linecap="round"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div class="modal-body row align-items-center justify-content-center diy-scroll">
+                <div style="width: 858px;height:calc(71vh);background: rgba(110, 110, 118, 0.2);border-radius: 30px;">
+                    <table class="localModalTable">
+                        <tr><td colspan="4" style="height: calc(13vh)"><span class="modal-small-title" i18n="net-2.4 Ghz">2.4 Ghz WiFi Network</span></td></tr>
+                        <tr><td colspan="4">
+                            <table class="localTable" style="width: 858px;text-align: center;vertical-align: middle;height: 100%;table-layout: fixed;white-space: nowrap;">
+                                <thead><tr>
+                                    <th scope="col" i18n="net-Device Name">Device Name</th><th scope="col" i18n="net-IP Address">IP Address</th><th scope="col" i18n="net-MAC Address">MAC Address</th>
+                                </tr></thead>
+                                <tbody  id="deviceTable">
+<!--                                <tr><td>Device A</td><td>192.168.0.0</td><td>18-CE-25-FV-25-98</td></tr>-->
+<!--                                <tr><td>Device B</td><td>192.168.0.0</td><td>18-CE-25-FV-25-98</td></tr>-->
+                                </tbody>
+                            </table>
+                        </td></tr>
+                        <tr><td colspan="4" style="height: 7px">
+                            <button class="btnPage" style="background: none;border: none;visibility: hidden" id="prevDevice">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                    <path d="M15 1L9.40386 6.67967C8.62855 7.46654 8.638 8.73296 9.42496 9.50817L15 15" stroke="white" stroke-opacity="0.3" stroke-width="2" stroke-linecap="round"/>
+                                    <path d="M7.99902 1L2.40288 6.67967C1.62758 7.46654 1.63703 8.73296 2.42399 9.50817L7.99902 15" stroke="white" stroke-opacity="0.3" stroke-width="2" stroke-linecap="round"/>
+                                </svg>
+                            </button>
+                            <button class="btnPage" style="background: none;border: none;margin-left: 74px;visibility: hidden" id="nextDevice">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                    <path d="M1 1L6.59614 6.67967C7.37145 7.46654 7.362 8.73296 6.57504 9.50817L1 15" stroke="white"  stroke-opacity="0.3"stroke-width="2" stroke-linecap="round"/>
+                                    <path d="M8.00098 1L13.5971 6.67967C14.3724 7.46654 14.363 8.73296 13.576 9.50817L8.00098 15" stroke="white" stroke-opacity="0.3" stroke-width="2" stroke-linecap="round"/>
+                                </svg>
+                            </button>
+                        </td></tr>
+                        <tr><td colspan="4" style="height: calc(13.6vh)"><span class="modal-small-title">USB</span></td></tr>
+                        <tr><td>
+                            <table class="localTable" style="width: 858px;text-align: center;vertical-align: middle;height: 100%;table-layout: fixed">
+                                <tbody  id="usbTable">
+<!--                                <tr><td>Device A</td><td>192.168.0.0</td><td>18-CE-25-FV-25-98</td></tr>-->
+                                </tbody>
+                            </table>
+                        </td></tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--DHCP弹框-->
+<div class="modal fade" id="dhcpModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" style="padding: 0; color: #9FA0A0">
+            <div class="modal-header">
+                <div style="margin: auto">
+                    <span class="modal-title">DHCP</span>
+                    <button type="button" class="close modal-close" data-dismiss="modal" aria-label="Close" style="padding: 0">
+                        <svg width="30" height="15" viewBox="0 0 30 15" fill="none">
+                            <path d="M2 13.4961L13.789 2.19167C14.571 1.44175 15.808 1.45098 16.5788 2.21248L28 13.4961" stroke="white" stroke-opacity="0.5" stroke-width="3" stroke-linecap="round"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div class="modal-body diy-scroll" style="margin: 0;font-size: 22px">
+                <div class="row justify-content-center">
+                    <table style="width: 858px;height: 129px;margin-top: calc(10.7vh);background: #6e6e7633;border-radius: 30px;font-size: 16px;color: #fff">
+                        <tr><td height="15px"></td><td></td></tr>
+                        <tr>
+                            <td></td><td class="greyFont" i18n="net-ail">Address IP LAN</td>
+                            <td colspan="2">
+                                <div class="dhcp-lan"><span>192.168. </span>
+                                    <input id="lan_addr1" type="number"><span> . </span><input id="lan_addr2" type="number"></div>
+                            </td>
+                        </tr>
+                        <tr><td></td><td class="greyFont" i18n="net-Subnet Mask">Subnet Mask</td><td><span id="dhcp_mask">255.255.255.0</span></td><td></td></tr>
+                        <tr><td height="15px" width="225px"></td><td width="285px"></td><td width="164px"></td><td></td></tr>
+                    </table>
+                </div>
+                <div class="row justify-content-center align-items-center" style="margin-top: calc(6.3vh);margin-bottom: calc(4.8vh);color: #fff;text-align: center">
+                    <span i18n="net-DHCP Server">DHCP Server</span>
+
+                </div>
+                <div class="row justify-content-center">
+                    <table style="width: 858px;height: 120px;background: none;font-size: 16px;color: #ffffff4d">
+                        <tr><td width="429px"><div style="margin-left: 224px" i18n="net-DHCP IP">DHCP IP Address Range</div></td>
+                            <td width="429px">
+                                <div class="dhcp-addr"><span style="margin-left: 50px;margin-right: 10px" id="dhcp_prefix">192.168.1.</span><input id="dhcp_addr1" autocomplete="off"><span> - </span><input id="dhcp_addr2" autocomplete="off"></div>
+                            </td>
+                        </tr>
+                        <tr><td><span style="margin-left: 224px" i18n="net-Lease Duration">Lease Duration</span></td>
+                            <td class="greyFont">
+                                <input type="number" placeholder="1-168" id="dhcp_select">
+                                <span style="color: #fff">H</span>
+                            </td></tr>
+                    </table>
+                </div>
+                <div class="row justify-content-center" style="margin-top:calc(6vh);padding-bottom: 30px">
+                    <button class="btn btnRun" id="tips"><span i18n="Save">Save</span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--设置DHCP确认弹框-->
+<div class="modal fade" id="dhcpTipModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="width: 700px; height: 300px; min-width: 700px">
+        <div class="modal-content" style="padding: 0; color: #fff;height:300px;width: 700px">
+            <div class="modal-body container" style="height: 130px; margin: 0; max-width: 98%;font-size: 22px">
+                <div class="row justify-content-center align-items-center" style="height: 70%">
+                    <span i18n="net-tdw" style="width: 450px;text-align: center">The device will restart after 5s, are you sure to set DHCP?</span>
+                </div>
+                <div class="row justify-content-center" style="height: 30%">
+                    <div>
+                        <button type="button" class="btn btnRun" data-dismiss="modal" style="margin-right: 33px" i18n="Cancel">Cancel</button>
+                        <button type="button" class="btn btnRun" onclick="setDHCP()" i18n="Yes">Yes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--SIM卡提示框-->
+<div class="modal fade" id="simTipModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="height: 300px;width: 700px;min-width: 700px">
+        <div class="modal-content" style="padding: 0; color: #fff;height: 300px;width: 700px;">
+            <div class="modal-body container" style="height: 130px; margin: 0; max-width: 98%;font-size: 24px">
+                <div class="row justify-content-center align-items-center" style="height: 68%"><span i18n="pit">Please insert the SIM card</span></div>
+                <div class="row justify-content-center align-items-center">
+                    <button type="button" class="btn btnRun" data-dismiss="modal" i18n="OK">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--设置清空阈值确认弹框-->
+<div class="modal fade" id="delThrModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="width: 700px; height: 300px; min-width: 700px">
+        <div class="modal-content" style="padding: 0; color: #fff;height:300px;width: 700px">
+            <div class="modal-body container" style="height: 130px; margin: 0; max-width: 98%;font-size: 22px">
+                <div class="row justify-content-center align-items-center" style="height: 70%">
+                    <span i18n="net-sys">Are you sure to clear statistic?</span>
+                </div>
+                <div class="row justify-content-center" style="height: 30%">
+                    <div>
+                        <button type="button" class="btn btnRun" data-dismiss="modal" style="margin-right: 33px" i18n="Cancel">Cancel</button>
+                        <button type="button" class="btn btnRun" onclick="clearThre()" i18n="Yes">Yes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--设置阈值弹框-->
+<div class="modal fade" id="setThrModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="width: 823px; height: 430px; min-width: 700px">
+        <div class="modal-content" style="padding: 0; color: #fff;width: 823px; height: 430px;">
+            <div class="modal-body container" style="height: 130px; margin: 0; max-width: 100%;font-size: 20px">
+                <div class="row justify-content-end" style="height: 8%">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="margin-right: 25px;margin-top: 21px">
+                        <svg width="25" height="25" viewBox="0 0 29 29" fill="none"><path d="M2 27L27 2M27 27L2 2" stroke="white" stroke-opacity="0.3" stroke-width="3"/></svg>
+                    </button>
+                </div>
+                <div class="row justify-content-center" style="margin-top: 73px">
+                    <table class="dataModal-table" style="width: 440px;height: 130px;">
+                        <tr><td width="210px" i18n="net-Start Date">Start Date</td>
+                            <td width="230px">
+                                <!--修改选择框样式 llh 20220615 start-->
+                                <div class="select-container">
+                                    <span style="left: 87px">
+                                        <svg width="15" height="9" viewBox="0 0 15 9" fill="none">
+                                            <path d="M1.00005 1.36001L6.07791 6.97796C6.87861 7.86382 8.27212 7.85521 9.06182 6.95953L13.9988 1.36002" stroke="white" stroke-width="2"/>
+                                        </svg>
+                                    </span>
+                                    <input id="dataDate" type="text" readonly="readonly" onclick="showAndHideUL(this)" value="1" data-value="1"
+                                           onblur="showAndHideUL(this, true)" style="width: 120px"/>
+                                    <ul class="diy-scroll1" style="width: 120px">
+                                        <li><a href="javascript:" data-value="1">1</a></li><li><a href="javascript:" data-value="2">2</a></li><li><a href="javascript:" data-value="3">3</a></li>
+                                        <li><a href="javascript:" data-value="4">4</a></li><li><a href="javascript:" data-value="5">5</a></li><li><a href="javascript:" data-value="6">6</a></li>
+                                        <li><a href="javascript:" data-value="7">7</a></li><li><a href="javascript:" data-value="8">8</a></li><li><a href="javascript:" data-value="9">9</a></li>
+                                        <li><a href="javascript:" data-value="10">10</a></li><li><a href="javascript:" data-value="11">11</a></li><li><a href="javascript:" data-value="12">12</a></li>
+                                        <li><a href="javascript:" data-value="13">13</a></li><li><a href="javascript:" data-value="14">14</a></li><li><a href="javascript:" data-value="15">15</a></li>
+                                        <li><a href="javascript:" data-value="16">16</a></li><li><a href="javascript:" data-value="17">17</a></li><li><a href="javascript:" data-value="18">18</a></li>
+                                        <li><a href="javascript:" data-value="19">19</a></li><li><a href="javascript:" data-value="20">20</a></li><li><a href="javascript:" data-value="21">21</a></li>
+                                        <li><a href="javascript:" data-value="22">22</a></li><li><a href="javascript:" data-value="23">23</a></li><li><a href="javascript:" data-value="24">24</a></li>
+                                        <li><a href="javascript:" data-value="25">25</a></li><li><a href="javascript:" data-value="26">26</a></li><li><a href="javascript:" data-value="27">27</a></li>
+                                        <li><a href="javascript:" data-value="28">28</a></li><li><a href="javascript:" data-value="29">29</a></li><li><a href="javascript:" data-value="30">30</a></li>
+                                    </ul>
+                                </div>
+                                <!--修改选择框样式 llh 20220615 end-->
+                            </td>
+                        </tr>
+                        <tr>
+                            <td i18n="net-mdp">Monthly Data Plan</td>
+                            <td>
+                                <input type="number" value="10" id="planData">
+                                <!--修改选择框样式 llh 20220615 start-->
+                                <div class="select-container" style="display: inline-block;margin-left: 10px">
+                                    <span style="left: 65px">
+                                        <svg width="15" height="9" viewBox="0 0 15 9" fill="none">
+                                            <path d="M1.00005 1.36001L6.07791 6.97796C6.87861 7.86382 8.27212 7.85521 9.06182 6.95953L13.9988 1.36002" stroke="white" stroke-width="2"/>
+                                        </svg>
+                                    </span>
+                                    <input id="dataUnit" type="text" readonly="readonly" onclick="showAndHideUL(this)" value="MB" data-value="1"
+                                           onblur="showAndHideUL(this, true)" style="width: 90px"/>
+                                    <ul style="width: 90px">
+                                        <li><a href="javascript:" data-value="1">MB</a></li>
+                                        <li><a href="javascript:" data-value="2">GB</a></li>
+                                    </ul>
+                                </div>
+                                <!--修改选择框样式 llh 20220615 end-->
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="row justify-content-center" style="margin-top: 72px">
+                    <button type="button" class="btn btnRun" data-dismiss="modal" aria-label="Close" i18n="Save">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--重启中提示框-->
+<div class="modal fade" id="rebootTipModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" style="margin-top: 0">
+    <div class="modal-dialog modal-dialog-centered" style="height: 140px;width: 500px;min-width: 500px">
+        <div class="modal-content" style="padding: 0; color: #fff;height: 140px;width: 500px;background-color: #373742;border: none">
+            <div class="modal-body" style="height: 130px; margin: 0; max-width: 98%;font-size: 24px">
+                <div class="row justify-content-center align-items-center" style="height: 100%">
+                    <div style="width: 80%">
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                        <span id="rebootTip" i18n="net-dar">Doing a reboot...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="js/jquery.js" charset="UTF-8"></script>
+<script src="js/bootstrap-min.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/network.js"></script>
+<script>
+    $(document).ready(function(){
+        switchLanguageToSet();
+        $("[i18n]").css("visibility", "visible")
+    })
+    //设置弹框位于窗口正中间
+    toastr.options.positionClass = 'toast-center-center';
+    $("#dhcp_addr1,#lan_addr1").attr("oninput", "if(value<0)value=0;if(value>255)value=255;");
+    $("#dhcp_addr2,#lan_addr2").attr("oninput", "if(value<1)value=1;if(value>254)value=254;");
+    $("#dhcp_select").attr("oninput", "if(value<1)value=1;if(value>168)value=168;")
+</script>
+</body>
+</html>
+

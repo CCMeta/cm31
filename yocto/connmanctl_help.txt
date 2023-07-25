@@ -1,0 +1,103 @@
+connmanctl> help
+state                                 Shows if the system is online or offline
+technologies                          Display technologies
+pdpat                                 pdp at handle
+clock                                 Get System Clock Properties
+enable          <technology>|offline  Enables given technology or offline mode
+disable         <technology>|offline  Disables given technology or offline mode
+tether          <technology> on|off
+                wifi [on|off] <ssid> <protocol> <passphrase>
+                     <ssid>        ssid length is: 1~32
+                     <protocol>:   none/wpa/wpa2
+                     <passphrase>: ssid passphrase length is: 8~63
+                Enable, disable tethering, set SSID and passphrase for wifi
+tethering_clients                      Display tethering clients
+tethering_channel    <channel>         set wifi tethering's channel
+                                        value 0 means acs(auto channel select) enabled
+
+tethering_ignore_broadcast    on|off            set wifi tethering's hiden ssid
+services        [<service>]           Display services
+   --properties      [<service>]      (obsolete)
+peers           [peer]                Display peers
+scan            <technology>          Scans for new services for given technology
+connect         <service/peer>        Connect a given service or peer
+disconnect      <service/peer>        Disconnect a given service or peer
+move-before     <service> <target service>      Move <service> before <target service>
+move-after      <service> <target service>      Move <service> after <target service>
+config          <service>             Set service configuration options
+   --nameservers     <dns1> [<dns2>] [<dns3>]
+   --timeservers     <ntp1> [<ntp2>] [...]
+   --domains         <domain1> [<domain2>] [...]
+   --mdns            yes|no
+   --ipv6            off|auto [enable|disable|preferred]|
+                        manual <address> <prefixlength> <gateway>
+   --proxy           direct|auto <URL>|manual <URL1> [<URL2>] [...]
+                        [exclude <exclude1> [<exclude2>] [...]]
+   --autoconnect     yes|no
+   --ipv4            off|dhcp|manual <address> <netmask> <gateway>
+   --remove                           Remove service
+monitor         [off]                 Monitor signals from interfaces
+   --services        [off]            Monitor only services
+   --tech            [off]            Monitor only technologies
+   --manager         [off]            Monitor only manager interface
+   --vpnmanager      [off]            Monitor only VPN manager interface
+   --vpnconnection   [off]            Monitor only VPN connections
+agent           on|off                Agent mode
+vpnconnections  [<connection>]        Display VPN connections
+vpnagent        on|off                VPN Agent mode
+session         on|off|connect|disconnect|configEnable or disable a session
+   --bearers         <technology1> [<technology2> [...]]
+   --type            local|internet|any
+   --ifname          [<interface_name>]
+   --srciprule       yes|no
+   --ctxid           <context_identifier>
+peer_service    register|unregister <specs> <master>
+Where specs are:
+        bjr_query <query> bjr_response <response>
+        upnp_service <service> upnp_version <version>
+        wfd_ies <ies>
+(Un)Register a Peer Service
+setautoconnect  on|off                setautoconnect on|off
+dns_filter      on|off                debug on|off
+bridge_mode     on|off                bridge_mode on|off
+netcfg_dump     on|off                cmd_netcfg_dump on|off
+show_bridge_mode                      show bridge_mode  on|off
+SetPdp                                Set apn ,protocol for pdp
+ActivatePdp                           Muliti APN delete policy rule
+DeactivatePdp   <cid>                 select sim card
+setsimid        <simid>               Muliti APN delete policy rule
+Atcommandtest   <command>             AT command test
+enableIprelay                         enableIprelay
+disableIprelay                        disableIprelay
+disableAllIprelay                      disableAllIprelay
+tetherdial      <eth>,<enable>,<cid>  tether dial
+ndisdial        <eth>,<enable>,<cid>  ndis dial
+setofonodebug   on|off                setofonodebug on|off
+test5gURSPevaluate                      test5gURSPevaluate
+test5gPDUbuild                        test5gPDUbuild
+ipdial          <eth>,<enable>,<cid>  ip dial
+ethdial         <eth>,<enable>,<cid>  eth dial
+help                                  Show help
+exit                                  Exit
+quit                                  Quit
+setwisper       on|off                setwisper on|off
+SetPppAuthType  noauth|pap|chap|both  SetPppAuthType noauth|pap|chap|both
+setmaxwifihistory<maxwifihistory>      set max wifi history to be storaged
+urspEvaluate    <td>                  request ursp evaluate-tos
+buildPduSession <td> <rsd>            build pdu session-tos
+closePduSession <td>                  close pdu session-tos
+SetScanOnly     on|off                turn on/off scan only mode for wifi
+GetWifiScanResultFull                      get wifi scan result under scan only mode
+TetheringMaxStations<mode>                config max station for ap
+TetheringAclMode<mode>                config acl mode, 0 for blacklist, 1 for whitelist
+BlackListAdd    <addr>                add mac addr to blacklist
+BlackListRemove <addr>                remove mac addr from blacklist
+WhiteListAdd    <addr>                add mac addr to blacklist
+WhiteListRemove <addr>                remove mac addr from blacklist
+StartWPS        [<pin>]               start the wps connect process
+CancelWPS                             cancel the wps connect process
+SetNdisPrefix   <prefix>              set prefix len for ndis
+apmanager       command               whether tethering clients should access Internet
+set_wifi_power_timer<time>                turn on/off wifi according to timer, e.g 09:00-17:00
+        note that 9:00 is invalid without front 0        arg 00:00-00:00 or no arg to cancel timer
+ConfigPreroutingToPc<add|del> <pc_ip>

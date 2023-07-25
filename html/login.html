@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MobiConnect Portal</title>
+    <link rel="stylesheet" href="css/bootstrap-min.css">
+    <link rel="stylesheet" href="css/common.css">
+    <style>
+        label{margin-bottom: 0}
+        .form-control{webkit-box-shadow:none;box-shadow:none;background: rgba(110, 110, 118, 0.2);border: 1px solid rgba(255, 255, 255, 0.5);border-radius: 35px;color: #fff}
+        .form-control:focus{border: 1px solid #fff;webkit-box-shadow:none;box-shadow:none;background: rgba(110, 110, 118, 0.2);}
+        .form-control:disabled{background-color: #ffffff1a}
+        .blur2 {filter:blur(15px);-webkit-filter:blur(15px);}
+        #pincode{padding-left: 10px;padding-right: 10px;background: rgba(110, 110, 118, 0.2);border: none;color: #fff;border-radius: 35px;width: 320px; height: 40px;margin-left: 20px}
+        #pincode:focus-visible{outline:1px #fff solid}
+        input{width: 441px;height: 40px;color: #fff;background: rgba(110, 110, 118, 0.2);border: none;border-radius: 35px;padding: 20px}
+        tr{vertical-align: top}
+        .svg-title{enable-background:new 0 0 224 224;width: 75%;min-width: 85px}
+        .bottomFont{font-size: 12px;color: rgba(255, 255, 255, 0.3);background-color: #262733;font-family: "Nunito-Light"}
+        .bottomFont label{margin-bottom: 0}
+        .bottom{background-color: #262733;}
+        .login-table td{vertical-align: middle}
+    </style>
+</head>
+<body>
+<div style="display: none">
+    <label id="lo-tip1" i18n="tanmt">There are no more times</label><label id="lo-tip2" i18n="Parameter">Parameter error</label>
+    <label id="lo-tip3" i18n="tpmb">The password must be 8 digits</label><label id="lo-tip4" i18n="WrongPassword">Wrong Password</label>
+    <label id="lo-tip5" i18n="Validation">Validation failed</label><label id="lo-tip6" i18n="tpcc">The PIN Code can not be null</label>
+    <label id="lo-tip7" i18n="tpcn">The password can not be null</label><label id="lo-tip8" i18n="tis">There are something wrong</label>
+    <label id="lo-tip9" i18n="yhnmv">You have no more verifications, please unlock on another device first</label>
+</div>
+<div class="container main" style="height: 100%;width: 100%;max-width: 100%">
+    <div class="row  align-items-center" style="height: 10%;min-height: 60px">
+        <a href="main.html" >
+        <svg  viewBox="0 0 400 300" width="160px" style="margin-left: 80px;margin-top: 35px" >
+            <defs><style>.cls-1{fill:#003b76;}
+            .cls-2{fill:#fff;}.cls-3{fill:#8ec31f;}
+            </style></defs><g id="图层_2" data-name="图层 2">
+            <g id="Calque_1" data-name="Calque 1">
+                <rect class="cls-1" x="1.6" y="1.6" width="248.58" height="248.58" rx="18.63"/>
+<!--                <path class="cls-2" d="M231.55,251.78H20.24A20.26,20.26,0,0,1,0,231.55V20.24A20.26,20.26,0,0,1,20.24,0H231.55a20.25,20.25,0,0,1,20.23,20.24V231.55A20.25,20.25,0,0,1,231.55,251.78ZM20.24,3.2a17.05,17.05,0,0,0-17,17V231.55a17.05,17.05,0,0,0,17,17H231.55a17,17,0,0,0,17-17V20.24a17.05,17.05,0,0,0-17-17Z"/>-->
+                <path class="cls-3" d="M208,70.81a10,10,0,0,0-1.15-.77l-.43-.25A32,32,0,0,0,159.06,89a1,1,0,0,0-.06.23,1.11,1.11,0,0,0,.17.75,1.08,1.08,0,0,0,1.62.21l.11-.11a22.21,22.21,0,0,1,22-5.53,22.41,22.41,0,0,1,7.9,4.28,12.51,12.51,0,1,0,17.11-18Z"/>
+                <path class="cls-3" d="M73.2,180.19c-.37.27-.76.53-1.15.77l-.44.24A32,32,0,0,1,24.29,162a1.55,1.55,0,0,1-.05-.23,1,1,0,0,1,.16-.74A1.08,1.08,0,0,1,26,160.8l.11.11a22.14,22.14,0,0,0,30,1.25,12.66,12.66,0,0,1,7.36-4.28,12.39,12.39,0,0,1,5.37.2,12.51,12.51,0,0,1,4.39,22.11Z"/>
+                <path class="cls-2" d="M53.69,142.3s-4.95,4.94-11.38,4.94a11.64,11.64,0,0,1-8.7-3.58,12.19,12.19,0,0,1-3.23-8.43c0-6.86,4.88-11.85,11.61-11.85a15.3,15.3,0,0,1,10,4.15l.5.52,5-7.8-.27-.32c-.21-.25-5.24-6.18-15.85-6.18a22.6,22.6,0,0,0-16.28,6.39,22.09,22.09,0,0,0,0,30.43c4.11,4.13,9.74,6.3,16.27,6.3,10.91,0,16.7-6.44,16.94-6.71l.27-.31-4.42-8.1Z"/>
+                <path class="cls-2" d="M83,113.75a20.7,20.7,0,0,0-15.07,6A22,22,0,0,0,62,135.31c0,12.5,9.3,21.56,22.11,21.56A25.41,25.41,0,0,0,100.64,151l.32-.3-4.4-8.17L96,143c0,.05-5,4.27-11.18,4.27a12.09,12.09,0,0,1-7.66-2.56,10.56,10.56,0,0,1-3.73-6.91H101l0-.52c0-.11.24-2.71.24-3.9,0-5.57-1.63-10.36-4.7-13.87C93.33,115.73,88.61,113.75,83,113.75Zm-.23,8.85c4.22,0,7,2.74,7.33,7.18H73.83C74.9,125.27,78.18,122.6,82.72,122.6Z"/>
+                <rect class="cls-2" x="160.14" y="98.97" width="11.05" height="10.26"/><rect class="cls-2" x="160.14" y="113.71" width="11.13" height="43.16"/>
+                <rect class="cls-2" x="181.13" y="98.97" width="11.05" height="10.26"/><rect class="cls-2" x="181.13" y="113.71" width="11.13" height="43.16"/>
+                <path class="cls-2" d="M217.75,130.89c-3.47-1.39-6.46-2.59-6.46-4.46,0-2.25,2.44-3.05,4.53-3.05a14.83,14.83,0,0,1,9.44,3.31l.56.52,4.22-8.44-.28-.29c-.19-.19-4.68-4.73-13.86-4.73-9.51,0-15.9,5-15.9,12.36,0,8.06,7.12,11,12.85,13.32,3.57,1.47,6.65,2.73,6.65,4.76s-2.36,3.05-4.7,3.05A16.25,16.25,0,0,1,204.28,143l-.5-.5-5.19,8,.31.33a22.8,22.8,0,0,0,16,6.07c9.36,0,15.91-5.18,15.91-12.6C230.79,136.13,223.56,133.23,217.75,130.89Z"/>
+                <rect class="cls-2" x="107.85" y="98.97" width="11.16" height="57.91"/><path class="cls-2" d="M153.11,146.7l-.7.15a9.05,9.05,0,0,1-1.68.14c-6.41,0-7.37-4.37-7.37-7V122.8h9.12v-9.09h-9.12V102.16h-10.9v11.55H127v9.09h5.19v18.47c0,6.07,2.19,10.48,6.52,13.08a21.16,21.16,0,0,0,10.72,2.59,18.21,18.21,0,0,0,3.18-.24l.46-.1v-9.9Z"/>
+            </g>
+        </g>
+        </svg>
+        </a>
+
+<!--        <a href="main.html" style="margin-left: 4%;color: #4d68ee;font-size: 24px;font-family: 'Nunito-Bold',sans-serif;">MobiWire</a>-->
+        <div class="btn-group-vertical1">
+            <button class="bat-active">
+                <svg class="img-fluid" width="45px" height="54px" viewBox="0 0 16 16" id="battery">
+                    <path d="M0 6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6zm2-1a1 1 0 0 0-1 1v4a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1H2zm14 3a1.5 1.5 0 0 1-1.5 1.5v-3A1.5 1.5 0 0 1 16 8z"></path>
+                    <path d="M2 6h10v4H2V6z" style="transition: 0.3s"></path>
+                </svg>
+            </button>
+            <button class="bat-hide"><span id="batteryNumber">100%</span></button>
+        </div>
+        <div class="btn-group-vertical">
+            <button class="lang-active">EN</button>
+            <button class="lang-hide">ES</button>
+            <button class="lang-hide">FR</button>
+        </div>
+    </div>
+    <div class="row justify-content-center align-items-center" style="height: 80%;min-height: 480px">
+        <table style="width:71.7%;min-width: 573px;min-height: 230px;text-align: center;color: #4D68EE;font-size: 24px;font-weight: 400">
+            <tbody>
+            <tr>
+                <td class="col-click" data-name="network">
+                    <div><svg x="0px" y="0px" viewBox="0 0 224 224" class="svg-title" xml:space="preserve">
+                        <g><linearGradient id="SVGID_1_" gradientUnits="userSpaceOnUse" x1="202.806" y1="220.1992" x2="21.194" y2="3.7623">
+                                <stop  offset="9.068826e-02" style="stop-color:#4B64E5"/><stop  offset="0.9255" style="stop-color:#9B46E4"/></linearGradient>
+                            <path class="st0" d="M183.6,224H40.4C18.1,224,0,205.9,0,183.6V40.4C0,18.1,18.1,0,40.4,0h143.2C205.9,0,224,18.1,224,40.4v143.2 C224,205.9,205.9,224,183.6,224z"/></g>
+                                    <g><circle class="st1" cx="112" cy="112" r="70"/>
+                                        <ellipse transform="matrix(0.1626 -0.9867 0.9867 0.1626 14.4842 176.3404)" class="st2" cx="111.1" cy="79.6" rx="12.7" ry="12.7"/>
+                                        <path class="st2" d="M82.5,147v-33c0-11.2,9.1-20.3,20.3-20.3h17.6c11.2,0,20.3,9.1,20.3,20.3v33"/>
+                                        <g><path class="st3" d="M95.2,157.9h-0.4c-1.7,0-3-1.4-3-3v-8.1c0-1.7,1.4-3,3-3h0.4c1.7,0,3,1.4,3,3v8.1 C98.2,156.5,96.9,157.9,95.2,157.9z"/>
+                                            <path class="st3" d="M106.5,157.9h-0.4c-1.7,0-3-1.4-3-3v-13.5c0-1.7,1.4-3,3-3h0.4c1.7,0,3,1.4,3,3v13.5 C109.5,156.5,108.2,157.9,106.5,157.9z"/>
+                                            <path class="st3" d="M117.9,157.9h-0.4c-1.7,0-3-1.4-3-3V136c0-1.7,1.4-3,3-3h0.4c1.7,0,3,1.4,3,3v18.9 C120.9,156.5,119.6,157.9,117.9,157.9z"/>
+                                            <path class="st3" d="M129.3,158h-0.4c-1.7,0-3-1.4-3-3V128c0-1.7,1.4-3,3-3h0.4c1.7,0,3,1.4,3,3v26.9 C132.3,156.6,131,158,129.3,158z"/>
+                            </g></g>
+                    </svg></div><div class="col-span" i18n="Network">Network</div>
+                </td>
+                <td class="col-click" data-name="wifi">
+                    <div><svg x="0px" y="0px" viewBox="0 0 224 224" class="svg-title" xml:space="preserve">
+                        <g><linearGradient id="SVGID_Wifi" gradientUnits="userSpaceOnUse" x1="202.8125" y1="220.2312" x2="21.2004" y2="3.7944">
+                                <stop  offset="9.068826e-02" style="stop-color:#4B64E5"/><stop  offset="0.9255" style="stop-color:#9B46E4"/></linearGradient>
+                            <path class="st5" d="M183.6,224H40.4C18.1,224,0,205.9,0,183.6V40.4C0,18.1,18.1,0,40.4,0h143.2C205.9,0,224,18.1,224,40.4v143.2 C224,205.9,205.9,224,183.6,224z"/></g>
+                                    <g><circle class="st6" cx="112" cy="112" r="70"/>
+                                        <g><polyline class="st7" points="105.3,89.5 105.3,61.1 91.9,74.5"/><polyline class="st7" points="119.7,75.3 119.7,103.8 133,90.4"/></g>
+                                        <path class="st8" d="M106.2,145.8c-3.2,3.2-3.2,8.3,0,11.5c3.2,3.2,8.3,3.2,11.5,0c3.2-3.2,3.2-8.3,0-11.5
+                                C114.5,142.6,109.4,142.6,106.2,145.8z M94.7,134.2c0,0-2.8,3,0,5.8c2.8,2.8,5.8,0,5.8,0c6.4-6.3,16.7-6.3,23,0.1
+                                c0,0,2.9,2.9,5.8,0c2.9-2.9,0-5.8,0-5.8C119.7,124.7,104.3,124.7,94.7,134.2L94.7,134.2L94.7,134.2z M83.2,122.7c0,0-2.9,2.9,0,5.8
+                                c2.9,2.9,5.8,0,5.8,0c12.8-12.7,33.4-12.6,46.1,0.1c0,0,2.9,2.9,5.8,0c2.9-2.9,0-5.8,0-5.8C124.9,106.9,99.2,106.8,83.2,122.7
+                                L83.2,122.7z"/></g>
+                    </svg></div><div class="col-span" i18n="WiFi">WiFi</div>
+                </td>
+                <td class="col-click" data-name="security">
+                    <div><svg x="0px" y="0px" viewBox="0 0 224 224" class="svg-title" xml:space="preserve">
+                        <g><linearGradient id="SVGID_Security" gradientUnits="userSpaceOnUse" x1="202.8317" y1="220.2312" x2="21.2196" y2="3.7944">
+                                <stop  offset="9.068826e-02" style="stop-color:#4B64E5"/><stop  offset="0.9255" style="stop-color:#9B46E4"/></linearGradient>
+                            <path class="st9" d="M183.6,224H40.4C18.1,224,0,205.9,0,183.6V40.4C0,18.1,18.1,0,40.4,0h143.2C205.9,0,224,18.1,224,40.4v143.2 C224,205.9,205.9,224,183.6,224z"/></g>
+                                    <g><circle class="st10" cx="112" cy="112" r="70"/>
+                                        <path class="st12" d="M130.6,149.9H93.5c-3.9,0-7-3.1-7-7v-30.6c0-3.9,3.1-7,7-7h37.1c3.9,0,7,3.1,7,7v30.6 C137.6,146.7,134.4,149.9,130.6,149.9z"/>
+                                        <path class="st11" d="M86.5,99.6c0-14.1,11.4-25.6,25.6-25.6s25.6,11.4,25.6,25.6"/></g>
+                    </svg></div><div class="col-span" i18n="Security">Security</div>
+                </td>
+                <td class="col-click" data-name="system">
+                    <div><svg x="0px" y="0px" viewBox="0 0 224 224" class="svg-title" xml:space="preserve">
+                        <g><linearGradient id="SVGID_System" gradientUnits="userSpaceOnUse" x1="202.8216" y1="220.2226" x2="21.2095" y2="3.7858">
+                                <stop  offset="9.068826e-02" style="stop-color:#4B64E5"/><stop  offset="0.9255" style="stop-color:#9B46E4"/></linearGradient>
+                            <path class="st13" d="M183.6,224H40.4C18.1,224,0,205.9,0,183.6V40.4C0,18.1,18.1,0,40.4,0h143.2C205.9,0,224,18.1,224,40.4v143.2 C224,205.9,205.9,224,183.6,224z"/></g>
+                                    <g><circle class="st14" cx="112" cy="112" r="70"/>
+                                        <path class="st14" d="M128.1,44.1v24.1c0,1.3,0.5,2.6,1.3,3.5l23.6,26.8c0.9,1,1.3,2.2,1.3,3.5v65.1"/>
+                                        <path class="st14" d="M68,56.9v27.7c0,1.4,0.6,2.8,1.6,3.8l23.1,23c1,1,1.6,2.4,1.6,3.8v41.1"/>
+                                        <path class="st14" d="M138.8,176.7V112c0-1.3-0.5-2.6-1.4-3.6l-22.6-24.5c-0.9-1-1.4-2.3-1.4-3.6V42"/>
+                                        <line class="st14" x1="123.3" y1="179.1" x2="123.3" y2="124.3"/>
+                                        <path class="st14" d="M92.2,70.2v16.9c0,1.4,0.5,2.7,1.5,3.7l12.8,13.4c1,1,1.5,2.3,1.5,3.7V182"/>
+                                        <circle class="st15" cx="123.3" cy="124.3" r="5.9"/>
+                                        <circle class="st15" cx="92.2" cy="70.2" r="5.9"/>
+                                        <path class="st14" d="M166.2,111.6v16.9c0,1.4,0.5,2.7,1.5,3.7l8.2,8.5"/>
+                                        <circle class="st15" cx="166.2" cy="111.6" r="5.9"/>
+                                        <circle class="st15" cx="94.2" cy="158.7" r="5.9"/>
+                                        <circle class="st15" cx="60" cy="111.6" r="5.9"/>
+                                        <path class="st14" d="M77.4,172.8v-43.3c0-1.5-0.6-2.8-1.6-3.9l-16.9-16.4"/></g>
+                    </svg></div><div class="col-span" i18n="System">System</div>
+                </td>
+                <td class="col-click" data-name="message">
+                    <div><svg x="0px" y="0px" viewBox="0 0 224 224" class="svg-title" xml:space="preserve">
+                        <g><linearGradient id="SVGID_Sms" gradientUnits="userSpaceOnUse" x1="202.806" y1="220.1928" x2="21.194" y2="3.7559">
+                                <stop  offset="9.068826e-02" style="stop-color:#4B64E5"/><stop  offset="0.9255" style="stop-color:#9B46E4"/></linearGradient>
+                            <path class="st16" d="M183.6,224H40.4C18.1,224,0,205.9,0,183.6V40.4C0,18.1,18.1,0,40.4,0h143.2C205.9,0,224,18.1,224,40.4v143.2 C224,205.9,205.9,224,183.6,224z"/></g>
+                                    <g><circle class="st17" cx="112" cy="112" r="70"/>
+                                        <path class="st18" d="M138.4,137.3H85.6c-7.7,0-14-6.3-14-14l0-23.1c0-7.7,6.3-14,14-14h52.8c7.7,0,14,6.3,14,14v23.1 C152.4,131,146.1,137.3,138.4,137.3z"/>
+                                        <path class="st18" d="M88,105.2l17.5,9.4c4.3,2.3,9.5,2.2,13.7-0.2l15.7-9.1"/></g>
+                    </svg></div><div class="col-span" i18n="SMS">SMS</div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="row justify-content-center align-items-end bottom">
+        <div>
+            <div class="row justify-content-center bottomFont" style="height: 28px"><label>Our Privacy Policy</label></div>
+            <div class="row" style="margin-top: 0;margin-bottom: 22px;height: 28px;">
+                <label class="bottomFont">Copyright © 2023 All Rights Reserved MobiIoT Group</label>
+            </div>
+        </div>
+    </div>
+</div>
+<!--登录弹框-->
+<div class="modal fade" id="LoginModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" style="display: none">
+    <div class="modal-dialog modal-dialog-centered" style="width: 953px;height: 522px;min-width: 700px;margin-top: 0">
+        <div class="modal-content" style="padding: 0; color: #fff;width: 953px;height: 522px;">
+            <div class="modal-body" style="margin: 0;font-size: 21px;">
+                <div class="row justify-content-center">
+                    <table class="login-table" style="width: 598px;margin-top: 120px;height: 177px;vertical-align: top">
+                        <tr><td width="157px" height="73px" i18n="Login">Login</td><td><input id="login" value="admin" disabled></td></tr>
+                        <tr><td height="66px" i18n="Password">Password</td><td><input id="pwd" type="password"></td></tr>
+                        <tr><td></td><td style="color: rgba(255, 255, 255, 0.3);font-size: 12px;">
+                            <div i18n="tst">To use the default password, press the reset button on your device.</div>
+                            <div><span style="color: #FF4646;font-weight: 700" i18n="Warning">Warning!</span><span i18n="iwad">  it will also delete all your settings and SMS.</span></div>
+                        </td></tr>
+                    </table>
+                </div>
+                <div class="row justify-content-center">
+                    <span id="tip" style="color: red;font-weight: 700;margin-top: 15px"></span>
+                </div>
+                <div class="row justify-content-center" style="margin-top: 35px">
+                    <button type="button" class="btn btnRun" style="width: 200px" onclick="Login()" i18n="connection">Connection</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--PIN验证框-->
+<div class="modal fade" id="PINCheckModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" style="display: none">
+    <div class="modal-dialog modal-dialog-centered" style="width: 754px;height: 468px;min-width: 700px;margin-top: 0">
+        <div class="modal-content" style="padding: 0; color: #fff;width: 754px;height: 468px;">
+            <div class="modal-body" style="margin: 0;font-size: 21px;">
+                <div class="row align-items-center justify-content-center" style="margin-top: 111px">
+                    <label for="pincode" i18n="se-PIN code">PIN Code</label>
+                    <input id="pincode" class="form-control" type="password">
+                </div>
+                <div class="row" style="font-size: 12px;color: #ffffff4d;margin-left: 274px"><label i18n="ra">Remaining attempts:</label><label id="pinNumber">3</label></div>
+                <div class="row align-items-center" style="margin-left: 158px;margin-top: 48px">
+                    <label i18n="dpv">Disable PIN verification</label>
+                    <div class="custom-control diy-checkbox">
+                        <input type="checkbox" class="diy-control-input" id="pinSwitch">
+                        <label class="diy-control-label" for="pinSwitch"></label>
+                    </div>
+                </div>
+                <div class="row justify-content-center align-items-center" style="height: 92px;color: red"><span id="pinTip" style="width: 470px;text-align: center"></span></div>
+                <div class="row justify-content-center">
+                    <button type="button" class="btn btnRun" onclick="PINCheck()" i18n="Save">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--设置PUK提示窗口-->
+<div class="modal fade modal1" id="PUKModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="width: 500px;height: 250px;min-width: 500px">
+        <div class="modal-content" style="padding: 0; color: #fff;width: 500px;height: 250px;background-color: #373742;">
+            <div class="modal-body" style="width: 500px;height: 250px; margin: 0; max-width: 98%;font-size: 26px">
+                <div class="row justify-content-center" style="margin-top: 60px"><span>
+                    <svg width="30px" fill="red" viewBox="0 0 16 16">
+                      <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+                    </svg>
+                    <span i18n="PUK">PUK Blocked</span></span></div>
+                <div class="row justify-content-center" style="margin-top: 10px"><span i18n="puif">Please unlock it first</span></div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--关闭PIN操作中提示框-->
+<div class="modal fade" id="setTipModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" style="margin-top: 0">
+    <div class="modal-dialog modal-dialog-centered" style="height: 140px;width: 500px;min-width: 500px">
+        <div class="modal-content" style="padding: 0; color: #fff;height: 140px;width: 500px;background-color: #373742;border: none">
+            <div class="modal-body" style="height: 130px; margin: 0; max-width: 98%;font-size: 24px">
+                <div class="row justify-content-center align-items-center" style="height: 100%">
+                    <div style="width: 80%">
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                        <span id="rebootTip" i18n="Trying">Trying...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--add simLock modal by luolihua 20220520 start-->
+<!--Simlock验证框-->
+<div class="modal fade" id="simLockModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" style="display: none">
+    <div class="modal-dialog modal-dialog-centered" style="width: 754px;height: 468px;min-width: 700px;margin-top: 0">
+        <div class="modal-content" style="padding: 0; color: #fff;width: 754px;height: 468px;">
+            <div class="modal-body" style="margin: 0;font-size: 21px;">
+                <div class="row justify-content-center" style="margin-top: 111px;font-size: 24px" i18n="ma-Network Locked">Network Locked</div>
+                <div class="row align-items-center justify-content-center" style="margin-top: 60px">
+                    <label for="lockPwd" i18n="Password">Password</label>
+                    <input id="lockPwd"  type="password" class="form-control" style="width: 320px;margin-left: 20px;color: #fff" oninput = "value=value.replace(/[^\d]/g,'')">
+                </div>
+                <div class="row" style="font-size: 12px;color: #ffffff4d;margin-left: 274px"><label i18n="ra">Remaining attempts:</label><label id="lockNumber">15</label></div>
+                <div class="row justify-content-center align-items-center" style="height: 85px;color: red" id="simLockTip"></div>
+                <div class="row justify-content-center">
+                    <button type="button" class="btn btnRun" onclick="simLockCheck()" i18n="OK">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--add simLock modal by luolihua 20220520 end-->
+<!--设置PUK提示窗口-->
+<div class="modal fade" id="loadModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="width: 100%;height: 100%;min-width: 500px;margin-top: 0;margin-bottom: 0">
+        <div class="modal-content" style="padding: 0; background-color: #37374280;margin-top: 0">
+            <div class="modal-body row justify-content-center align-items-center">
+                <div>
+                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    <span style="font-size: 24px">Loading...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+<script src="js/jquery.js" charset="UTF-8"></script>
+<!--<script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>-->
+<!--<script src="https://cdn.staticfile.org/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>-->
+<script src="js/bootstrap-min.js" charset="UTF-8"></script>
+<script src="js/utils.js" charset="UTF-8"></script>
+<script type="text/javascript">
+    $(function () {
+        if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)){
+            //   (if is mobile.html) href to index.html
+            window.location.href = "/index.html";
+        } else{
+            //   (if not mobile.html)
+            getLanguage();
+        }
+    })
+    function getLanguage() {
+        // $("#loadModal").modal('show');
+        XmlAjax({
+            url: "/api/get_web_language",
+            data: {"get_web_language": 1},
+            success: function (result) {
+                console.log("getLanguageResult:" + result);
+                let data=JSON.parse(result);
+                let num=data.language;
+                if(num_lang[num] == undefined){
+                    document.cookie = 'path="/"';
+                    document.cookie = 'language=en';
+                    switchLanguageToSet();
+                } else {
+                    let lang = num_lang[num].toLowerCase();
+                    document.cookie = 'path="/"';
+                    document.cookie = 'language=' + lang;
+                    switchLanguageToSet();
+                }
+                $("[i18n]").css("visibility", "visible")
+                // $("#loadModal").modal('hide');
+                setTimeout(function () {
+                    getSimLock();
+                }, 200)
+            }
+        })
+    }
+    //设置PIN码校验标志
+    localStorage.setItem("pin","lock-fuck");
+    //设置弹框位于窗口正中间
+    toastr.options.positionClass = 'toast-center-center';
+    $(".modal").on("shown.bs.modal", function () {$(".main").addClass("blur2");})
+    $("#setTipModal").on("show.bs.modal", function () {$("#PINCheckModal").addClass("blur");})
+    $("#setTipModal").on("hidden.bs.modal", function () {$("#PINCheckModal").removeClass("blur");})
+    let pinStatus, pinRemain, haveGetPin = false;
+    $("#LoginModal").on('shown.bs.modal', function () {
+        document.onkeydown=function(event){var code = event.keyCode;if(code ===13){Login();}}
+    })
+    //修改登录后逻辑，先判断SimLock，再判断PIN，最后登录
+    //add simLock function by luolihua 20220520 start
+    function getSimLock() {
+        XmlAjax({
+            url: "/api/get_simlock_status",
+            data: {"": 1},
+            success: function (result) {
+                console.log("getSimLockResult:" + result);
+                let data = JSON.parse(result);
+                if(data.result === "ok") {
+                    if(data.status === "1") {
+                        simStatus = 1;
+                        //sim locked
+                        if(data.trials === "15") {
+                            $("#lockNumber").html("0");
+                            $("#simLockTip").html($("#lo-tip1").html());
+                        } else {
+                            $("#lockNumber").html(15-data.trials*1);
+                        }
+                        $("#simLockModal").modal("show");
+                    } else {
+                        setTimeout(function () {
+                            getPin();
+                        }, 700);
+                    }
+                } else {
+                    // $("#simLockModal").modal("hide");
+                    $("#simLockTip").html($("#lo-tip2").html());
+                }
+            }
+        })
+    }
+    function simLockCheck() {
+        let lockpwd = $("#lockPwd").val();
+        if(lockpwd.length !== 8) {
+            $("#simLockTip").html($("#lo-tip3").html());
+        } else {
+            XmlAjax({
+                url: "/api/unlock_simlock",
+                data: {"unlock_simlock": lockpwd},
+                success: function (result) {
+                    console.log("unlockSimLockResult:" + result);
+                    let data = JSON.parse(result);
+                    if(data.result === "ok") {
+                        if(data.errCode === "7") {
+                            $("#simLockTip").html($("#lo-tip4").html());
+                        } else if(data.errCode === "2") {
+                            $("#simLockTip").html($("#lo-tip1").html());
+                        }
+                        setTimeout(function () {
+                            getSimLock();
+                        },200);
+                    } else {
+                        $("#simLockTip").html($("#lo-tip2").html());
+                    }
+                }
+            })
+        }
+    }
+    let pinSwitch, pin;
+    function getPin() {
+        $("#simLockModal").modal("hide");
+        XmlAjax({
+            url: "/api/get_pin_setting",
+            data: {"get_pin_setting":"1"},
+            success:function (result) {
+                console.log("getPINSetResult:" + result);
+                let data = JSON.parse(result);
+                pinStatus = data.pinStatus; pinRemain = data.pinRemain;
+                //pinStatus和pinEnabled都为1时弹框
+                if(pinStatus===1 && data.pinEnabled===1){
+                    $("#setTipModal").modal("hide");
+                    $("#PINCheckModal").modal("show");
+                    if(pinRemain===2){
+                        $("#pinNumber").html(2);
+                        if(haveGetPin){$("#pinTip").html($("#lo-tip5").html());}
+                    }
+                    else if(pinRemain===1){
+                        $("#pinNumber").html(1);
+                        if(haveGetPin){$("#pinTip").html($("#lo-tip5").html());}
+                    }
+                } else if(pinStatus===2 && data.pinEnabled===1) {
+                    $("#setTipModal").modal("hide");
+                    $("#PUKModal").modal("show");
+                } else {
+                    //再次获取语言
+                    XmlAjax({
+                        url: "/api/get_web_language",
+                        data: {"get_web_language": 1},
+                        success: function (result) {
+                            console.log("getLanguageResult:" + result);
+                            let data=JSON.parse(result);
+                            let num=data.language;
+                            if(num_lang[num] == undefined){
+                                document.cookie = 'path="/"';
+                                document.cookie = 'language=en';
+                                switchLanguageToSet();
+                            } else {
+                                let lang = num_lang[num].toLowerCase();
+                                document.cookie = 'path="/"';
+                                document.cookie = 'language=' + lang;
+                                switchLanguageToSet();
+                            }
+                        }
+                    })
+                    //如果PIN为关闭状态，弹出登录弹框
+                    setTimeout(function () {
+                        $("#setTipModal").modal("hide");
+                        localStorage.setItem("pin","unlock");
+                        $("#PINCheckModal").modal("hide");
+                        $("#LoginModal").modal("show");
+                    }, 500)
+                }
+            }
+        })
+    }
+    function PINCheck() {
+        pin = $("#pincode").val();
+        pinSwitch = $("#pinSwitch").prop("checked") ? 0 : 1;
+        if(pin==="" || pin===null){toastr.warning($("#lo-tip6").html())}
+        else {
+            if($("#pinNumber").html() == "1") {
+                $("#pinTip").html($("#lo-tip9").html());
+            } else {
+                haveGetPin = true;
+                $("#setTipModal").modal("show");
+                //先输入PIN码解锁，然后设置PIN状态
+                XmlAjax({
+                    url:"/api/login",
+                    data:{"operate_pin": JSON.stringify({"pinCode":pin})},
+                    success:function (result) {
+                        console.log("PINCheckResult:" + result);
+                        let data = JSON.parse(result);
+                        if(data.result === "ok") {
+                            if(pinSwitch === 0) {
+                                //关闭PIN码
+                                OperatePin();
+                            } else {
+                                getPin();
+                            }
+                        } else {
+                            getPin();
+                        }
+                    }
+                })
+            }
+        }
+    }
+    function OperatePin() {
+        XmlAjax({
+            url: "/api/get_pin_setting",
+            data: {"get_pin_setting":"1"},
+            success:function (result) {
+                console.log("getPINSetResult:" + result);
+                let data = JSON.parse(result);
+                if(data.result === "ok") {
+                    // $("#setTipModal").modal("hide");
+                    pinStatus = data.pinStatus; pinRemain = data.pinRemain;
+                    //pinStatus和pinEnabled都为1时弹框
+                    if(pinStatus===1 && data.pinEnabled===1){
+                        $("#setTipModal").modal("hide");
+                        $("#PINCheckModal").modal("show");
+                        if(pinRemain===2){$("#pinNumber").html(2);$("#pinTip").html($("#lo-tip5").html());}
+                        else if(pinRemain===1){$("#pinNumber").html(1);$("#pinTip").html($("#lo-tip5").html());}
+                    } else if(pinStatus===2 && data.pinEnabled===1) {
+                        $("#setTipModal").modal("hide");
+                        $("#PUKModal").modal("show");
+                    } else {
+                        XmlAjax({
+                            url:"/api/login",
+                            data:{"operate_pin": JSON.stringify({"pinEnabled":pinSwitch,"pinCode":pin})},
+                            success:function (result) {
+                                console.log("PINCheckResult:" + result);
+                                let data = JSON.parse(result);
+                                getPin();
+                            }
+                        })
+                    }
+                } else {
+                    $("#setTipModal").modal("hide");
+                    toastr.error($("#lo-tip8").html());
+                }
+            }
+        })
+    }
+    //add simLock function by luolihua 20220520 end
+    function Login() {
+        let pwd = $("#pwd").val();
+        console.log("password:" + pwd);
+        if(pwd==="" || pwd === null){
+            toastr.warning($("#lo-tip7").html());
+        }
+        else {
+            //对密码进行Base64编码 llh 20220701
+            XmlAjax({
+                url:"/api/login",
+                data:{"web_login": JSON.stringify({"passwd": window.btoa(pwd)})},
+                success: function (result) {
+                    console.log("loginResult" + result);
+                    let data = JSON.parse(result);
+                    if(data.result==="ok"){
+                        sessionCookie = data.session;
+                        document.cookie ='SessionId=' + data.session;
+                        window.location.href="main.html";
+                    } else {
+                        $("#pwd").val("");$("#tip").html($("#lo-tip4").html());
+                    }
+                }
+            })
+        }
+    }
+</script>

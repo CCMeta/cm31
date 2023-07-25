@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge ; IE=11">
+    <title>MobiConnect Portal</title>
+<!--    <link rel="shortcut icon" href="image/logo.png">-->
+    <link rel="stylesheet" href="css/bootstrap-min.css">
+    <link rel="stylesheet" href="css/common.css">
+    <style>
+        input::-ms-clear,input::-ms-reveal{display: none;}
+        .bottomFont{font-size: 12px;color: rgba(255, 255, 255, 0.3);background-color: #262733;font-family: "Nunito-Light"}
+        .bottomFont label{margin-bottom: 0}
+        .bottom{background-color: #262733;}
+        .svg-title{enable-background:new 0 0 224 224;width: 75%;min-width: 85px}
+        .col-click {cursor: pointer;word-wrap:break-word;word-break:break-all;width: 275px}
+        .col-click:hover{transition: .5s;transform: scale(1.25);}
+        .col-click svg{filter: drop-shadow(6px 8px 24px rgba(0, 0, 0, 0.5));}
+        .col-span{margin-top: 30px}
+        .modal-content{margin-top: 0}
+        #planData {background-color: rgba(110, 110, 118, 0.2);color: #fff;border: 1.5px solid #fff;border-radius: 30px;width: 120px;padding-left: 18px;}
+        /*svg图标样式*/
+        .st0{fill:url(#SVGID_1_);}
+        .st1{fill:none;stroke:#FFFFFF;stroke-width:6;stroke-miterlimit:10;}
+        .st2{fill-rule:evenodd;clip-rule:evenodd;fill:none;stroke:#FFFFFF;stroke-width:6;stroke-linecap:round;stroke-miterlimit:10;}
+        .st3{fill-rule:evenodd;clip-rule:evenodd;fill:#FFFFFF;}
+        .st5{fill:url(#SVGID_Wifi);}
+        .st6{fill:none;stroke:#FFFFFF;stroke-width:6;stroke-miterlimit:10;}
+        .st7{fill:none;stroke:#FFFFFF;stroke-width:6;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;}
+        .st8{fill-rule:evenodd;clip-rule:evenodd;fill:#FFFFFF;}
+        .st9{fill:url(#SVGID_Security);}
+        .st10{fill:none;stroke:#FFFFFF;stroke-width:6;stroke-miterlimit:10;}
+        .st11{fill:none;stroke:#FFFFFF;stroke-width:6;stroke-linecap:round;stroke-miterlimit:10;}
+        .st12{fill:#FFFFFF;}
+        .st13{fill:url(#SVGID_System);}
+        .st14{fill:none;stroke:#FFFFFF;stroke-width:6;stroke-miterlimit:10;}
+        .st15{fill:#FFFFFF;}
+        .st16{fill:url(#SVGID_Sms);}
+        .st17{fill:none;stroke:#FFFFFF;stroke-width:6;stroke-miterlimit:10;}
+        .st18{fill-rule:evenodd;clip-rule:evenodd;fill:none;stroke:#FFFFFF;stroke-width:6;stroke-linecap:round;stroke-miterlimit:10;}
+        .policy{background: none;font-size: 12px;color: rgba(255, 255, 255, 0.3);}
+        .policy:hover{color: #fff}
+    </style>
+</head>
+<body>
+
+<div style="display: none">
+    <label i18n="ma-rs" id="ma-tip1">Reinitialization succeeded</label><label i18n="ma-rf" id="ma-tip2">Reinitialization failed</label>
+    <label i18n="ma-cpf" id="ma-tip3">Change plan failed</label><label i18n="ma-cps" id="ma-tip4">Change plan succeeded</label>
+</div>
+<div class="container" style="height: 100%;width: 100%;max-width: 100%">
+    <div class="row  align-items-center" style="height: 10%;min-height: 60px">
+        <a href="main.html" >
+        <svg  viewBox="0 0 400 300" width="160px" style="margin-left: 80px;margin-top: 35px" >
+            <defs><style>.cls-1{fill:#003b76;}
+            .cls-2{fill:#fff;}.cls-3{fill:#8ec31f;}
+            </style></defs><g id="图层_2" data-name="图层 2">
+            <g id="Calque_1" data-name="Calque 1">
+                <rect class="cls-1" x="1.6" y="1.6" width="248.58" height="248.58" rx="18.63"/>
+<!--                <path class="cls-2" d="M231.55,251.78H20.24A20.26,20.26,0,0,1,0,231.55V20.24A20.26,20.26,0,0,1,20.24,0H231.55a20.25,20.25,0,0,1,20.23,20.24V231.55A20.25,20.25,0,0,1,231.55,251.78ZM20.24,3.2a17.05,17.05,0,0,0-17,17V231.55a17.05,17.05,0,0,0,17,17H231.55a17,17,0,0,0,17-17V20.24a17.05,17.05,0,0,0-17-17Z"/>-->
+                <path class="cls-3" d="M208,70.81a10,10,0,0,0-1.15-.77l-.43-.25A32,32,0,0,0,159.06,89a1,1,0,0,0-.06.23,1.11,1.11,0,0,0,.17.75,1.08,1.08,0,0,0,1.62.21l.11-.11a22.21,22.21,0,0,1,22-5.53,22.41,22.41,0,0,1,7.9,4.28,12.51,12.51,0,1,0,17.11-18Z"/>
+                <path class="cls-3" d="M73.2,180.19c-.37.27-.76.53-1.15.77l-.44.24A32,32,0,0,1,24.29,162a1.55,1.55,0,0,1-.05-.23,1,1,0,0,1,.16-.74A1.08,1.08,0,0,1,26,160.8l.11.11a22.14,22.14,0,0,0,30,1.25,12.66,12.66,0,0,1,7.36-4.28,12.39,12.39,0,0,1,5.37.2,12.51,12.51,0,0,1,4.39,22.11Z"/>
+                <path class="cls-2" d="M53.69,142.3s-4.95,4.94-11.38,4.94a11.64,11.64,0,0,1-8.7-3.58,12.19,12.19,0,0,1-3.23-8.43c0-6.86,4.88-11.85,11.61-11.85a15.3,15.3,0,0,1,10,4.15l.5.52,5-7.8-.27-.32c-.21-.25-5.24-6.18-15.85-6.18a22.6,22.6,0,0,0-16.28,6.39,22.09,22.09,0,0,0,0,30.43c4.11,4.13,9.74,6.3,16.27,6.3,10.91,0,16.7-6.44,16.94-6.71l.27-.31-4.42-8.1Z"/>
+                <path class="cls-2" d="M83,113.75a20.7,20.7,0,0,0-15.07,6A22,22,0,0,0,62,135.31c0,12.5,9.3,21.56,22.11,21.56A25.41,25.41,0,0,0,100.64,151l.32-.3-4.4-8.17L96,143c0,.05-5,4.27-11.18,4.27a12.09,12.09,0,0,1-7.66-2.56,10.56,10.56,0,0,1-3.73-6.91H101l0-.52c0-.11.24-2.71.24-3.9,0-5.57-1.63-10.36-4.7-13.87C93.33,115.73,88.61,113.75,83,113.75Zm-.23,8.85c4.22,0,7,2.74,7.33,7.18H73.83C74.9,125.27,78.18,122.6,82.72,122.6Z"/>
+                <rect class="cls-2" x="160.14" y="98.97" width="11.05" height="10.26"/><rect class="cls-2" x="160.14" y="113.71" width="11.13" height="43.16"/>
+                <rect class="cls-2" x="181.13" y="98.97" width="11.05" height="10.26"/><rect class="cls-2" x="181.13" y="113.71" width="11.13" height="43.16"/>
+                <path class="cls-2" d="M217.75,130.89c-3.47-1.39-6.46-2.59-6.46-4.46,0-2.25,2.44-3.05,4.53-3.05a14.83,14.83,0,0,1,9.44,3.31l.56.52,4.22-8.44-.28-.29c-.19-.19-4.68-4.73-13.86-4.73-9.51,0-15.9,5-15.9,12.36,0,8.06,7.12,11,12.85,13.32,3.57,1.47,6.65,2.73,6.65,4.76s-2.36,3.05-4.7,3.05A16.25,16.25,0,0,1,204.28,143l-.5-.5-5.19,8,.31.33a22.8,22.8,0,0,0,16,6.07c9.36,0,15.91-5.18,15.91-12.6C230.79,136.13,223.56,133.23,217.75,130.89Z"/>
+                <rect class="cls-2" x="107.85" y="98.97" width="11.16" height="57.91"/><path class="cls-2" d="M153.11,146.7l-.7.15a9.05,9.05,0,0,1-1.68.14c-6.41,0-7.37-4.37-7.37-7V122.8h9.12v-9.09h-9.12V102.16h-10.9v11.55H127v9.09h5.19v18.47c0,6.07,2.19,10.48,6.52,13.08a21.16,21.16,0,0,0,10.72,2.59,18.21,18.21,0,0,0,3.18-.24l.46-.1v-9.9Z"/>
+            </g>
+        </g>
+        </svg>
+        </a>
+<!--        <a href="main.html" style="margin-left: 4%;color: #4d68ee;font-size: 24px;font-family: 'Nunito-Bold',sans-serif;">MobiWire</a>-->
+        <div class="btn-group-vertical1">
+            <button class="bat-active">
+                <svg class="img-fluid" width="45px" height="54px" viewBox="0 0 16 16" id="battery">
+                    <path d="M0 6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6zm2-1a1 1 0 0 0-1 1v4a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1H2zm14 3a1.5 1.5 0 0 1-1.5 1.5v-3A1.5 1.5 0 0 1 16 8z"></path>
+                    <path d="M2 6h10v4H2V6z" style="transition: 0.3s"></path>
+                </svg>
+            </button>
+            <button class="bat-hide"><span id="batteryNumber">100%</span></button>
+        </div>
+        <div class="btn-group-vertical">
+            <button class="lang-active">EN</button>
+            <button class="lang-hide">ES</button>
+            <button class="lang-hide">FR</button>
+        </div>
+    </div>
+    <div class="row justify-content-center align-items-center main" style="height: 80%;min-height: 480px">
+        <table style="width:71.7%;min-width: 573px;min-height: 230px;text-align: center;color: #4D68EE;font-size: 24px;font-weight: 400">
+            <tbody>
+            <tr>
+                <td class="col-click" data-name="network">
+                    <div><svg x="0px" y="0px" viewBox="0 0 224 224" class="svg-title" xml:space="preserve">
+                        <g><linearGradient id="SVGID_1_" gradientUnits="userSpaceOnUse" x1="202.806" y1="220.1992" x2="21.194" y2="3.7623">
+                                <stop  offset="9.068826e-02" style="stop-color:#4B64E5"/><stop  offset="0.9255" style="stop-color:#9B46E4"/></linearGradient>
+                            <path class="st0" d="M183.6,224H40.4C18.1,224,0,205.9,0,183.6V40.4C0,18.1,18.1,0,40.4,0h143.2C205.9,0,224,18.1,224,40.4v143.2 C224,205.9,205.9,224,183.6,224z"/></g>
+                                    <g><circle class="st1" cx="112" cy="112" r="70"/>
+                                        <ellipse transform="matrix(0.1626 -0.9867 0.9867 0.1626 14.4842 176.3404)" class="st2" cx="111.1" cy="79.6" rx="12.7" ry="12.7"/>
+                                        <path class="st2" d="M82.5,147v-33c0-11.2,9.1-20.3,20.3-20.3h17.6c11.2,0,20.3,9.1,20.3,20.3v33"/>
+                                        <g><path class="st3" d="M95.2,157.9h-0.4c-1.7,0-3-1.4-3-3v-8.1c0-1.7,1.4-3,3-3h0.4c1.7,0,3,1.4,3,3v8.1 C98.2,156.5,96.9,157.9,95.2,157.9z"/>
+                                            <path class="st3" d="M106.5,157.9h-0.4c-1.7,0-3-1.4-3-3v-13.5c0-1.7,1.4-3,3-3h0.4c1.7,0,3,1.4,3,3v13.5 C109.5,156.5,108.2,157.9,106.5,157.9z"/>
+                                            <path class="st3" d="M117.9,157.9h-0.4c-1.7,0-3-1.4-3-3V136c0-1.7,1.4-3,3-3h0.4c1.7,0,3,1.4,3,3v18.9 C120.9,156.5,119.6,157.9,117.9,157.9z"/>
+                                            <path class="st3" d="M129.3,158h-0.4c-1.7,0-3-1.4-3-3V128c0-1.7,1.4-3,3-3h0.4c1.7,0,3,1.4,3,3v26.9 C132.3,156.6,131,158,129.3,158z"/>
+                            </g></g>
+                    </svg></div><div class="col-span" i18n="Network">Network</div>
+                </td>
+                <td class="col-click" data-name="wifi">
+                    <div><svg x="0px" y="0px" viewBox="0 0 224 224" class="svg-title" xml:space="preserve">
+                        <g><linearGradient id="SVGID_Wifi" gradientUnits="userSpaceOnUse" x1="202.8125" y1="220.2312" x2="21.2004" y2="3.7944">
+                                <stop  offset="9.068826e-02" style="stop-color:#4B64E5"/><stop  offset="0.9255" style="stop-color:#9B46E4"/></linearGradient>
+                            <path class="st5" d="M183.6,224H40.4C18.1,224,0,205.9,0,183.6V40.4C0,18.1,18.1,0,40.4,0h143.2C205.9,0,224,18.1,224,40.4v143.2 C224,205.9,205.9,224,183.6,224z"/></g>
+                                    <g><circle class="st6" cx="112" cy="112" r="70"/>
+                                        <g><polyline class="st7" points="105.3,89.5 105.3,61.1 91.9,74.5"/><polyline class="st7" points="119.7,75.3 119.7,103.8 133,90.4"/></g>
+                                        <path class="st8" d="M106.2,145.8c-3.2,3.2-3.2,8.3,0,11.5c3.2,3.2,8.3,3.2,11.5,0c3.2-3.2,3.2-8.3,0-11.5
+                                C114.5,142.6,109.4,142.6,106.2,145.8z M94.7,134.2c0,0-2.8,3,0,5.8c2.8,2.8,5.8,0,5.8,0c6.4-6.3,16.7-6.3,23,0.1
+                                c0,0,2.9,2.9,5.8,0c2.9-2.9,0-5.8,0-5.8C119.7,124.7,104.3,124.7,94.7,134.2L94.7,134.2L94.7,134.2z M83.2,122.7c0,0-2.9,2.9,0,5.8
+                                c2.9,2.9,5.8,0,5.8,0c12.8-12.7,33.4-12.6,46.1,0.1c0,0,2.9,2.9,5.8,0c2.9-2.9,0-5.8,0-5.8C124.9,106.9,99.2,106.8,83.2,122.7
+                                L83.2,122.7z"/></g>
+                    </svg></div><div class="col-span" i18n="WiFi">WiFi</div>
+                </td>
+                <td class="col-click" data-name="security">
+                    <div><svg x="0px" y="0px" viewBox="0 0 224 224" class="svg-title" xml:space="preserve">
+                        <g><linearGradient id="SVGID_Security" gradientUnits="userSpaceOnUse" x1="202.8317" y1="220.2312" x2="21.2196" y2="3.7944">
+                                <stop  offset="9.068826e-02" style="stop-color:#4B64E5"/><stop  offset="0.9255" style="stop-color:#9B46E4"/></linearGradient>
+                            <path class="st9" d="M183.6,224H40.4C18.1,224,0,205.9,0,183.6V40.4C0,18.1,18.1,0,40.4,0h143.2C205.9,0,224,18.1,224,40.4v143.2 C224,205.9,205.9,224,183.6,224z"/></g>
+                                    <g><circle class="st10" cx="112" cy="112" r="70"/>
+                                        <path class="st12" d="M130.6,149.9H93.5c-3.9,0-7-3.1-7-7v-30.6c0-3.9,3.1-7,7-7h37.1c3.9,0,7,3.1,7,7v30.6 C137.6,146.7,134.4,149.9,130.6,149.9z"/>
+                                        <path class="st11" d="M86.5,99.6c0-14.1,11.4-25.6,25.6-25.6s25.6,11.4,25.6,25.6"/></g>
+                    </svg></div><div class="col-span" i18n="Security">Security</div>
+                </td>
+                <td class="col-click" data-name="system">
+                    <div><svg x="0px" y="0px" viewBox="0 0 224 224" class="svg-title" xml:space="preserve">
+                        <g><linearGradient id="SVGID_System" gradientUnits="userSpaceOnUse" x1="202.8216" y1="220.2226" x2="21.2095" y2="3.7858">
+                                <stop  offset="9.068826e-02" style="stop-color:#4B64E5"/><stop  offset="0.9255" style="stop-color:#9B46E4"/></linearGradient>
+                            <path class="st13" d="M183.6,224H40.4C18.1,224,0,205.9,0,183.6V40.4C0,18.1,18.1,0,40.4,0h143.2C205.9,0,224,18.1,224,40.4v143.2 C224,205.9,205.9,224,183.6,224z"/></g>
+                                    <g><circle class="st14" cx="112" cy="112" r="70"/>
+                                        <path class="st14" d="M128.1,44.1v24.1c0,1.3,0.5,2.6,1.3,3.5l23.6,26.8c0.9,1,1.3,2.2,1.3,3.5v65.1"/>
+                                        <path class="st14" d="M68,56.9v27.7c0,1.4,0.6,2.8,1.6,3.8l23.1,23c1,1,1.6,2.4,1.6,3.8v41.1"/>
+                                        <path class="st14" d="M138.8,176.7V112c0-1.3-0.5-2.6-1.4-3.6l-22.6-24.5c-0.9-1-1.4-2.3-1.4-3.6V42"/>
+                                        <line class="st14" x1="123.3" y1="179.1" x2="123.3" y2="124.3"/>
+                                        <path class="st14" d="M92.2,70.2v16.9c0,1.4,0.5,2.7,1.5,3.7l12.8,13.4c1,1,1.5,2.3,1.5,3.7V182"/>
+                                        <circle class="st15" cx="123.3" cy="124.3" r="5.9"/>
+                                        <circle class="st15" cx="92.2" cy="70.2" r="5.9"/>
+                                        <path class="st14" d="M166.2,111.6v16.9c0,1.4,0.5,2.7,1.5,3.7l8.2,8.5"/>
+                                        <circle class="st15" cx="166.2" cy="111.6" r="5.9"/>
+                                        <circle class="st15" cx="94.2" cy="158.7" r="5.9"/>
+                                        <circle class="st15" cx="60" cy="111.6" r="5.9"/>
+                                        <path class="st14" d="M77.4,172.8v-43.3c0-1.5-0.6-2.8-1.6-3.9l-16.9-16.4"/></g>
+                    </svg></div><div class="col-span" i18n="System">System</div>
+                </td>
+                <td class="col-click" data-name="message">
+                    <div><svg x="0px" y="0px" viewBox="0 0 224 224" class="svg-title" xml:space="preserve">
+                        <g><linearGradient id="SVGID_Sms" gradientUnits="userSpaceOnUse" x1="202.806" y1="220.1928" x2="21.194" y2="3.7559">
+                                <stop  offset="9.068826e-02" style="stop-color:#4B64E5"/><stop  offset="0.9255" style="stop-color:#9B46E4"/></linearGradient>
+                            <path class="st16" d="M183.6,224H40.4C18.1,224,0,205.9,0,183.6V40.4C0,18.1,18.1,0,40.4,0h143.2C205.9,0,224,18.1,224,40.4v143.2 C224,205.9,205.9,224,183.6,224z"/></g>
+                                    <g><circle class="st17" cx="112" cy="112" r="70"/>
+                                        <path class="st18" d="M138.4,137.3H85.6c-7.7,0-14-6.3-14-14l0-23.1c0-7.7,6.3-14,14-14h52.8c7.7,0,14,6.3,14,14v23.1 C152.4,131,146.1,137.3,138.4,137.3z"/>
+                                        <path class="st18" d="M88,105.2l17.5,9.4c4.3,2.3,9.5,2.2,13.7-0.2l15.7-9.1"/></g>
+                    </svg></div><div class="col-span" i18n="SMS">SMS</div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="row justify-content-center align-items-end bottom main">
+        <div>
+            <div class="row justify-content-center bottomFont" style="height: 28px">
+                <a type="button" data-toggle="modal" data-target="#policyModal" class="policy" i18n="ma-opp">Our Privacy Policy</a>
+            </div>
+            <div class="row" style="margin-top: 0;margin-bottom: 22px;height: 28px;">
+                <label class="bottomFont"i18n="ma-co">Copyright © 2023 All Rights Reserved MobiWire SAS</label>
+            </div>
+        </div>
+    </div>
+</div>
+<!--设置阈值预警提示框-->
+<div class="modal fade mainModal" id="thresholdModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="width: 858px; height: 500px; min-width: 700px">
+        <div class="modal-content" style="padding: 0; color: #fff;height:500px;width: 858px">
+            <div class="modal-body container" style=" margin: 0; max-width: 100%;font-size: 21px">
+                <div class="row justify-content-end">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="margin-right: 25px;margin-top: 21px">
+                        <svg width="25" height="25" viewBox="0 0 29 29" fill="none"><path d="M2 27L27 2M27 27L2 2" stroke="white" stroke-opacity="0.3" stroke-width="3"/></svg>
+                    </button>
+                </div>
+                <div class="row justify-content-center" style="display: grid;text-align: center;width: 100%;margin-top: 45px;">
+                    <b style="color: #ff4646" i18n="ma-Warning">Warning !</b>
+                    <span style="color: #fff" i18n="ma-yac">You are close to your data limit</span>
+                    <span style="color: #fff"i18n="ma-ya">You have 3 options:</span>
+                    <button class="btn btnRun" style="width: 369px;margin-top: 50px" data-toggle="modal" data-target="#thrTipModal" i18n="ma-Reinitialize">Reinitialize</button>
+                    <button class="btn btnRun" style="width: 369px;margin-top: 20px" data-toggle="modal" data-target="#setThrModal" i18n="ma-cyp">Change your plan</button>
+                    <button class="btn btnRun" style="width: 369px;margin-top: 20px" onclick="saveThreshold(0)" i18n="ma-Deactivate">Deactivate</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--设置SMS内存满提示框-->
+<div class="modal fade mainModal" id="storageModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="width: 754px; height: 210px; min-width: 700px">
+        <div class="modal-content" style="padding: 0; color: #fff;height:210px;width: 754px">
+            <div class="modal-body container" style=" margin: 0; max-width: 100%;font-size: 21px">
+                <div class="row justify-content-end">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="margin-right: 25px;margin-top: 21px">
+                        <svg width="25" height="25" viewBox="0 0 29 29" fill="none"><path d="M2 27L27 2M27 27L2 2" stroke="white" stroke-opacity="0.3" stroke-width="3"/></svg>
+                    </button>
+                </div>
+                <div class="row justify-content-center" style="display: grid;text-align: center;width: 100%;margin-top: 22px">
+                    <b style="color: #ff4646" i18n="ma-Warning">Warning !</b>
+                    <span style="color: #fff" i18n="ma-yry">You reached your SMS storage limit</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--设置阈值弹框-->
+<div class="modal fade secModal" id="setThrModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="width: 823px; height: 430px; min-width: 700px">
+        <div class="modal-content" style="padding: 0; color: #fff;width: 823px; height: 430px;">
+            <div class="modal-body container" style="height: 130px; margin: 0; max-width: 100%;font-size: 20px">
+                <div class="row justify-content-end" style="height: 8%">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="margin-right: 25px;margin-top: 21px">
+                        <svg width="25" height="25" viewBox="0 0 29 29" fill="none"><path d="M2 27L27 2M27 27L2 2" stroke="white" stroke-opacity="0.3" stroke-width="3"/></svg>
+                    </button>
+                </div>
+                <div class="row justify-content-center" style="margin-top: 73px">
+                    <table class="dataModal-table" style="width: 440px;height: 130px;">
+                        <tr><td width="210px" i18n="net-Start Date">Start Date</td>
+                            <td width="230px">
+                                <!--修改选择框样式 llh 20220615 start-->
+                                <div class="select-container">
+                                    <span style="left: 87px">
+                                        <svg width="15" height="9" viewBox="0 0 15 9" fill="none">
+                                            <path d="M1.00005 1.36001L6.07791 6.97796C6.87861 7.86382 8.27212 7.85521 9.06182 6.95953L13.9988 1.36002" stroke="white" stroke-width="2"/>
+                                        </svg>
+                                    </span>
+                                    <input id="dataDate" type="text" readonly="readonly" onclick="showAndHideUL(this)" value="1" data-value="1"
+                                           onblur="var t=this;setTimeout(()=>{t.nextSibling.nextSibling.style.display='none';},100);" style="width: 120px;height: 35px"/>
+                                    <ul class="diy-scroll1" style="width: 120px">
+                                        <li><a href="javascript:" data-value="1">1</a></li><li><a href="javascript:" data-value="2">2</a></li><li><a href="javascript:" data-value="3">3</a></li>
+                                        <li><a href="javascript:" data-value="4">4</a></li><li><a href="javascript:" data-value="5">5</a></li><li><a href="javascript:" data-value="6">6</a></li>
+                                        <li><a href="javascript:" data-value="7">7</a></li><li><a href="javascript:" data-value="8">8</a></li><li><a href="javascript:" data-value="9">9</a></li>
+                                        <li><a href="javascript:" data-value="10">10</a></li><li><a href="javascript:" data-value="11">11</a></li><li><a href="javascript:" data-value="12">12</a></li>
+                                        <li><a href="javascript:" data-value="13">13</a></li><li><a href="javascript:" data-value="14">14</a></li><li><a href="javascript:" data-value="15">15</a></li>
+                                        <li><a href="javascript:" data-value="16">16</a></li><li><a href="javascript:" data-value="17">17</a></li><li><a href="javascript:" data-value="18">18</a></li>
+                                        <li><a href="javascript:" data-value="19">19</a></li><li><a href="javascript:" data-value="20">20</a></li><li><a href="javascript:" data-value="21">21</a></li>
+                                        <li><a href="javascript:" data-value="22">22</a></li><li><a href="javascript:" data-value="23">23</a></li><li><a href="javascript:" data-value="24">24</a></li>
+                                        <li><a href="javascript:" data-value="25">25</a></li><li><a href="javascript:" data-value="26">26</a></li><li><a href="javascript:" data-value="27">27</a></li>
+                                        <li><a href="javascript:" data-value="28">28</a></li><li><a href="javascript:" data-value="29">29</a></li><li><a href="javascript:" data-value="30">30</a></li>
+                                    </ul>
+                                </div>
+                                <!--修改选择框样式 llh 20220615 end-->
+                            </td>
+                        </tr>
+                        <tr>
+                            <td i18n="net-mdp">Monthly Data Plan</td>
+                            <td>
+                                <input type="number" value="10" id="planData">
+                                <!--修改选择框样式 llh 20220615 start-->
+                                <div class="select-container" style="display: inline-block;margin-left: 10px">
+                                    <span style="left: 65px">
+                                        <svg width="15" height="9" viewBox="0 0 15 9" fill="none">
+                                            <path d="M1.00005 1.36001L6.07791 6.97796C6.87861 7.86382 8.27212 7.85521 9.06182 6.95953L13.9988 1.36002" stroke="white" stroke-width="2"/>
+                                        </svg>
+                                    </span>
+                                    <input id="dataUnit" type="text" readonly="readonly" onclick="showAndHideUL(this)" value="MB" data-value="1"
+                                           onblur="var t=this;setTimeout(()=>{t.nextSibling.nextSibling.style.display='none';},100);" style="width: 90px;height: 35px"/>
+                                    <ul style="width: 90px">
+                                        <li><a href="javascript:" data-value="1">MB</a></li>
+                                        <li><a href="javascript:" data-value="2">GB</a></li>
+                                    </ul>
+                                </div>
+                                <!--修改选择框样式 llh 20220615 end-->
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="row justify-content-center" style="margin-top: 72px">
+                    <button type="button" class="btn btnRun" onclick="saveThreshold(1)" i18n="Save">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--设置清空阈值提示框-->
+<div class="modal fade secModal" id="thrTipModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="width: 754px; height: 210px; min-width: 700px">
+        <div class="modal-content" style="padding: 0; color: #fff;height:210px;width: 754px">
+            <div class="modal-body container" style=" margin: 0; max-width: 100%;font-size: 21px">
+                <div class="row justify-content-center" style="display: grid;text-align: center;width: 100%;margin-top: 35px;margin-bottom: 20px">
+                    <span style="color: #fff;width: 420px;"i18n="ma-tow">This operation will clear the traffic statistics, are you sure to do this?</span>
+                </div>
+                <div class="row justify-content-center" style="height: 30%">
+                    <div style="width: 270px;">
+                        <button type="button" class="btn btnRun" data-dismiss="modal" style="margin-right: 33px" i18n="No">No</button>
+                        <button type="button" class="btn btnRun" onclick="clearThre()" i18n="Yes">Yes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--设置Policy-->
+<div class="modal fade mainModal" id="policyModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="width: 953px; height: 522px; min-width: 700px">
+        <div class="modal-content" style="padding: 0; color: #fff;height:522px;width: 953px">
+            <div class="modal-body container" style=" margin: 0; max-width: 100%;font-size:14px">
+                <div class="row justify-content-end">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="margin-right: 25px;margin-top: 21px">
+                        <svg width="25" height="25" viewBox="0 0 29 29" fill="none"><path d="M2 27L27 2M27 27L2 2" stroke="white" stroke-opacity="0.3" stroke-width="3"/></svg>
+                    </button>
+                </div>
+                <div class="row justify-content-center" style="display: grid;margin-top: 80px;text-align: left;color: rgba(255,255,255,0.6);">
+                    <p style="width: 736px;color: #fff;margin-bottom: 0;text-align: justify" i18n="policy1">Data protection in the event of a software update for your device, according to its compatibility with this service:</p>
+                    <p style="width: 736px;margin-top: 0;text-align: justify" i18n="policy2">
+                        In order to provide you with the very best service, your device will automatically check for/obtain software update information from the manufacturer and its partners after connecting to the Internet.
+                        This process may use mobile data, and requires access to your device's identification data, such as its IMEI number, serial number (SN) and your network operator's ID (PLMN),
+                        in order to verify whether your device can be updated. This data is collected for software update purposes only and will not be subject to any further processing.
+                    </p>
+                    <p style="width: 736px;color: #fff;margin-bottom: 0;text-align: justify" i18n="policy3">Personal Data Protection as part of the procedure to return your device to your operator:</p>
+                    <p style="width: 736px;margin-top: 0;text-align: justify" i18n="policy4">
+                        Whatever the cause of return of your device to your operator or the associated authorized service center, please note that,
+                        by default, any personal data contained in the device will be systematically and irremediably erased and therefore will not be processed further.
+                        The only personal data we store are those collected and communicated by your operator which we will only use for the purpose of repair.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="js/jquery.js" charset="UTF-8"></script>
+<script src="js/bootstrap-min.js"></script>
+<script src="js/utils.js"></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+        switchLanguageToSet();
+        $("[i18n]").css("visibility", "visible")
+    })
+    //设置弹框位于窗口正中间
+    toastr.options.positionClass = 'toast-center-center';
+    let $main = $(".main");
+    $(".mainModal").on("shown.bs.modal", function () {$main.addClass("blur");})
+    $(".mainModal").on("hidden.bs.modal", function () {$main.removeClass("blur");})
+    $(".secModal").on("shown.bs.modal", function () {$("#thresholdModal").addClass("blur");})
+    $(".secModal").on("hidden.bs.modal", function () {$("#thresholdModal").removeClass("blur");})
+    /*控制密码显示与隐藏*/
+    let showFlag = 0,$show = $("#showPassword"), $hide = $("#hidePassword");
+    $("#control").on("click", function () {
+        if(showFlag === 0) {$show.css("display", "block"); $hide.css("display", "none"); $("#pincode").attr("type","text"); showFlag = 1;}
+        else {$show.css("display", "none"); $hide.css("display", "block"); $("#pincode").attr("type","password"); showFlag = 0;}
+    })
+    //跳转页面
+    let jumpPage;
+    $('.col-click').on('click', function () {
+        let name = $(this).data('name');
+        if(name === 'network') { jumpPage = 'network.html'; }
+        else if (name === 'wifi') { jumpPage = 'wifi.html'; }
+        else if (name === 'security') { jumpPage = 'security.html'; }
+        else if (name === 'system') { jumpPage = 'system.html'; }
+        else if (name === 'message') { jumpPage = 'message.html'; }
+        window.location.href = jumpPage;
+    })
+    // add for 阈值预警和sms内存满提示 llh 20220621 start
+    window.onload = function () {getBattery("/main.html");setTimeout(function () {
+        getThreAndSMS();
+    },500)}
+    function getThreAndSMS() {
+        XmlAjax({
+            url: "/api/get_data_threshold",
+            data: {"get_data_threshold" : 1},
+            success: function (result) {
+                console.log("getDataThresholdResult:\n" + result);
+                let data = JSON.parse(result);
+                if(data.result === "ok") {
+                    if(data.status === "1") {
+                        let total = localStorage.getItem("totalFlow");
+                        let percent = localStorage.getItem("FlowPercent");
+                        //对阈值进行判断
+                        if(total * 1 / 1024 / 1024 >= (data.thresholdValue * 1 * percent / 100)) {
+                            $("#thresholdModal").modal("show");
+                        }
+                    } else {
+                        $("#thresholdModal").modal("hide");
+                        SMSFull();
+                    }
+                }
+            }
+        })
+    }
+    //清空阈值
+    function clearThre() {
+        $("#thrTipModal").modal("hide");
+        XmlAjax({
+            url:"/api/network",
+            data:{"clear_flowrate":1},
+            success:function (result) {
+                console.log("ClearThreshold_Result:\n" + result);
+                let data = JSON.parse(result);
+                if(data.result === "ok") {
+                    $("#thresholdModal").modal("hide");
+                    toastr.success($("#ma-tip1").html());
+                } else {
+                    $("#thresholdModal").modal("show");
+                    toastr.error($("#ma-tip2").html());
+                }
+            }
+        })
+    }
+    //保存阈值计划
+    let $dataDate = $("#dataDate"), $planData = $("#planData"), $dataUnit = $("#dataUnit"), planData, dataDate;
+    function saveThreshold(flag) {
+        if(flag === 1) {
+            if( $planData.val() * 1 < 10 && $dataUnit.val() === "MB") {planData = 10;} else {planData = $planData.val();}
+            planData = $dataUnit.val() === "MB" ? planData : planData * 1024;
+            dataDate = $dataDate.val();
+        } else {
+            planData = 10;
+            dataDate = 1;
+        }
+        XmlAjax({
+            url: "/api/set_data_threshold",
+            data: {"set_data_threshold": JSON.stringify({"status":flag,"thresholdValue":planData,"resetDay":dataDate})},
+            success: function (result) {
+                console.log("setDataThresholdResult:\n" + result);
+                let data = JSON.parse(result);
+                if(data.result !== "ok") {
+                    $("#setThrModal").modal("hide");
+                    $("#thresholdModal").modal("show");
+                    toastr.error($("#ma-tip3").html());
+                } else {
+                    $("#setThrModal").modal("hide");
+                    $("#thresholdModal").modal("hide");
+                    toastr.success($("#ma-tip4").html());
+                    SMSFull();
+                }
+            }
+        })
+    }
+    function SMSFull() {
+        let isSMSFull = localStorage.getItem("isSMSFull");
+        if(isSMSFull === "1") {$("#storageModal").modal("show");}
+    }
+    // add for 阈值预警和sms内存满提示 llh 20220621 start
+</script>
+</body>
+</html>

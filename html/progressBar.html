@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge ; IE=11">
+    <title>MobiConnect Portal</title>
+<!--    <link rel="shortcut icon" href="image/logo.png">-->
+    <link rel="stylesheet" href="css/common.css">
+    <style>
+        .canvas {
+            background:#262733;
+            margin: 0 auto;
+            transform: translate(-50%, -50%);
+            position: absolute;
+            left: 50%;
+            top: 50%;
+        }
+    </style>
+</head>
+<body>
+    <canvas class="canvas" id="canvas" width="400px" height="400px"></canvas>
+    <div style="display: none">
+        <label id="pb-tip1" i18n="tis">"There is something wrong"</label>
+
+    </div>
+</body>
+</html>
+<script src="js/utils.js"></script>
+<script>
+    window.onload = function () {
+        console.log("时间：" + new Date().getSeconds());
+        var canvas = document.getElementById('canvas'),  //获取canvas元素
+            context = canvas.getContext('2d'),  //获取画图环境，指明为2d
+            centerX = canvas.width / 2,   //Canvas中心点x轴坐标
+            centerY = canvas.height / 2,  //Canvas中心点y轴坐标
+            rad = Math.PI * 2 / 100, //将360度分成100份，那么每一份就是rad度
+            speed = 0.1; //加载的快慢就靠它了
+        //绘制蓝色外圈
+        function blueCircle(n) {
+            context.save();
+            var gradient = context.createLinearGradient(centerX,centerY-123,123,centerX,centerY-123,123);   //设置描边样式
+            gradient.addColorStop("0","#4D68EE");
+            gradient.addColorStop("1", "#9B46E4");
+            context.strokeStyle = gradient;
+            context.lineCap = "round";
+            context.beginPath(); //路径开始
+            context.globalCompositeOperation = "destination-atop";
+            context.shadowColor = "rgba(0, 0, 0, 0.75)";
+            context.shadowOffsetX = 0;
+            context.shadowOffsetY = 15;
+            context.shadowBlur = 40;
+            context.lineWidth = 25; //设置线宽
+            context.arc(centerX, centerY, 123, -Math.PI / 2, -Math.PI / 2 + n * rad, false); //用于绘制圆弧context.arc(x坐标，y坐标，半径，起始角度，终止角度，顺时针/逆时针)
+            context.moveTo(centerX,centerY-123); //去除绘制时的白线
+            context.stroke(); //绘制
+            context.closePath(); //路径结束
+            context.restore();
+        }
+        //绘制白色外圈
+        // function whiteCircle() {
+        // 	context.save();
+        // 	context.strokeStyle = "black";
+        // 	context.beginPath();
+        // 	context.arc(centerX, centerY, 50, 0, Math.PI * 2, false);
+        // 	context.stroke();
+        // 	context.closePath();
+        // 	context.restore();
+        // }
+        //百分比文字绘制
+        function text(n) {
+            context.save(); //save和restore可以保证样式属性只运用于该段canvas元素
+            // context.globalCompositeOperation="destination-out";
+            context.beginPath(); //表示重新开始绘制新图形，不受其他图形影响
+            context.moveTo(centerX, centerY-123)
+            // context.strokeStyle = "#fff"; //设置描边样式
+            context.font = "36px Nunito"; //设置字体大小和字体
+            context.textAlign = 'center';//字体水平居中
+            context.textBaseline = 'middle';//字体垂直居中
+            //绘制字体，并且指定位置
+            context.fillStyle = "#fff";
+            context.fillText(n.toFixed(0) + "%", centerX, centerY);
+            context.stroke(); //执行绘制
+            context.restore();
+        }
+        //循环获取
+        (function drawFrame() {
+            window.requestAnimationFrame(drawFrame, canvas);
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            blueCircle(speed);
+            text(speed);
+            if (speed < 100) {
+                //0.1可从后台获取值
+                speed += 0.133;
+                console.log("时间：" + new Date().getSeconds());
+            }
+        }());
+        XmlAjax({
+            url: "/api/restart",
+            data: {"restart": 1},
+            success: function (result) {
+                console.log("rebootResult:" + result);
+            },
+            error:function () {
+                toastr.error($("#pb-tip1").html());
+            }
+        })
+        setTimeout(function () {
+            window.location.href = "login.html";
+        }, 12000);
+    }
+</script>

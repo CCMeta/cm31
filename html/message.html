@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MobiConnect Portal</title>
+    <link rel="stylesheet" href="css/bootstrap-min.css">
+    <link rel="stylesheet" href="css/common.css">
+    <style>
+        .sms-td{background-color: #44444f}
+        .del-sms{background: none; border: none;}
+        .form-control{background-color: rgba(110, 110, 118, 0.2);border-radius: 35px;border: none;color: #fff;}
+        .form-control:focus-visible{background-color: rgba(110, 110, 118, 0.2);outline: none;border: 1px #fff solid}
+        .form-control:focus{box-shadow: none}
+        .smsTable{width: 927px; text-align: center;color: #fff;border-collapse:separate; border-spacing:0 10px;font-size: 14px;margin-left: calc(85vw / 2 - 429px);margin-top: 40px;}
+        .smsTable th{background: none;font-weight: 400;color: #ffffff4d;font-size: 16px}
+        .smsTable td{height: 60px;white-space: nowrap;text-overflow: ellipsis;overflow: hidden;}
+        .sms-tr-grey{color: #ffffff4d}
+        .table-left{border-radius: 35px 0 0 35px;text-align: center;background-color: #6e6e7633}
+        .table-left button{background: none;border: none}
+        .table-sec{height: 60px;background-color: #6e6e7633;text-align: left;line-height: 60px;}
+        .table-sec span{white-space: nowrap;text-overflow: ellipsis;overflow: hidden;width: 144px;display: block;padding-right: 20px}
+        .table-border{border-left: 1px solid rgba(255, 255, 255, 0.3);border-right: 1px solid rgba(255, 255, 255, 0.3);background-color: #6e6e7633;line-height: 60px;}
+        .table-border span{white-space: nowrap;text-overflow: ellipsis;overflow: hidden;width: 383px;display: block;padding: 0 41px;}
+        .table-date{border-radius: 0 35px 35px 0;background-color: #6e6e7633}
+        .table-right{background: none;}
+        .btnPage{/**background: #6e6e7633;border-radius: 35px**/;width: 45px;padding: 0;height: 30px}
+        .viewText{width: 320px;height: 41px;background: rgba(110, 110, 118, 0.2);border-radius: 35px;margin-left: 114px;padding-left: 27px;color: #fff}
+        .viewRow{margin-left: 47px;margin-top: 29px;height: 41px;line-height: 41px}
+        textarea{background: rgba(110, 110, 118, 0.2);border-radius: 35px;resize:none;border: none;color: #fff;}
+        textarea:focus-visible{outline: 1px solid #fff}
+        .select-container input{width: 117px}
+        .select-container span {left: 88px}
+        .select-container ul{width: 117px}
+        #ussdResult{width: 370px;resize: none;background: none;height: auto;font-size: 17px;border-radius: 0;margin-bottom: 10px;min-height: 240px}
+        #ussdResult:focus-visible{outline: none}
+    </style>
+</head>
+<body>
+<div style="display: none">
+    <label i18n="me-atf" id="sms-tip1">It's already the first page</label><label id="sms-tip2" i18n="me-atl">It's already the last page</label>
+    <label id="sms-tip3" i18n="Setup succeed">Setup succeed</label><label id="sms-tip4" i18n="tis">There is something wrong</label>
+    <label id="sms-tip5" i18n="me-tcc">The contact can not be null</label><label id="sms-tip6" i18n="me-tccn">The content can not be blank</label>
+    <label id="sms-tip7" i18n="me-sms">Send Message success</label><label id="sms-tip8" i18n="me-Delete success">Delete Message success</label>
+    <label id="sms-tip9" i18n="me-pe">Parameter error</label>
+    <label id="sms-tip10" i18n="me-iu">Incorrect USSD code format!</label>
+    <label id="sms-tip11" i18n="me-se">Status Error</label>
+    <label id="ussd-tip" i18n="ticn">The input can not be null</label>
+</div>
+<div class="container" style="height: 100%;width: 100%;max-width: 100%;">
+    <div class="row  align-items-center" style="height: 10%;min-height: 60px">
+        <a href="main.html" >
+        <svg  viewBox="0 0 400 300" width="160px" style="margin-left: 80px;margin-top: 35px" >
+            <defs><style>.cls-1{fill:#003b76;}
+            .cls-2{fill:#fff;}.cls-3{fill:#8ec31f;}
+            </style></defs><g id="图层_2" data-name="图层 2">
+            <g id="Calque_1" data-name="Calque 1">
+                <rect class="cls-1" x="1.6" y="1.6" width="248.58" height="248.58" rx="18.63"/>
+<!--                <path class="cls-2" d="M231.55,251.78H20.24A20.26,20.26,0,0,1,0,231.55V20.24A20.26,20.26,0,0,1,20.24,0H231.55a20.25,20.25,0,0,1,20.23,20.24V231.55A20.25,20.25,0,0,1,231.55,251.78ZM20.24,3.2a17.05,17.05,0,0,0-17,17V231.55a17.05,17.05,0,0,0,17,17H231.55a17,17,0,0,0,17-17V20.24a17.05,17.05,0,0,0-17-17Z"/>-->
+                <path class="cls-3" d="M208,70.81a10,10,0,0,0-1.15-.77l-.43-.25A32,32,0,0,0,159.06,89a1,1,0,0,0-.06.23,1.11,1.11,0,0,0,.17.75,1.08,1.08,0,0,0,1.62.21l.11-.11a22.21,22.21,0,0,1,22-5.53,22.41,22.41,0,0,1,7.9,4.28,12.51,12.51,0,1,0,17.11-18Z"/>
+                <path class="cls-3" d="M73.2,180.19c-.37.27-.76.53-1.15.77l-.44.24A32,32,0,0,1,24.29,162a1.55,1.55,0,0,1-.05-.23,1,1,0,0,1,.16-.74A1.08,1.08,0,0,1,26,160.8l.11.11a22.14,22.14,0,0,0,30,1.25,12.66,12.66,0,0,1,7.36-4.28,12.39,12.39,0,0,1,5.37.2,12.51,12.51,0,0,1,4.39,22.11Z"/>
+                <path class="cls-2" d="M53.69,142.3s-4.95,4.94-11.38,4.94a11.64,11.64,0,0,1-8.7-3.58,12.19,12.19,0,0,1-3.23-8.43c0-6.86,4.88-11.85,11.61-11.85a15.3,15.3,0,0,1,10,4.15l.5.52,5-7.8-.27-.32c-.21-.25-5.24-6.18-15.85-6.18a22.6,22.6,0,0,0-16.28,6.39,22.09,22.09,0,0,0,0,30.43c4.11,4.13,9.74,6.3,16.27,6.3,10.91,0,16.7-6.44,16.94-6.71l.27-.31-4.42-8.1Z"/>
+                <path class="cls-2" d="M83,113.75a20.7,20.7,0,0,0-15.07,6A22,22,0,0,0,62,135.31c0,12.5,9.3,21.56,22.11,21.56A25.41,25.41,0,0,0,100.64,151l.32-.3-4.4-8.17L96,143c0,.05-5,4.27-11.18,4.27a12.09,12.09,0,0,1-7.66-2.56,10.56,10.56,0,0,1-3.73-6.91H101l0-.52c0-.11.24-2.71.24-3.9,0-5.57-1.63-10.36-4.7-13.87C93.33,115.73,88.61,113.75,83,113.75Zm-.23,8.85c4.22,0,7,2.74,7.33,7.18H73.83C74.9,125.27,78.18,122.6,82.72,122.6Z"/>
+                <rect class="cls-2" x="160.14" y="98.97" width="11.05" height="10.26"/><rect class="cls-2" x="160.14" y="113.71" width="11.13" height="43.16"/>
+                <rect class="cls-2" x="181.13" y="98.97" width="11.05" height="10.26"/><rect class="cls-2" x="181.13" y="113.71" width="11.13" height="43.16"/>
+                <path class="cls-2" d="M217.75,130.89c-3.47-1.39-6.46-2.59-6.46-4.46,0-2.25,2.44-3.05,4.53-3.05a14.83,14.83,0,0,1,9.44,3.31l.56.52,4.22-8.44-.28-.29c-.19-.19-4.68-4.73-13.86-4.73-9.51,0-15.9,5-15.9,12.36,0,8.06,7.12,11,12.85,13.32,3.57,1.47,6.65,2.73,6.65,4.76s-2.36,3.05-4.7,3.05A16.25,16.25,0,0,1,204.28,143l-.5-.5-5.19,8,.31.33a22.8,22.8,0,0,0,16,6.07c9.36,0,15.91-5.18,15.91-12.6C230.79,136.13,223.56,133.23,217.75,130.89Z"/>
+                <rect class="cls-2" x="107.85" y="98.97" width="11.16" height="57.91"/><path class="cls-2" d="M153.11,146.7l-.7.15a9.05,9.05,0,0,1-1.68.14c-6.41,0-7.37-4.37-7.37-7V122.8h9.12v-9.09h-9.12V102.16h-10.9v11.55H127v9.09h5.19v18.47c0,6.07,2.19,10.48,6.52,13.08a21.16,21.16,0,0,0,10.72,2.59,18.21,18.21,0,0,0,3.18-.24l.46-.1v-9.9Z"/>
+            </g>
+        </g>
+        </svg>
+        </a>
+<!--        <a href="main.html" style="margin-left: 4%;color: #4d68ee;font-size: 24px;font-family: 'Nunito-Bold',sans-serif;">-->
+<!--            MobiWire-->
+<!--        </a>-->
+        <div class="btn-group-vertical1">
+            <button class="bat-active">
+                <svg class="img-fluid" width="45px" height="54px" viewBox="0 0 16 16" id="battery">
+                    <path d="M0 6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6zm2-1a1 1 0 0 0-1 1v4a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1H2zm14 3a1.5 1.5 0 0 1-1.5 1.5v-3A1.5 1.5 0 0 1 16 8z"></path>
+                    <path d="M2 6h10v4H2V6z" style="transition: 0.3s"></path>
+                </svg>
+            </button>
+            <button class="bat-hide"><span id="batteryNumber">100%</span></button>
+        </div>
+        <div class="btn-group-vertical">
+            <button class="lang-active">EN</button>
+            <button class="lang-hide">ES</button>
+            <button class="lang-hide">FR</button>
+        </div>
+    </div>
+    <!--上侧导航栏-->
+    <div class="row main nav-icon-top justify-content-center align-items-center">
+        <table class="nav-network">
+            <tr>
+                <td class="nav-icon grey-icon">
+                    <a class="nav-icon" id="v-network" href="network.html">
+                        <svg x="0px" y="0px" viewBox="0 0 90 90" class="nav-col-svg" xml:space="preserve">
+                            <style type="text/css">.nt0{fill:#ffffff33;}  .nt1{fill-rule:evenodd;clip-rule:evenodd;fill:#ffffff33;}</style>
+                            <path class="nt0" d="M45,89.5c-24.5,0-44.5-20-44.5-44.5S20.5,0.5,45,0.5s44.5,20,44.5,44.5S69.5,89.5,45,89.5z M45,3.5 C22.1,3.5,3.5,22.1,3.5,45S22.1,86.5,45,86.5S86.5,67.9,86.5,45S67.9,3.5,45,3.5z"/>
+                            <path class="nt0" d="M51,32.2c2-1.7,3.3-4.2,3.3-7c0-5.1-4.2-9.3-9.3-9.3s-9.3,4.2-9.3,9.3c0,2.8,1.3,5.3,3.3,7 c-7.4,0.3-13.4,6.5-13.4,14v20.3c0,0.8,0.7,1.5,1.5,1.5c0.8,0,1.5-0.7,1.5-1.5V46.2c0-6.1,4.9-11,11-11h10.8c6.1,0,11,4.9,11,11
+                            v20.3c0,0.8,0.7,1.5,1.5,1.5c0.8,0,1.5-0.7,1.5-1.5V46.2C64.4,38.7,58.4,32.6,51,32.2z M45,18.8c3.5,0,6.3,2.8,6.3,6.3 s-2.8,6.3-6.3,6.3s-6.3-2.8-6.3-6.3S41.5,18.8,45,18.8z"/>
+                            <g>
+                                <path class="nt1" d="M34.5,73.2L34.5,73.2c-1.1,0-2-0.9-2-2v-4.8c0-1.1,0.9-2,2-2l0,0c1.1,0,2,0.9,2,2v4.8 C36.5,72.3,35.6,73.2,34.5,73.2z"/>
+                                <path class="nt1" d="M41.5,73.2L41.5,73.2c-1.1,0-2-0.9-2-2v-8.1c0-1.1,0.9-2,2-2l0,0c1.1,0,2,0.9,2,2v8.1 C43.4,72.3,42.6,73.2,41.5,73.2z"/>
+                                <path class="nt1" d="M48.5,73.2L48.5,73.2c-1.1,0-2-0.9-2-2V59.8c0-1.1,0.9-2,2-2l0,0c1.1,0,2,0.9,2,2v11.4 C50.4,72.3,49.6,73.2,48.5,73.2z"/>
+                                <path class="nt1" d="M55.5,73.3L55.5,73.3c-1.1,0-2-0.9-2-2V55c0-1.1,0.9-2,2-2l0,0c1.1,0,2,0.9,2,2v16.3 C57.4,72.4,56.6,73.3,55.5,73.3z"/>
+                            </g>
+                        </svg>
+                    </a>
+                    <div i18n="Network">Network</div>
+                </td>
+                <td class="nav-icon grey-icon">
+                    <a class="nav-icon" id="v-wifi" href="wifi.html">
+                        <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 90 90" class="nav-col-svg" xml:space="preserve">
+                            <style type="text/css">
+                                .wf0{fill:#ffffff33;}
+                                .wf1{fill-rule:evenodd;clip-rule:evenodd;fill:#ffffff33;}
+                            </style>
+                            <path class="wf0" d="M45,89.5c-24.5,0-44.5-20-44.5-44.5c0-24.5,20-44.5,44.5-44.5s44.5,20,44.5,44.5C89.5,69.5,69.5,89.5,45,89.5z
+                                 M45,3.5C22.1,3.5,3.5,22.1,3.5,45c0,22.9,18.6,41.5,41.5,41.5S86.5,67.9,86.5,45C86.5,22.1,67.9,3.5,45,3.5z"/>
+                            <g>
+                                <path class="wf0" d="M40.9,32.7c-0.8,0-1.5-0.7-1.5-1.5V17.4L33.7,23c-0.6,0.6-1.5,0.6-2.1,0s-0.6-1.5,0-2.1l8.2-8.2
+                                    c0.4-0.4,1.1-0.6,1.6-0.3c0.6,0.2,0.9,0.8,0.9,1.4v17.5C42.4,32,41.7,32.7,40.9,32.7z"/>
+                                <path class="wf0" d="M49.7,41.4c-0.2,0-0.4,0-0.6-0.1c-0.6-0.2-0.9-0.8-0.9-1.4V22.5c0-0.8,0.7-1.5,1.5-1.5s1.5,0.7,1.5,1.5v13.8
+                                    l5.6-5.6c0.6-0.6,1.5-0.6,2.1,0s0.6,1.5,0,2.1L50.8,41C50.5,41.3,50.1,41.4,49.7,41.4z"/>
+                            </g>
+                            <path class="wf1" d="M41.4,65.7c-2,1.9-2,5.1,0,7.1c1.9,2,5.1,2,7.1,0c2-1.9,2-5.1,0-7.1C46.6,63.8,43.4,63.8,41.4,65.7z M34.4,58.6
+                                c0,0-1.7,1.8,0,3.5c1.7,1.7,3.5,0,3.5,0c3.9-3.9,10.3-3.9,14.2,0c0,0,1.8,1.8,3.5,0c1.8-1.8,0-3.5,0-3.5
+                                C49.8,52.8,40.2,52.8,34.4,58.6L34.4,58.6L34.4,58.6z M27.3,51.5c0,0-1.8,1.8,0,3.5c1.8,1.8,3.5,0,3.5,0c7.8-7.8,20.5-7.8,28.3,0.1
+                                c0,0,1.8,1.8,3.5,0c1.8-1.8,0-3.5,0-3.5C53,41.8,37.1,41.8,27.3,51.5L27.3,51.5z"/>
+                        </svg>
+                    </a>
+                    <div i18n="WiFi">WiFi</div>
+                </td>
+                <td class="nav-icon grey-icon">
+                    <a class="nav-icon" href="security.html" title="security">
+                        <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 90 90" class="nav-col-svg" xml:space="preserve">
+                            <style type="text/css">.se0{fill:#ffffff33;}</style>
+                            <path class="se0" d="M45,89.5c-24.5,0-44.5-20-44.5-44.5c0-24.5,20-44.5,44.5-44.5s44.5,20,44.5,44.5C89.5,69.5,69.5,89.5,45,89.5z
+                                 M45,3.5C22.1,3.5,3.5,22.1,3.5,45c0,22.9,18.6,41.5,41.5,41.5S86.5,67.9,86.5,45C86.5,22.1,67.9,3.5,45,3.5z"/>
+                            <path class="se0" d="M55.7,68.3H34.3c-2.8,0-5-2.2-5-5V45.9c0-2.8,2.2-5,5-5h21.4c2.8,0,5,2.2,5,5v17.4C60.7,66,58.5,68.3,55.7,68.3 z"/>
+                            <path class="se0" d="M60.7,38.9c-0.8,0-1.5-0.7-1.5-1.5c0-7.8-6.4-14.2-14.2-14.2c-7.8,0-14.2,6.4-14.2,14.2c0,0.8-0.7,1.5-1.5,1.5
+                                s-1.5-0.7-1.5-1.5c0-9.5,7.7-17.2,17.2-17.2c9.5,0,17.2,7.7,17.2,17.2C62.2,38.2,61.5,38.9,60.7,38.9z"/>
+                        </svg>
+                    </a>
+                    <div i18n="Security">Security</div>
+                </td>
+                <td class="nav-icon grey-icon">
+                    <a class="nav-icon" href="system.html" title="system">
+                        <svg x="0px" y="0px" viewBox="0 0 90 90" class="nav-col-svg" xml:space="preserve">
+                        <style type="text/css">.sys0{fill:#ffffff33;}</style>
+                            <path class="sys0" d="M45,0.5C20.5,0.5,0.5,20.5,0.5,45s20,44.5,44.5,44.5s44.5-20,44.5-44.5S69.5,0.5,45,0.5z M60,83.69
+                            c-2.12,0.82-4.33,1.49-6.6,1.96V55.86c1.24-0.57,2.1-1.81,2.1-3.26c0-1.99-1.61-3.6-3.6-3.6s-3.6,1.61-3.6,3.6
+                            c0,1.45,0.86,2.69,2.1,3.26v30.27c-1.77,0.23-3.57,0.36-5.4,0.36c-0.34,0-0.67-0.02-1-0.03V42.4c0-1.2-0.4-2.4-1.3-3.3l-7.9-8.2
+                            c-0.3-0.3-0.5-0.7-0.5-1.2v-7.14c1.24-0.57,2.1-1.81,2.1-3.26c0-1.99-1.61-3.6-3.6-3.6s-3.6,1.61-3.6,3.6c0,1.45,0.86,2.69,2.1,3.26
+                            v7.14c0,1.2,0.4,2.4,1.3,3.3l7.9,8.3c0.3,0.3,0.5,0.7,0.5,1.2v43.8c-5.64-0.54-10.95-2.22-15.7-4.79V55.7c0-1.2-0.6-2.5-1.5-3.4
+                            l-6.97-6.77C16.93,45.2,17,44.86,17,44.5c0-1.99-1.61-3.6-3.6-3.6s-3.6,1.61-3.6,3.6s1.61,3.6,3.6,3.6c0.5,0,0.98-0.1,1.41-0.29
+                            l6.89,6.69c0.3,0.3,0.5,0.8,0.5,1.3v23.85C10.94,72.23,3.5,59.48,3.5,45c0-11.82,4.96-22.48,12.9-30.04V28.1c0,1.3,0.5,2.5,1.4,3.4
+                            l14.3,14.1c0.3,0.4,0.5,0.8,0.5,1.3v23.54c-1.24,0.57-2.1,1.81-2.1,3.26c0,1.99,1.61,3.6,3.6,3.6s3.6-1.61,3.6-3.6
+                            c0-1.49-0.91-2.77-2.2-3.32V46.9c0-1.3-0.5-2.5-1.4-3.4L19.9,29.4c-0.3-0.4-0.5-0.8-0.5-1.3V12.36c6.88-5.41,15.51-8.69,24.9-8.84
+                            V25.4c0,1.3,0.5,2.4,1.3,3.3l13.9,15.1c0.3,0.3,0.5,0.7,0.5,1.2V83.69z M69.5,78.48c-2.04,1.49-4.21,2.81-6.5,3.92
+                            c0-4.09,0-37.4,0-37.4c0-1.3-0.5-2.4-1.3-3.3L47.8,26.6c-0.3-0.3-0.5-0.7-0.5-1.2V3.57c2.08,0.11,4.11,0.38,6.1,0.79V18.1
+                            c0,1.2,0.4,2.3,1.2,3.2l14.5,16.5c0.2,0.3,0.4,0.8,0.4,1.2V78.48z M78.3,41.2c-1.99,0-3.6,1.61-3.6,3.6c0,1.45,0.86,2.69,2.1,3.26
+                            v7.14c0,1.2,0.4,2.4,1.3,3.3l4.31,4.48c-2.41,5-5.8,9.43-9.91,13.08V39c0-1.2-0.4-2.3-1.2-3.2L56.8,19.3c-0.2-0.3-0.4-0.8-0.4-1.2
+                            v-13C73.76,10.06,86.5,26.05,86.5,45c0,5.27-1,10.31-2.79,14.95L80.3,56.4c-0.3-0.3-0.5-0.7-0.5-1.2v-7.14
+                            c1.24-0.57,2.1-1.81,2.1-3.26C81.9,42.81,80.29,41.2,78.3,41.2z"/>
+                        </svg>
+                    </a>
+                    <div i18n="System">System</div>
+                </td>
+                <td class="nav-icon">
+                    <a class="nav-icon" href="message.html" >
+                        <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 90 90" class="nav-col-svg" xml:space="preserve">
+                            <style type="text/css">
+                                .me0{fill:#4D68EE;}
+                                .me1{fill:#FFFFFF;}
+                            </style>
+                            <circle class="me0" cx="44.5" cy="44.9" r="43.2"/>
+                            <path class="me0" d="M45,89.5c-24.5,0-44.5-20-44.5-44.5c0-24.5,20-44.5,44.5-44.5s44.5,20,44.5,44.5C89.5,69.5,69.5,89.5,45,89.5zM45,3.5C22.1,3.5,3.5,22.1,3.5,45c0,22.9,18.6,41.5,41.5,41.5S86.5,67.9,86.5,45C86.5,22.1,67.9,3.5,45,3.5z"/>
+                            <path class="me1" d="M61.4,62H28.6c-5.5,0-9.9-4.4-9.9-9.9V37.5c0-5.5,4.4-9.9,9.9-9.9h32.9c5.5,0,9.9,4.4,9.9,9.9v14.6
+                                C71.3,57.6,66.9,62,61.4,62z M28.6,30.6c-3.8,0-6.9,3.1-6.9,6.9v14.6c0,3.8,3.1,6.9,6.9,6.9h32.9c3.8,0,6.9-3.1,6.9-6.9V37.5c0-3.8-3.1-6.9-6.9-6.9H28.6z"/>
+                            <path class="me1" d="M45,49.1c-1.6,0-3.3-0.4-4.8-1.2l-10.7-5.7c-0.7-0.4-1-1.3-0.6-2c0.4-0.7,1.3-1,2-0.6l10.7,5.7c2.2,1.2,4.8,1.1,7-0.1l9.6-5.6c0.7-0.4,1.6-0.2,2.1,0.5c0.4,0.7,0.2,1.6-0.5,2.1l-9.6,5.6C48.6,48.6,46.8,49.1,45,49.1z"/>
+                        </svg>
+                    </a>
+                    <div style="color: #4D68EE" i18n="SMS">SMS</div>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <!--下侧内容-->
+    <div class="row main nav-btn-bottom justify-content-center align-items-center">
+        <table style="width:553px;">
+            <tr>
+                <td>
+                    <button class="btn btn-modal" onclick="simCheck('message')"><span i18n="Messages">Messages</span></button>
+                    <button class="btn btn-modal" onclick="simCheck('ussd')"><span i18n="USSD">USSD</span></button>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+<!--sms弹框-->
+<div class="modal fade smsModal" id="smsModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" style="padding: 0; min-width: 1015px; min-height: 500px; color: #fff">
+            <div class="modal-header">
+                <div style="margin: auto">
+                    <span class="modal-title" i18n="Message">Messages</span>
+                    <button type="button" class="close modal-close" data-dismiss="modal" aria-label="Close" style="padding: 0">
+                        <svg width="30" height="15" viewBox="0 0 30 15" fill="none">
+                            <path d="M2 13.4961L13.789 2.19167C14.571 1.44175 15.808 1.45098 16.5788 2.21248L28 13.4961" stroke="white" stroke-opacity="0.5" stroke-width="3" stroke-linecap="round"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div class="modal-body diy-scroll" style="margin: 0;">
+                <div class="row justify-content-center">
+                    <button data-toggle="modal" data-target="#addSMSModal" style="border:none;background-color: rgba(110, 110, 118, 0.2);border-radius: 30px;margin-top: 85px;width: 858px;height: 60px;color: #fff;font-family: 'Nunito-Bold',sans-serif;font-size: 32px">
+                        <svg width="22" height="21" viewBox="0 0 22 21" fill="none" style="margin-bottom: 4px">
+                            <path d="M19.7997 0H2.19876C0.983084 0 0.00930379 1.01887 0.00930379 2.27682L1.53905e-07 19.7469C-0.000516715 20.8604 1.30096 21.4188 2.06179 20.6315L3.27798 19.373C3.99591 18.6301 4.96918 18.2129 5.9843 18.2129H19.7997C21.0148 18.2129 22 17.1935 22 15.9361V2.27682C22 1.01887 21.0154 0 19.7997 0ZM6.06132 14.3626V11.5451L13.6298 3.7134C13.7327 3.60697 13.8722 3.54707 14.0175 3.54707C14.1627 3.54707 14.3023 3.60697 14.4051 3.7134L16.3522 5.72815C16.5667 5.95011 16.5667 6.30845 16.3522 6.53041L8.78367 14.3621H6.06132V14.3626Z" fill="#4D68EE"/>
+                        </svg><span style="margin-left: 10px" i18n="me-New Message">New message</span>
+                    </button>
+                </div>
+                <div class="row justify-content-center sms-history" style="height: 40px;margin-top: 70px"><span style="font-family: 'Nunito-Bold',sans-serif;font-size: 32px;" i18n="me-History">History</span></div>
+                <div class="row align-items-start sms-history" style="height: 300px">
+                    <table class="smsTable">
+                        <thead><tr><th></th><th style="text-align: left;" i18n="me-Contact">Contact</th><th i18n="me-Message">Message</th><th i18n="me-Date">Date</th><th></th></tr></thead>
+                        <tbody id="smsTbody">
+<!--                                <tr><td class="table-left" width="90px">-->
+<!--                                    <button data-toggle="modal" data-target="#viewSMSModal">-->
+<!--                                        <svg width="24" height="13" viewBox="0 0 24 13" fill="none"><path d="M22 2L13.2756 10.5961C12.4887 11.3714 11.2223 11.362 10.447 10.575L2 2" stroke="#4D68EE" stroke-width="3" stroke-linecap="round"/></svg>-->
+<!--                                    </button>-->
+<!--                                </td><td class="table-sec text-truncate" width="146px">13479770128</td><td class="table-border text-truncate" width="387px">TestTestTestTestTestTestTestTestTestTest</td>-->
+<!--                                    <td class="table-date" width="235px">13/04/2022</td><td class="table-right">-->
+<!--                                    <button class="del-sms" data-toggle="modal" data-target="#delSMSModal"><svg width="21" height="21" viewBox="0 0 21 21" fill="none">-->
+<!--                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M18.0496 6.68182H2.95041V18.3967C2.95041 19.8345 4.11595 21 5.55372 21H15.4463C16.884 21 18.0496 19.8345 18.0496 18.3967V6.68182ZM7.20248 11.1508C7.20248 10.7914 6.9111 10.5 6.55165 10.5C6.19221 10.5 5.90083 10.7914 5.90083 11.1508V16.531C5.90083 16.8904 6.19221 17.1818 6.55165 17.1818C6.9111 17.1818 7.20248 16.8904 7.20248 16.531V11.1508ZM14.7087 10.5C15.0681 10.5 15.3595 10.7914 15.3595 11.1508V16.531C15.3595 16.8904 15.0681 17.1818 14.7087 17.1818C14.3492 17.1818 14.0579 16.8904 14.0579 16.531V11.1508C14.0579 10.7914 14.3492 10.5 14.7087 10.5ZM11.281 11.1508C11.281 10.7914 10.9896 10.5 10.6302 10.5C10.2707 10.5 9.97934 10.7914 9.97934 11.1508V16.531C9.97934 16.8904 10.2707 17.1818 10.6302 17.1818C10.9896 17.1818 11.281 16.8904 11.281 16.531V11.1508Z" fill="#FF4646"/>-->
+<!--                                        <path d="M20.25 3.74939H16.5006V2.25C16.5006 1.00756 15.501 0 14.2672 0H6.74877C5.50695 0 4.49939 1.00756 4.49939 2.24939V3.74877H0.75C0.334832 3.74877 0 4.08361 0 4.49877C0 4.91394 0.334832 5.24877 0.75 5.24877H20.25C20.6652 5.24877 21 4.91394 21 4.49877C21 4.08361 20.6652 3.74877 20.25 3.74877V3.74939Z" fill="#FF4646"/>-->
+<!--                                    </svg></button>-->
+<!--                                </td></tr>-->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="row justify-content-center sms-history">
+                    <div style="width: 120px;height: 30px;margin-top: 40px" id="smsPagination">
+                        <button class="btn btnPage" id="prevSMS">
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                <path d="M15 1L9.40386 6.67967C8.62855 7.46654 8.638 8.73296 9.42496 9.50817L15 15" stroke="white" stroke-opacity="0.3" stroke-width="2" stroke-linecap="round"/>
+                                <path d="M7.99902 1L2.40288 6.67967C1.62758 7.46654 1.63703 8.73296 2.42399 9.50817L7.99902 15" stroke="white" stroke-opacity="0.3" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                        </button>
+                        <button class="btn btnPage" style="margin-left: 24px;" id="nextSMS">
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                <path d="M1 1L6.59614 6.67967C7.37145 7.46654 7.362 8.73296 6.57504 9.50817L1 15" stroke="white"  stroke-opacity="0.3" stroke-width="2" stroke-linecap="round"/>
+                                <path d="M8.00098 1L13.5971 6.67967C14.3724 7.46654 14.363 8.73296 13.576 9.50817L8.00098 15" stroke="white" stroke-opacity="0.3" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="row justify-content-center">
+                    <table style="width: 416px;height: 317px;margin-top: 110px;font-size: 21px">
+                        <tr height="75px"><td i18n="me-SMS Report">SMS Report</td><td width="120px">
+                            <div class="switchButton" data-check="checked">
+                                <input type="checkbox" name="sex" id="smsReportSwitch" class="chooseBtn2" />
+                                <label for="smsReportSwitch" class="choose-label2" style="top: 4px"></label>
+                            </div>
+                        </td></tr>
+                        <tr style="vertical-align: top" height="58px">
+                            <td><span i18n="me-SMS Storage">SMS Storage</span><span id="storageTip" style="display: none;color: rgba(255,255,255,0.3);font-size: 16px" i18n="me-ut">Up to 150 SMS</span></td><td width="120px">
+                            <!--修改选择框样式 llh 20220615 start-->
+                            <div class="select-container">
+                                <span>
+                                    <svg width="15" height="9" viewBox="0 0 15 9" fill="none">
+                                        <path d="M1.00005 1.36001L6.07791 6.97796C6.87861 7.86382 8.27212 7.85521 9.06182 6.95953L13.9988 1.36002" stroke="white" stroke-width="2"/>
+                                    </svg>
+                                </span>
+                                <input id="smsStorage" type="text" readonly="readonly" onclick="showAndHideUL(this)"
+                                       onblur="showAndHideUL(this, true)"/>
+                                <ul>
+                                    <li><a href="javascript:" data-value="1">SIM Card</a></li>
+                                    <li><a href="javascript:" data-value="2">Device</a></li>
+                                </ul>
+                            </div>
+                            <!--修改选择框样式 llh 20220615 end-->
+                        </td></tr>
+                        <tr><td colspan="2" style="text-align: center;vertical-align: bottom;padding-bottom: 30vh"><button class="btn btnRun" onclick="setSMSSettings()" style="margin-top: 146px;" i18n="Save">Save</button></td></tr>
+                    </table>
+                </div>
+            </div>
+            </div>
+        </div>
+    </div>
+<!--新增message弹框-->
+<div class="modal fade secModal" id="addSMSModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="padding: 0; width:953px; height: 658px; color: #fff;">
+        <div class="modal-content" style="padding: 0; width: 953px; height: 658px; color: #fff;background-color: #373742;">
+            <div class="modal-body" style="margin: 0;font-size: 16px">
+                <div class="row justify-content-center">
+                    <div style="border:none;background:none;border-radius: 30px;margin-top: 32px;height: 40px;color: #fff;font-family: 'Nunito-Bold',sans-serif;font-size: 32px">
+                        <svg width="22" height="21" viewBox="0 0 22 21" fill="none" style="margin-bottom: 4px">
+                            <path d="M19.7997 0H2.19876C0.983084 0 0.00930379 1.01887 0.00930379 2.27682L1.53905e-07 19.7469C-0.000516715 20.8604 1.30096 21.4188 2.06179 20.6315L3.27798 19.373C3.99591 18.6301 4.96918 18.2129 5.9843 18.2129H19.7997C21.0148 18.2129 22 17.1935 22 15.9361V2.27682C22 1.01887 21.0154 0 19.7997 0ZM6.06132 14.3626V11.5451L13.6298 3.7134C13.7327 3.60697 13.8722 3.54707 14.0175 3.54707C14.1627 3.54707 14.3023 3.60697 14.4051 3.7134L16.3522 5.72815C16.5667 5.95011 16.5667 6.30845 16.3522 6.53041L8.78367 14.3621H6.06132V14.3626Z" fill="#4D68EE"/>
+                        </svg><span style="margin-left: 10px" i18n="me-New Message">New message</span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div style="width: 320px;height: 72px;margin-top: 44px;margin-left: 40px">
+                        <label for="inputContact" style="color: #ffffff4d" i18n="me-Contact">Contact</label><input class="form-control" id="inputContact" style="width: 320px;height: 41px;color: #fff">
+                    </div>
+                </div>
+                <div class="row justify-content-center">
+                    <div style="width: 870px;height: 308px;margin-top: 43px">
+                        <label for="inputContent" style="color: #ffffff4d" i18n="Message">Message</label>
+                        <textarea id="inputContent" class="diy-scroll" style="width: 870px;height: 270px;padding: 20px;"></textarea>
+                    </div>
+                </div>
+                <div class="row justify-content-center">
+                    <div style="margin-top: 40px">
+                        <button type="button" class="btn btnRun" data-dismiss="modal" style="margin-right: 34px" i18n="Cancel">Cancel</button>
+                        <button type="button" class="btn btnRun" onclick="sendSMS()" i18n="me-Send">Send</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--删除sms确认弹框-->
+<div class="modal fade secModal" id="delSMSModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="width: 700px;height: 300px;min-width: 700px">
+        <div class="modal-content" style="padding: 0; color: #fff;width: 700px;height: 300px;rgba(59, 59, 71, 0.7);">
+            <div class="modal-body" style="margin: 0;font-size: 24px;">
+                <div class="row justify-content-center" style="margin-top: 80px"><span i18n="me-ays?">Are you sure to delete the message?</span></div>
+                <div class="row justify-content-center">
+                    <div style="margin-top: 55px">
+                        <button type="button" class="btn btnRun" data-dismiss="modal" style="margin-right: 33px" i18n="Cancel">Cancel</button>
+                        <button type="button" class="btn btnRun" onclick="deleteSMS()" i18n="Delete">Delete</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--查看message弹框-->
+<div class="modal fade secModal" id="viewSMSModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="padding: 0; width:953px; height: 658px; color: #fff;">
+        <div class="modal-content" style="padding: 0; width: 953px; height: 658px; color: #fff;background-color: #373742;">
+            <div class="modal-body" style="margin: 0;font-size: 16px;color: #ffffff4d">
+                <div class="row justify-content-end">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="margin-top: 23px;margin-right: 42px">
+                        <svg width="29" height="29" viewBox="0 0 29 29" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 27L27 2M27 27L2 2" stroke="white" stroke-opacity="0.3" stroke-width="3"/></svg>
+                    </button>
+                </div>
+                <div class="row viewRow" style="margin-left: 47px;margin-top: 7px">
+                    <label for="viewContact" i18n="me-Contact">Contact</label><div id="viewContact" class="viewText"></div>
+                </div>
+                <div class="row viewRow" style="margin-left: 47px;margin-top: 29px">
+                    <label for="viewContact" i18n="me-Date/ Hour">Date/ Hour</label><div id="viewDate" class="viewText" style="margin-left: 90px"></div>
+                </div>
+                <div class="row justify-content-center">
+                    <div style="width: 870px;height: 308px;margin-top: 70px">
+                        <label for="inputContent" i18n="Message">Message</label>
+                        <textarea id="viewContent" class="diy-scroll" readonly style="width: 870px;height: 335px;padding: 30px;"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--SIM卡提示框-->
+<div class="modal fade smsModal" id="simTipModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="height: 300px;width: 700px;min-width: 700px">
+        <div class="modal-content" style="padding: 0; color: #fff;height: 300px;width: 700px;">
+            <div class="modal-body container" style="height: 130px; margin: 0; max-width: 98%;font-size: 24px">
+                <div class="row justify-content-center align-items-center" style="height: 68%"><span i18n="pit">Please insert the SIM card</span></div>
+                <div class="row justify-content-center align-items-center">
+                    <button type="button" class="btn btnRun" data-dismiss="modal" i18n="OK">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--删除中提示框-->
+<div class="modal fade secModal" id="delTipModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" style="margin-top: 0">
+    <div class="modal-dialog modal-dialog-centered" style="height: 140px;width: 500px;min-width: 500px">
+        <div class="modal-content" style="padding: 0; color: #fff;height: 140px;width: 500px;background-color: #373742;border: none">
+            <div class="modal-body" style="height: 130px; margin: 0; max-width: 98%;font-size: 24px">
+                <div class="row justify-content-center align-items-center" style="height: 100%">
+                    <div style="width: 80%">
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                        <span id="rebootTip" i18n="Delete">Delete</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--发送中提示框-->
+<div class="modal fade secModal" id="sendTipModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" style="margin-top: 0">
+    <div class="modal-dialog modal-dialog-centered" style="height: 140px;width: 500px;min-width: 500px">
+        <div class="modal-content" style="padding: 0; color: #fff;height: 140px;width: 500px;background-color: #373742;border: none">
+            <div class="modal-body" style="height: 130px; margin: 0; max-width: 98%;font-size: 24px">
+                <div class="row justify-content-center align-items-center" style="height: 100%">
+                    <div style="width: 80%">
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                        <span i18n="Send">Sending</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--USSD弹框-->
+<div class="modal fade smsModal" id="ussdModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" style="padding: 0; min-width: 1015px; min-height: 500px; color: #fff">
+            <div class="modal-header">
+                <div style="margin: auto">
+                    <span class="modal-title" i18n="USSD">USSD</span>
+                    <button type="button" class="close modal-close" data-dismiss="modal" aria-label="Close" style="padding: 0">
+                        <svg width="30" height="15" viewBox="0 0 30 15" fill="none">
+                            <path d="M2 13.4961L13.789 2.19167C14.571 1.44175 15.808 1.45098 16.5788 2.21248L28 13.4961" stroke="white" stroke-opacity="0.5" stroke-width="3" stroke-linecap="round"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div class="modal-body diy-scroll" style="margin: 0;">
+                <div class="row align-items-center justify-content-center" style="height: 100%">
+                    <div style="text-align: center">
+                        <label style="color: rgba(255,255,255,0.3);font-size: 16px" i18n="me-addNumber">Enter the USSD code</label>
+                        <div>
+                            <input style="width: 425px;height: 55px;border: 1px solid #FFFFFF;border-radius: 35px;background-color: rgba(110, 110, 118, 0.2);color: #fff;font-size: 20px;text-align: center"
+                            id="ussd">
+                        </div>
+                        <div style="margin-top: 80px">
+                            <button class="btn btnRun" i18n="me-Send" onclick="sendUSSD()">Send</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--USSD提示框-->
+<div class="modal usModal" id="ussdTipModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" style="margin-top: 0">
+    <div class="modal-dialog modal-dialog-centered" style="width: 500px;min-width: 500px;max-height: 520px;height: auto">
+        <div class="modal-content" style="padding: 0; color: #fff;max-height: 520px;width: 500px;background-color: #373742;border: none;margin-top: 0;min-height: 220px">
+            <div class="modal-body" style="margin: 0; max-width: 98%;font-size: 24px">
+                <div class="row justify-content-end">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="margin-top: 23px;margin-right: 22px" onclick="releaseUSSD()">
+                        <svg width="29" height="29" viewBox="0 0 29 29" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 27L27 2M27 27L2 2" stroke="white" stroke-opacity="0.3" stroke-width="3"/></svg>
+                    </button>
+                </div>
+                <div class="row justify-content-center align-items-center" style="padding-bottom: 20px">
+                    <textarea id="ussdResult" readonly>
+                    </textarea>
+                </div>
+                <div class="row justify-content-center ussdReplyDiv" style="padding-bottom: 35px">
+                    <input id="ussdReply" style="background: none;color: #fff;border-radius: 30px;border: 1px #fff solid;padding: 10px;font-size: 17px;margin-right: 15px;height: 36px">
+                    <button class="btn btnRun" onclick="ussdReply()">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--USSD发送中提示框-->
+<div class="modal fade usModal" id="ussdSendTipModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" style="margin-top: 0">
+    <div class="modal-dialog modal-dialog-centered" style="height: 140px;width: 500px;min-width: 500px">
+        <div class="modal-content" style="padding: 0; color: #fff;height: 140px;width: 500px;background-color: #373742;border: none">
+            <div class="modal-body" style="height: 130px; margin: 0; max-width: 98%;font-size: 24px">
+                <div class="row justify-content-center align-items-center" style="height: 100%">
+                    <div style="width: 80%">
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                        <span i18n="Send">Sending</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="js/jquery.js" charset="UTF-8"></script>
+<script src="js/bootstrap-min.js"></script>
+<script src="js/utils.js"></script>
+<script>
+    $(document).ready(function(){
+        switchLanguageToSet();
+        $("[i18n]").css("visibility", "visible")
+    })
+    //设置弹框位于窗口正中间
+    toastr.options.positionClass = 'toast-center-center';
+    let $smsModal = $(".smsModal"),$usModal=$(".usModal") ,$main = $(".main"), smsPage = 1;
+    $smsModal.on("shown.bs.modal", function () {$main.addClass("blur");})
+    $smsModal.on("hidden.bs.modal", function () {$main.removeClass("blur");})
+    $usModal.on("shown.bs.modal", function () {$("#ussdModal").addClass("blur");})
+    $usModal.on("hidden.bs.modal", function () {$("#ussdModal").removeClass("blur");})
+
+    $(".secModal").on("shown.bs.modal", function () {$("#smsModal").css("display","none");})
+    $(".secModal").on("hide.bs.modal", function () {$("#smsModal").css("display","block");$(".main").addClass("blur");})
+    $("#addSMSModal").on("hide.bs.modal", function () {$("#inputContent").val("");$("#inputContact").val("");})
+    $("#sendTipModal").on("show.bs.modal", function () {$("#addSMSModal").addClass("blur");}).on("hidden.bs.modal", function () {$("#addSMSModal").removeClass("blur");})
+    window.onload = function () {getBattery("/system.html");getSMSSettings();getSMSList(1);GetNetwork();releaseUSSD();}
+    let $reportSwitch = $("#smsReportSwitch"), $storageSwitch = $("#smsStorage"), $inputContact = $("#inputContact"), $inputContent = $("#inputContent");
+    let smsTotal, $smsTbody = $("#smsTbody"), delIndex;
+    $("#smsModal").on("show.bs.modal", function () {
+        getSMSList(1);getSMSSettings();
+    })
+    $(".btnPage").mouseover(function (){
+        $(this).children("svg").children("path").attr("stroke", "#4d68ee").attr("stroke-opacity", "1");
+    }).mouseout(function () {
+        $(this).children("svg").children("path").attr("stroke", "#fff").attr("stroke-opacity", "0.3");
+    })
+    $storageSwitch.on("change", function () {
+        if($(this).val() == "Device") {
+            $("#storageTip").css("display", "block");
+        } else {
+            $("#storageTip").css("display", "none");
+        }
+    })
+    //检查有无插卡
+    let simStatus = 1;
+    function GetNetwork(){
+        XmlAjax({
+            url: "/api/network_info",
+            data: {"network_info": 0},
+            success: function(result) {
+                console.log("networkResult:" + result);
+                let data = JSON.parse(result);
+                if(data.result === "ok") {if(data.simStatusInfo==="No SIM") {simStatus=0;}}
+            },
+        });
+    }
+    function simCheck(key){
+        if(simStatus===1){
+            if(key == "message") {
+                $("#smsModal").modal("show");
+            } else {
+                $("#ussdModal").modal("show");
+                $("#ussd").val("");
+                releaseUSSD();
+            }
+        } else {$("#simTipModal").modal("show");}
+    }
+    //获取短信列表
+    function getSMSList(index){
+        XmlAjax({
+            url: "/api/message_list",
+            data: {"message_list": index},
+            success: function (result) {
+                console.log("smsListResult:" + result);
+                let data = JSON.parse(result);
+                $smsTbody.html("");
+                if(data.result === "ok") {
+                    smsTotal = data.total * 1;
+                    if(smsTotal > 3) {
+                        $(".sms-history").css("display", "flex");
+                        $("#smsPagination").css("visibility", "visible");
+                    } else {
+                        if(smsTotal === 0) {
+                            //如果没有短信，则直接隐藏History
+                            $(".sms-history").css("display", "none");
+                        } else {
+                            $(".sms-history").css("display", "flex");
+                        }
+                    }
+                    for(let i=0;i<data.messages.length;i++) {
+                        let sms = data.messages[i];
+                        let trash = '<td class="table-right">' +
+                            '<button class="del-sms" data-toggle="modal" data-target="#delSMSModal" data-index="' + sms.index + '">' +
+                            '<svg width="21" height="21" viewBox="0 0 21 21" fill="none">' +
+                            '<path fill-rule="evenodd" clip-rule="evenodd" d="M18.0496 6.68182H2.95041V18.3967C2.95041 19.8345 4.11595 21 5.55372 21H15.4463C16.884 21 18.0496 19.8345 18.0496 18.3967V6.68182ZM7.20248 11.1508C7.20248 10.7914 6.9111 10.5 6.55165 10.5C6.19221 10.5 5.90083 10.7914 5.90083 11.1508V16.531C5.90083' +
+                            ' 16.8904 6.19221 17.1818 6.55165 17.1818C6.9111 17.1818 7.20248 16.8904 7.20248 16.531V11.1508ZM14.7087 10.5C15.0681 10.5 15.3595 10.7914 15.3595 11.1508V16.531C15.3595 16.8904 15.0681 17.1818 14.7087 17.1818C14.3492 17.1818 14.0579 16.8904 14.0579 16.531V11.1508C14.0579 10.7914 14.3492 10.5 14.7087 10.5ZM11.281 11.1508C11.281 10.7914 10.9896 10.5 10.6302 10.5C10.2707 10.5 9.97934 10.7914 9.97934 11.1508V16.531C9.97934 16.8904 10.2707 17.1818 10.6302 17.1818C10.9896 17.1818 11.281 16.8904 11.281 16.531V11.1508Z" fill="#FF4646"/>' +
+                            '<path d="M20.25 3.74939H16.5006V2.25C16.5006 1.00756 15.501 0 14.2672 0H6.74877C5.50695 0 4.49939 1.00756 4.49939 2.24939V3.74877H0.75C0.334832 3.74877 0 4.08361 0 4.49877C0 4.91394 0.334832 5.24877 0.75 5.24877H20.25C20.6652 5.24877 21 4.91394 21 4.49877C21 4.08361 20.6652 3.74877 20.25 3.74877V3.74939Z" fill="#FF4646"/>' +
+                            '</svg>' +
+                            '</button>' +
+                            '</td>';
+                        if(sms.status === "1"){
+                            $smsTbody.append(
+                                '<tr>' +
+                                '<td class="table-left" width="90px">' +
+                                '<button onclick="showSMS(this)" data-index="' + sms.index + '">' +
+                                '<svg width="24" height="13" viewBox="0 0 24 13" fill="none">' +
+                                '<path d="M22 2L13.2756 10.5961C12.4887 11.3714 11.2223 11.362 10.447 10.575L2 2" stroke="#4D68EE" stroke-width="3" stroke-linecap="round"/>' +
+                                '</svg>' +
+                                '</button>' +
+                                '</td>' +
+                                '<td class="table-sec" width="146px"><span>' + string2Unicode(sms.name) + '</span></td>' +
+                                '<td class="table-border" width="387px"><span>' + string2Unicode(sms.content) + '</span></td>' +
+                                '<td class="table-date" width="235px">' + sms.time + '</td>' + trash +
+                                '</tr>'
+                            );
+                        } else {
+                            $smsTbody.append(
+                                '<tr class="sms-tr-grey">' +
+                                '<td class="table-left" width="90px">' +
+                                '<button onclick="showSMS(this)" data-index="' + sms.index + '">' +
+                                '<svg width="24" height="13" viewBox="0 0 24 13" fill="none">' +
+                                '<path d="M22 2L13.2756 10.5961C12.4887 11.3714 11.2223 11.362 10.447 10.575L2 2" stroke="#4D68EE" stroke-width="3" stroke-linecap="round"/>' +
+                                '</svg>' +
+                                '</button>' +
+                                '</td>' +
+                                '<td class="table-sec" width="146px"><span>' + string2Unicode(sms.name) + '</span></td>' +
+                                '<td class="table-border" width="387px"><span>' + string2Unicode(sms.content) + '</span></td>' +
+                                '<td class="table-date" width="235px">' + sms.time + '</td>' + trash +
+                                '</tr>'
+                            )
+                        }
+                    }
+                } else {
+                    toastr.error($("#ad-tip4").html());
+                }
+            },
+            error: function () {
+                $smsTbody.html("");
+                toastr.error($("#sms-tip4").html());
+            }
+        })
+    }
+    //下一页
+    $("#nextSMS").on("click", function () {
+        if(smsPage === Math.ceil(smsTotal / 3)) {toastr.warning($("#sms-tip2").html())}
+        else {
+            smsPage += 1;
+            getSMSList(smsPage);
+        }
+    })
+    //上一页
+    $("#prevSMS").on("click", function () {
+        if(smsPage === 1) {toastr.warning($("#sms-tip1").html())}
+        else {
+            smsPage -= 1;
+            getSMSList(smsPage);
+        }
+    })
+    //获取sms设置信息
+    function getSMSSettings() {
+        XmlAjax({
+            url: "/api/get_message_setting",
+            data: {"get_message_setting":1},
+            success: function (result) {
+                console.log("smsSetResult:" + result);
+                let data = JSON.parse(result);
+                if(data.statusReport==="0"){$reportSwitch.prop("checked", false);} else {$reportSwitch.prop("checked", true);}
+                if(data.storage==="1"){$storageSwitch.val("SIM Card");$storageSwitch.attr("data-value", "1");$("#storageTip").css("display", "none");}
+                else {$storageSwitch.val("Device");$storageSwitch.attr("data-value", "2");$("#storageTip").css("display", "block");}
+            }
+        })
+    }
+    //设置sms
+    function setSMSSettings() {
+        let status = $reportSwitch.prop("checked") ? "1" : "0";
+        XmlAjax({
+            url: "/api/set_message_setting",
+            data: {"set_message_setting": JSON.stringify({"statusReport":status,"storage":$storageSwitch.attr("data-value")})},
+            success: function (result) {
+                console.log("SMSSetResult:" + result);
+                let data = JSON.parse(result);
+                if(data.result==="ok") {
+                    toastr.success($("#sms-tip3").html());
+                } else {
+                    toastr.error(($("#sms-tip4").html()));
+                }
+            },
+            error: function () {
+                toastr.error(($("#sms-tip4").html()));
+            }
+        })
+    }
+    //显示短信详情
+    function showSMS(obj) {
+        $("#viewContact").val("");
+        $("#viewContent").val("");
+        $("#viewDate").val("");
+        XmlAjax({
+            url: "/api/message_detail",
+            data: {"message_detail" : $(obj).data("index")},
+            success: function (result) {
+                console.log("showSMSResult:" + result);
+                let data = JSON.parse(result);
+                if(data.result === "ok") {
+                    $("#viewContact").html(string2Unicode(data.name));
+                    $("#viewContent").val(string2Unicode(data.content));
+                    $("#viewDate").html(string2Unicode(data.time));
+                    $("#viewSMSModal").modal("show");
+                } else {
+                    toastr.error(($("#sms-tip4").html()));
+                }
+            }
+        })
+    }
+    //关闭显示详情框时刷新列表
+    $("#viewSMSModal").on("hide.bs.modal", function () {getSMSList(smsPage);})
+    //发送短信
+    // add for limit input length llh 20220606 start
+    $inputContent.on("input propertychange", function() {
+        // value是input框的值,byteLength是需求限制的字符，attribute是input的id名
+        let value = $(this).val();
+        var newvalue = value.replace(/[^\x00-\xff]/g, "**");
+        var length = newvalue.length;
+        //当填写的字节数小于设置的字节数
+        if (length * 1 <= 150) {
+            return;
+        }
+        var limitDate = newvalue.substr(0, 150);
+        var count = 0;
+        var limitvalue = "";
+        for (var i = 0; i < limitDate.length; i++) {
+            var flat = limitDate.substr(i, 1);
+            if (flat == "*") {
+                count++;
+            }
+        }
+        var size = 0;
+        var istar = newvalue.substr(150 - 1, 1); //校验点是否为“×”
+        //if 基点是×; 判断在基点内有×为偶数还是奇数
+        if (count % 2 == 0) {
+            //当为偶数时
+            size = count / 2 + (150 - count);
+            limitvalue = value.substr(0, size);
+        } else {
+            //当为奇数时
+            size = (count - 1) / 2 + (150 - count);
+            limitvalue = value.substr(0, size);
+        }
+        // alert("最大输入" + byteLength + "个字节（相当于" + byteLength / 2 + "个汉字）！");
+        $(this).val(limitvalue);
+        return;
+    })
+    // add for limit input length llh 20220606 end
+    function sendSMS() {
+        console.log($inputContact.val());
+        if($inputContact.val() === "" || $inputContact.val() === null) {
+            toastr.error($("#sms-tip5").html());
+        } else if($inputContent.val() === "" || $inputContent.val() === null){
+            toastr.error($("#sms-tip6").html());
+        } else {
+            $("#sendTipModal").modal("show");
+            XmlAjax({
+                url: "/api/send_message",
+                data: {"send_message": JSON.stringify({"dest_addr":$inputContact.val(),"content":unicode2String($inputContent.val())})},
+                success: function (result) {
+                    console.log("sendSMSResult:" + result);
+                    let data = JSON.parse(result);
+                    $("#sendTipModal").modal("hide");
+                    if(data.result==="ok") {
+                        $("#addSMSModal").modal("hide");
+                        $inputContact.val("");$inputContent.val("");
+                        toastr.success($("#sms-tip7").html());
+                    } else {
+                        toastr.error($("#sms-tip4").html());
+                    }
+                }
+            })
+        }
+    }
+    //获取要删除信息的index
+    $(document).on("click", ".del-sms", function () {
+        delIndex = $(this).data("index");
+        console.log(delIndex);
+        $("#delSMSModal").modal("show");
+    })
+    //删除信息
+    function deleteSMS() {
+        $("#delSMSModal").modal("hide");
+        $("#delTipModal").modal("show");
+        XmlAjax({
+            url: "/api/delete_message",
+            data: {"delete_message": delIndex},
+            success: function (result) {
+                console.log("DelSMSResult:" + result);
+                let data = JSON.parse(result);
+                $("#delTipModal").modal("hide");
+                if(data.result === "ok") {
+                    smsPage = 1;
+                    setTimeout(function () {
+                        getSMSList(smsPage);
+                    },1000)
+                    toastr.success($("#sms-tip8").html());
+                } else if(data.result === "fail"){
+                    toastr.error($("#sms-tip9").html());
+                } else {
+                    toastr.error($("#sms-tip4").html());
+                }
+            }
+        })
+    }
+    //发送USSD请求
+    function sendUSSD() {
+        let ussd = $("#ussd").val();
+        if( !ussd ) {
+            toastr.warning($("#ussd-tip").html());
+        } else {
+            $("#ussdSendTipModal").modal("show");
+            XmlAjax({
+                url: "/api/operate_ussd",
+                data: {"operate_ussd":  JSON.stringify({"ussdCode": ussd})},
+                success: function (result) {
+                    console.log("OperatorUSSDResult:" + result);
+                    let data = JSON.parse(result);
+                    if(data.result === "ok") {
+                        $("#ussdTipModal").modal("show");
+                        $("#ussd").val('');
+                        // $("#ussdResult").val(string2Unicode(data.resultMessage));
+                        $("#ussdResult").val(string2Unicode(data.resultMessage)).height($('#ussdResult')[0].scrollHeight);
+                        console.log($('#ussdResult')[0].scrollHeight)
+                        if(data.showReply == "1") {
+                            $(".ussdReplyDiv").css("display", "flex");
+                        } else {
+                            $(".ussdReplyDiv").css("display", "none");
+                        }
+                        $("#ussdSendTipModal").modal("hide");
+                    } else if(data.result === "fail"){
+                        $("#ussdSendTipModal").modal("hide");
+                        if(data.code=="1001"){ toastr.error($("#sms-tip9").html());}
+                        if(data.code=="1002"){ toastr.error($("#sms-tip10").html());}
+                        else{ toastr.error($("#sms-tip11").html());}
+                    } else {
+                        $("#ussdSendTipModal").modal("hide");
+                        toastr.error($("#sms-tip4").html());
+                    }
+                }
+            })
+        }
+    }
+    //释放请求
+    function releaseUSSD() {
+        XmlAjax({
+            url: "/api/release_ussd",
+            data: {"release_ussd":  1},
+            success: function (result) {
+                console.log("ReleaseUSSDResult:" + result);
+            }
+        })
+    }
+    //回复USSD请求
+    function ussdReply() {
+        XmlAjax({
+            url: "/api/operate_ussd",
+            data: {"operate_ussd":  JSON.stringify({"ussdCode": $("#ussdReply").val(), "operation": 1})},
+            success: function (result) {
+                // $("#ussdSendTipModal").modal("hide");
+                console.log("OperatorUSSDResult:" + result);
+                let data = JSON.parse(result);
+                if(data.result === "ok") {
+                    $("#ussdReply").val('');
+                    $("#ussdResult").val('').height("150");
+                    // $("#ussdResult").val(string2Unicode(data.resultMessage));
+                    $("#ussdResult").val(string2Unicode(data.resultMessage)).height($('#ussdResult')[0].scrollHeight);
+                    if(data.showReply == "1") {
+                        $(".ussdReplyDiv").css("display", "flex");
+                    } else {
+                        $(".ussdReplyDiv").css("display", "none");
+                    }
+                } else if(data.result === "fail"){
+                    if(data.code=="1001"){ toastr.error($("#sms-tip9").html());}
+                    if(data.code=="1002"){ toastr.error($("#sms-tip10").html());}
+                    else{ toastr.error($("#sms-tip11").html());}
+                } else {
+                    toastr.error($("#sms-tip4").html());
+                }
+            }
+        })
+    }
+</script>
+</body>
+</html>
+

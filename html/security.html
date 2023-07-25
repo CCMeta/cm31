@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MobiConnect Portal</title>
+<!--    <link rel="shortcut icon" href="image/logo.png">-->
+    <!--    <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.3.1/css/bootstrap.min.css">-->
+    <link rel="stylesheet" href="css/bootstrap-min.css">
+    <link rel="stylesheet" href="css/common.css">
+    <style>
+        .row1{height: 12%}
+        .pin-input{border: none;background: rgba(110, 110, 118, 0.2);border-radius: 35px;font-size: 22px;color: #fff;width: 320px;height: 38px}
+        .filter-table tr{min-height: 40px}
+        .filter-input{border: none;background: rgba(110, 110, 118, 0.2);border-radius: 35px;font-size: 21px;color: #fff;width: 320px;height: 38px}
+        .greyFont{color: #ffffff4d}
+        th{font-weight: 400;font-size: 14px;color: #ffffff4d;text-align: center}
+        .td-left{border-radius: 30px 0 0 30px}
+        .td-right{border-radius: 0 30px 30px 0}
+        /*modify for [1. 修改IP Address Filter弹出框样式] jinweiyang 20220519 start*/
+        .apnTable{width:848px;text-align: center;color: #fff;border-collapse:separate; border-spacing:0 10px;font-size: 14px;margin: 0 auto;/*margin-left: calc(85vw / 2 - 429px)*/}
+        .apnTable thead{height:93px;background: none;font-weight: 400;color: rgba(255, 255, 255, 0.3);font-size: 16px;font-family: 'Nunito';font-style: normal;}
+        .apnTable tr{font-family: 'Nunito';font-style: normal;font-weight: 400;font-size: 16px;align-items: center;text-align: center;line-height: 22px;height: 28px;}
+        .apnTable td{white-space: nowrap;text-overflow: ellipsis;overflow: hidden;}
+        .td-del{background: none}
+        .apnTableOther{background: rgba(59, 59, 71, 0.7);;border-radius: 35px;width: 858px;height: 336px;margin: 0 auto;overflow: auto;}
+        /*modify for [1. 修改IP Address Filter弹出框样式] jinweiyang 20220519 end*/
+        td .switchButton label{top: 4px}
+
+        .macTable{width: 927px; text-align: center;color: #fff;border-collapse:separate; border-spacing:0 17px;font-size: 14px;margin-left: calc(85vw / 2 - 429px)}
+        .macTable thead{background: none;font-weight: 400;color: #ffffff33;font-size: 16px}
+        .macTable td{height: 51px;white-space: nowrap;text-overflow: ellipsis;overflow: hidden}
+        .td-left{border-radius: 30px 0 0 30px; width: 429px;background-color: #383842;}
+        .td-right{border-radius:  0 30px 30px 0; width: 429px;background-color: #383842;}
+        .addmacTable{width: 850px;margin: 0 auto;font-size: 20px;margin-top: 50px;border-collapse:separate; border-spacing:0 17px;}
+        .addmacTable td{height: 45px;}
+        .addmacTable button{font-size: 20px;padding: 0;color: #fff;background-color: #4d68ee;border-radius: 30px;width: 65px;}
+        .addmacTable button:hover{background-color: #4d68ee;}
+        .pwd-table{width: 600px;height: 180px;color: #fff}
+        .pwd-table input{width: 320px;height: 38px;background: rgba(110, 110, 118, 0.2);border-radius: 35px;color: #fff;border:none;padding-left: 18px}
+    </style>
+</head>
+<body>
+<div style="display: none">
+    <label id="sec-tip1" i18n="Setup succeed">Setup succeed</label><label id="sec-tip2" i18n="tis">There is something wrong</label>
+    <label id="sec-tip3" i18n="se-tic">The input can not be null</label><label id="sec-tip4" i18n="se-tia">The IP Address format is incorrect</label>
+    <label id="sec-tip5" i18n="se-afs">Add Filter success</label><label id="sec-tip6" i18n="se-dfs">Delete Filter success</label>
+    <label id="sec-tip7" i18n="se-tpcl">The pin code length must between 4-8</label><label id="sec-tip8" i18n="se-tpce">The pin code entered twice is inconsistent</label>
+    <label id="sec-tip9" i18n="se-tpit">The PIN is turned on</label>
+    <label id="sec-tip11" i18n="se-dps">Disable PIN success</label><label id="sec-tip12" i18n="se-eps">Enable PIN success</label>
+    <label id="sec-tip13" i18n="se-pce">PIN code error</label><label id="sec-tip14" i18n="se-thb">This has been deleted, please refresh the page.</label>
+    <label id="sec-tip15" i18n="se-aine">Attempts is not enough, please operator on another device</label>
+</div>
+<div class="container" style="height: 100%;width: 100%;max-width: 100%;">
+    <div class="row  align-items-center" style="height: 10%;min-height: 60px">
+        <a href="main.html" >
+        <svg  viewBox="0 0 400 300" width="160px" style="margin-left: 80px;margin-top: 35px" >
+            <defs><style>.cls-1{fill:#003b76;}
+            .cls-2{fill:#fff;}.cls-3{fill:#8ec31f;}
+            </style></defs><g id="图层_2" data-name="图层 2">
+            <g id="Calque_1" data-name="Calque 1">
+                <rect class="cls-1" x="1.6" y="1.6" width="248.58" height="248.58" rx="18.63"/>
+<!--                <path class="cls-2" d="M231.55,251.78H20.24A20.26,20.26,0,0,1,0,231.55V20.24A20.26,20.26,0,0,1,20.24,0H231.55a20.25,20.25,0,0,1,20.23,20.24V231.55A20.25,20.25,0,0,1,231.55,251.78ZM20.24,3.2a17.05,17.05,0,0,0-17,17V231.55a17.05,17.05,0,0,0,17,17H231.55a17,17,0,0,0,17-17V20.24a17.05,17.05,0,0,0-17-17Z"/>-->
+                <path class="cls-3" d="M208,70.81a10,10,0,0,0-1.15-.77l-.43-.25A32,32,0,0,0,159.06,89a1,1,0,0,0-.06.23,1.11,1.11,0,0,0,.17.75,1.08,1.08,0,0,0,1.62.21l.11-.11a22.21,22.21,0,0,1,22-5.53,22.41,22.41,0,0,1,7.9,4.28,12.51,12.51,0,1,0,17.11-18Z"/>
+                <path class="cls-3" d="M73.2,180.19c-.37.27-.76.53-1.15.77l-.44.24A32,32,0,0,1,24.29,162a1.55,1.55,0,0,1-.05-.23,1,1,0,0,1,.16-.74A1.08,1.08,0,0,1,26,160.8l.11.11a22.14,22.14,0,0,0,30,1.25,12.66,12.66,0,0,1,7.36-4.28,12.39,12.39,0,0,1,5.37.2,12.51,12.51,0,0,1,4.39,22.11Z"/>
+                <path class="cls-2" d="M53.69,142.3s-4.95,4.94-11.38,4.94a11.64,11.64,0,0,1-8.7-3.58,12.19,12.19,0,0,1-3.23-8.43c0-6.86,4.88-11.85,11.61-11.85a15.3,15.3,0,0,1,10,4.15l.5.52,5-7.8-.27-.32c-.21-.25-5.24-6.18-15.85-6.18a22.6,22.6,0,0,0-16.28,6.39,22.09,22.09,0,0,0,0,30.43c4.11,4.13,9.74,6.3,16.27,6.3,10.91,0,16.7-6.44,16.94-6.71l.27-.31-4.42-8.1Z"/>
+                <path class="cls-2" d="M83,113.75a20.7,20.7,0,0,0-15.07,6A22,22,0,0,0,62,135.31c0,12.5,9.3,21.56,22.11,21.56A25.41,25.41,0,0,0,100.64,151l.32-.3-4.4-8.17L96,143c0,.05-5,4.27-11.18,4.27a12.09,12.09,0,0,1-7.66-2.56,10.56,10.56,0,0,1-3.73-6.91H101l0-.52c0-.11.24-2.71.24-3.9,0-5.57-1.63-10.36-4.7-13.87C93.33,115.73,88.61,113.75,83,113.75Zm-.23,8.85c4.22,0,7,2.74,7.33,7.18H73.83C74.9,125.27,78.18,122.6,82.72,122.6Z"/>
+                <rect class="cls-2" x="160.14" y="98.97" width="11.05" height="10.26"/><rect class="cls-2" x="160.14" y="113.71" width="11.13" height="43.16"/>
+                <rect class="cls-2" x="181.13" y="98.97" width="11.05" height="10.26"/><rect class="cls-2" x="181.13" y="113.71" width="11.13" height="43.16"/>
+                <path class="cls-2" d="M217.75,130.89c-3.47-1.39-6.46-2.59-6.46-4.46,0-2.25,2.44-3.05,4.53-3.05a14.83,14.83,0,0,1,9.44,3.31l.56.52,4.22-8.44-.28-.29c-.19-.19-4.68-4.73-13.86-4.73-9.51,0-15.9,5-15.9,12.36,0,8.06,7.12,11,12.85,13.32,3.57,1.47,6.65,2.73,6.65,4.76s-2.36,3.05-4.7,3.05A16.25,16.25,0,0,1,204.28,143l-.5-.5-5.19,8,.31.33a22.8,22.8,0,0,0,16,6.07c9.36,0,15.91-5.18,15.91-12.6C230.79,136.13,223.56,133.23,217.75,130.89Z"/>
+                <rect class="cls-2" x="107.85" y="98.97" width="11.16" height="57.91"/><path class="cls-2" d="M153.11,146.7l-.7.15a9.05,9.05,0,0,1-1.68.14c-6.41,0-7.37-4.37-7.37-7V122.8h9.12v-9.09h-9.12V102.16h-10.9v11.55H127v9.09h5.19v18.47c0,6.07,2.19,10.48,6.52,13.08a21.16,21.16,0,0,0,10.72,2.59,18.21,18.21,0,0,0,3.18-.24l.46-.1v-9.9Z"/>
+            </g>
+        </g>
+
+        </svg>
+        </a>
+<!--        <a href="main.html" style="margin-left: 4%;color: #4d68ee;font-size: 24px;font-family: 'Nunito-Bold',sans-serif;">MobiWire</a>-->
+        <div class="btn-group-vertical1">
+            <button class="bat-active">
+                <svg class="img-fluid" width="45px" height="54px" viewBox="0 0 16 16" id="battery">
+                    <path d="M0 6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6zm2-1a1 1 0 0 0-1 1v4a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1H2zm14 3a1.5 1.5 0 0 1-1.5 1.5v-3A1.5 1.5 0 0 1 16 8z"></path>
+                    <path d="M2 6h10v4H2V6z" style="transition: 0.3s"></path>
+                </svg>
+            </button>
+            <button class="bat-hide"><span id="batteryNumber">100%</span></button>
+        </div>
+        <div class="btn-group-vertical">
+            <button class="lang-active">EN</button>
+            <button class="lang-hide">ES</button>
+            <button class="lang-hide">FR</button>
+        </div>
+    </div>
+    <!--上侧导航栏-->
+    <div class="row main nav-icon-top justify-content-center align-items-center">
+        <table class="nav-network">
+            <tr>
+                <td class="nav-icon grey-icon">
+                    <a class="nav-icon" id="v-network" href="network.html">
+                        <svg x="0px" y="0px" viewBox="0 0 90 90" class="nav-col-svg" xml:space="preserve">
+                            <style type="text/css">.nt0{fill:#ffffff33;}  .nt1{fill-rule:evenodd;clip-rule:evenodd;fill:#ffffff33;}</style>
+                            <path class="nt0" d="M45,89.5c-24.5,0-44.5-20-44.5-44.5S20.5,0.5,45,0.5s44.5,20,44.5,44.5S69.5,89.5,45,89.5z M45,3.5 C22.1,3.5,3.5,22.1,3.5,45S22.1,86.5,45,86.5S86.5,67.9,86.5,45S67.9,3.5,45,3.5z"/>
+                            <path class="nt0" d="M51,32.2c2-1.7,3.3-4.2,3.3-7c0-5.1-4.2-9.3-9.3-9.3s-9.3,4.2-9.3,9.3c0,2.8,1.3,5.3,3.3,7 c-7.4,0.3-13.4,6.5-13.4,14v20.3c0,0.8,0.7,1.5,1.5,1.5c0.8,0,1.5-0.7,1.5-1.5V46.2c0-6.1,4.9-11,11-11h10.8c6.1,0,11,4.9,11,11
+                            v20.3c0,0.8,0.7,1.5,1.5,1.5c0.8,0,1.5-0.7,1.5-1.5V46.2C64.4,38.7,58.4,32.6,51,32.2z M45,18.8c3.5,0,6.3,2.8,6.3,6.3 s-2.8,6.3-6.3,6.3s-6.3-2.8-6.3-6.3S41.5,18.8,45,18.8z"/>
+                            <g>
+                                <path class="nt1" d="M34.5,73.2L34.5,73.2c-1.1,0-2-0.9-2-2v-4.8c0-1.1,0.9-2,2-2l0,0c1.1,0,2,0.9,2,2v4.8 C36.5,72.3,35.6,73.2,34.5,73.2z"/>
+                                <path class="nt1" d="M41.5,73.2L41.5,73.2c-1.1,0-2-0.9-2-2v-8.1c0-1.1,0.9-2,2-2l0,0c1.1,0,2,0.9,2,2v8.1 C43.4,72.3,42.6,73.2,41.5,73.2z"/>
+                                <path class="nt1" d="M48.5,73.2L48.5,73.2c-1.1,0-2-0.9-2-2V59.8c0-1.1,0.9-2,2-2l0,0c1.1,0,2,0.9,2,2v11.4 C50.4,72.3,49.6,73.2,48.5,73.2z"/>
+                                <path class="nt1" d="M55.5,73.3L55.5,73.3c-1.1,0-2-0.9-2-2V55c0-1.1,0.9-2,2-2l0,0c1.1,0,2,0.9,2,2v16.3 C57.4,72.4,56.6,73.3,55.5,73.3z"/>
+                            </g>
+                        </svg>
+                    </a>
+                    <div i18n="Network">Network</div>
+                </td>
+                <td class="nav-icon grey-icon">
+                    <a class="nav-icon" id="v-wifi" href="wifi.html">
+                        <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 90 90" class="nav-col-svg" xml:space="preserve">
+                            <style type="text/css">
+                                .wf0{fill:#ffffff33;}
+                                .wf1{fill-rule:evenodd;clip-rule:evenodd;fill:#ffffff33;}
+                            </style>
+                            <path class="wf0" d="M45,89.5c-24.5,0-44.5-20-44.5-44.5c0-24.5,20-44.5,44.5-44.5s44.5,20,44.5,44.5C89.5,69.5,69.5,89.5,45,89.5z
+                                 M45,3.5C22.1,3.5,3.5,22.1,3.5,45c0,22.9,18.6,41.5,41.5,41.5S86.5,67.9,86.5,45C86.5,22.1,67.9,3.5,45,3.5z"/>
+                            <g>
+                                <path class="wf0" d="M40.9,32.7c-0.8,0-1.5-0.7-1.5-1.5V17.4L33.7,23c-0.6,0.6-1.5,0.6-2.1,0s-0.6-1.5,0-2.1l8.2-8.2
+                                    c0.4-0.4,1.1-0.6,1.6-0.3c0.6,0.2,0.9,0.8,0.9,1.4v17.5C42.4,32,41.7,32.7,40.9,32.7z"/>
+                                <path class="wf0" d="M49.7,41.4c-0.2,0-0.4,0-0.6-0.1c-0.6-0.2-0.9-0.8-0.9-1.4V22.5c0-0.8,0.7-1.5,1.5-1.5s1.5,0.7,1.5,1.5v13.8
+                                    l5.6-5.6c0.6-0.6,1.5-0.6,2.1,0s0.6,1.5,0,2.1L50.8,41C50.5,41.3,50.1,41.4,49.7,41.4z"/>
+                            </g>
+                            <path class="wf1" d="M41.4,65.7c-2,1.9-2,5.1,0,7.1c1.9,2,5.1,2,7.1,0c2-1.9,2-5.1,0-7.1C46.6,63.8,43.4,63.8,41.4,65.7z M34.4,58.6
+                                c0,0-1.7,1.8,0,3.5c1.7,1.7,3.5,0,3.5,0c3.9-3.9,10.3-3.9,14.2,0c0,0,1.8,1.8,3.5,0c1.8-1.8,0-3.5,0-3.5
+                                C49.8,52.8,40.2,52.8,34.4,58.6L34.4,58.6L34.4,58.6z M27.3,51.5c0,0-1.8,1.8,0,3.5c1.8,1.8,3.5,0,3.5,0c7.8-7.8,20.5-7.8,28.3,0.1
+                                c0,0,1.8,1.8,3.5,0c1.8-1.8,0-3.5,0-3.5C53,41.8,37.1,41.8,27.3,51.5L27.3,51.5z"/>
+                        </svg>
+                    </a>
+                    <div i18n="WiFi">WiFi</div>
+                </td>
+                <td class="nav-icon">
+                    <a class="nav-icon" href="security.html" >
+                        <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 90 90" class="nav-col-svg" xml:space="preserve">
+                            <style type="text/css">
+                                .se0{fill:#4D68EE;}
+                                .se1{fill:#FFFFFF;}
+                            </style>
+                            <circle class="se0" cx="45" cy="44.9" r="43.6"/>
+                            <path class="se0" d="M45,89.5c-24.5,0-44.5-20-44.5-44.5c0-24.5,20-44.5,44.5-44.5s44.5,20,44.5,44.5C89.5,69.5,69.5,89.5,45,89.5zM45,3.5C22.1,3.5,3.5,22.1,3.5,45c0,22.9,18.6,41.5,41.5,41.5S86.5,67.9,86.5,45C86.5,22.1,67.9,3.5,45,3.5z"/>
+                            <path class="se1" d="M55.7,68.3H34.3c-2.8,0-5-2.2-5-5V45.9c0-2.8,2.2-5,5-5h21.4c2.8,0,5,2.2,5,5v17.4C60.7,66,58.5,68.3,55.7,68.3z"/>
+                            <path class="se1" d="M60.7,38.9c-0.8,0-1.5-0.7-1.5-1.5c0-7.8-6.4-14.2-14.2-14.2c-7.8,0-14.2,6.4-14.2,14.2c0,0.8-0.7,1.5-1.5,1.5s-1.5-0.7-1.5-1.5c0-9.5,7.7-17.2,17.2-17.2c9.5,0,17.2,7.7,17.2,17.2C62.2,38.2,61.5,38.9,60.7,38.9z"/>
+                        </svg>
+                    </a>
+                    <div style="color: #4D68EE" i18n="Security">Security</div>
+                </td>
+                <td class="nav-icon grey-icon">
+                    <a class="nav-icon" href="system.html" title="system">
+                        <svg x="0px" y="0px" viewBox="0 0 90 90" class="nav-col-svg" xml:space="preserve">
+                        <style type="text/css">.sys0{fill:#ffffff33;}</style>
+                            <path class="sys0" d="M45,0.5C20.5,0.5,0.5,20.5,0.5,45s20,44.5,44.5,44.5s44.5-20,44.5-44.5S69.5,0.5,45,0.5z M60,83.69
+                            c-2.12,0.82-4.33,1.49-6.6,1.96V55.86c1.24-0.57,2.1-1.81,2.1-3.26c0-1.99-1.61-3.6-3.6-3.6s-3.6,1.61-3.6,3.6
+                            c0,1.45,0.86,2.69,2.1,3.26v30.27c-1.77,0.23-3.57,0.36-5.4,0.36c-0.34,0-0.67-0.02-1-0.03V42.4c0-1.2-0.4-2.4-1.3-3.3l-7.9-8.2
+                            c-0.3-0.3-0.5-0.7-0.5-1.2v-7.14c1.24-0.57,2.1-1.81,2.1-3.26c0-1.99-1.61-3.6-3.6-3.6s-3.6,1.61-3.6,3.6c0,1.45,0.86,2.69,2.1,3.26
+                            v7.14c0,1.2,0.4,2.4,1.3,3.3l7.9,8.3c0.3,0.3,0.5,0.7,0.5,1.2v43.8c-5.64-0.54-10.95-2.22-15.7-4.79V55.7c0-1.2-0.6-2.5-1.5-3.4
+                            l-6.97-6.77C16.93,45.2,17,44.86,17,44.5c0-1.99-1.61-3.6-3.6-3.6s-3.6,1.61-3.6,3.6s1.61,3.6,3.6,3.6c0.5,0,0.98-0.1,1.41-0.29
+                            l6.89,6.69c0.3,0.3,0.5,0.8,0.5,1.3v23.85C10.94,72.23,3.5,59.48,3.5,45c0-11.82,4.96-22.48,12.9-30.04V28.1c0,1.3,0.5,2.5,1.4,3.4
+                            l14.3,14.1c0.3,0.4,0.5,0.8,0.5,1.3v23.54c-1.24,0.57-2.1,1.81-2.1,3.26c0,1.99,1.61,3.6,3.6,3.6s3.6-1.61,3.6-3.6
+                            c0-1.49-0.91-2.77-2.2-3.32V46.9c0-1.3-0.5-2.5-1.4-3.4L19.9,29.4c-0.3-0.4-0.5-0.8-0.5-1.3V12.36c6.88-5.41,15.51-8.69,24.9-8.84
+                            V25.4c0,1.3,0.5,2.4,1.3,3.3l13.9,15.1c0.3,0.3,0.5,0.7,0.5,1.2V83.69z M69.5,78.48c-2.04,1.49-4.21,2.81-6.5,3.92
+                            c0-4.09,0-37.4,0-37.4c0-1.3-0.5-2.4-1.3-3.3L47.8,26.6c-0.3-0.3-0.5-0.7-0.5-1.2V3.57c2.08,0.11,4.11,0.38,6.1,0.79V18.1
+                            c0,1.2,0.4,2.3,1.2,3.2l14.5,16.5c0.2,0.3,0.4,0.8,0.4,1.2V78.48z M78.3,41.2c-1.99,0-3.6,1.61-3.6,3.6c0,1.45,0.86,2.69,2.1,3.26
+                            v7.14c0,1.2,0.4,2.4,1.3,3.3l4.31,4.48c-2.41,5-5.8,9.43-9.91,13.08V39c0-1.2-0.4-2.3-1.2-3.2L56.8,19.3c-0.2-0.3-0.4-0.8-0.4-1.2
+                            v-13C73.76,10.06,86.5,26.05,86.5,45c0,5.27-1,10.31-2.79,14.95L80.3,56.4c-0.3-0.3-0.5-0.7-0.5-1.2v-7.14
+                            c1.24-0.57,2.1-1.81,2.1-3.26C81.9,42.81,80.29,41.2,78.3,41.2z"/>
+                        </svg>
+                    </a>
+                    <div i18n="System">System</div>
+                </td>
+                <td class="nav-icon grey-icon">
+                    <a class="nav-icon" href="message.html" title="message">
+                        <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 90 90" class="nav-col-svg" xml:space="preserve">
+                            <style type="text/css">
+                                .me0{fill:#ffffff33;}
+                            </style>
+                            <path class="me0" d="M45,89.5c-24.5,0-44.5-20-44.5-44.5c0-24.5,20-44.5,44.5-44.5s44.5,20,44.5,44.5C89.5,69.5,69.5,89.5,45,89.5zM45,3.5C22.1,3.5,3.5,22.1,3.5,45c0,22.9,18.6,41.5,41.5,41.5S86.5,67.9,86.5,45C86.5,22.1,67.9,3.5,45,3.5z"/>
+                            <path class="me0" d="M61.4,62H28.6c-5.5,0-9.9-4.4-9.9-9.9V37.5c0-5.5,4.4-9.9,9.9-9.9h32.9c5.5,0,9.9,4.4,9.9,9.9v14.6
+                                C71.3,57.6,66.9,62,61.4,62z M28.6,30.6c-3.8,0-6.9,3.1-6.9,6.9v14.6c0,3.8,3.1,6.9,6.9,6.9h32.9c3.8,0,6.9-3.1,6.9-6.9V37.5c0-3.8-3.1-6.9-6.9-6.9H28.6z"/>
+                            <path class="me0" d="M45,49.1c-1.6,0-3.3-0.4-4.8-1.2l-10.7-5.7c-0.7-0.4-1-1.3-0.6-2c0.4-0.7,1.3-1,2-0.6l10.7,5.7
+                                c2.2,1.2,4.8,1.1,7-0.1l9.6-5.6c0.7-0.4,1.6-0.2,2.1,0.5c0.4,0.7,0.2,1.6-0.5,2.1l-9.6,5.6C48.6,48.6,46.8,49.1,45,49.1z"/>
+                        </svg>
+                    </a>
+                    <div i18n="SMS">SMS</div>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <!--下侧内容-->
+    <div class="row main nav-btn-bottom justify-content-center align-items-center">
+        <table style="width:553px;">
+            <tr>
+                <td>
+                    <button class="btn btn-modal" data-toggle="modal" data-target="#protectModal"><span i18n="se-Protection">Protection</span></button>
+                    <!--                    <button class="btn btn-modal" data-toggle="modal" data-target="#macModal"><span>IP Addresses</span></button>-->
+                    <button class="btn btn-modal" onclick="simCheck()"><span i18n="se-spm">SIM PIN Management</span></button>
+                    <!--                    <button class="btn btn-modal" data-toggle="modal" data-target="#sipModal"><span>SIP ALG</span></button>-->
+                    <button class="btn btn-modal" data-toggle="modal" data-target="#macModal"><span i18n="se-MAC">MAC Filter</span></button>
+                    <!--                    <button class="btn btn-modal" data-toggle="modal" data-target="#macModal"><span>IP Addresses</span></button>-->
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+<!--Protection弹框-->
+<div class="modal fade" style="overflow: auto;" id="protectModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" style="padding: 0;">
+            <div class="modal-header">
+                <div style="margin: auto">
+                    <span class="modal-title" i18n="se-Protection">Protection</span>
+                    <button type="button" class="close modal-close" data-dismiss="modal" aria-label="Close" style="padding: 0">
+                        <svg width="30" height="15" viewBox="0 0 30 15" fill="none">
+                            <path d="M2 13.4961L13.789 2.19167C14.571 1.44175 15.808 1.45098 16.5788 2.21248L28 13.4961" stroke="white" stroke-opacity="0.5" stroke-width="3" stroke-linecap="round"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div class="modal-body diy-scroll" style=" margin: 0;">
+                <div class="row justify-content-center">
+                    <table style="width: 406px;color: #fff;font-size: 21px;font-weight: 400;border-collapse:separate; border-spacing:0 24px;margin: 50px auto 0 auto;height: 205px">
+                        <tr>
+                            <td width="356px"><span i18n="se-Firewall">Firewall</span></td>
+                            <td width="50px"><div class="switchButton" data-check="checked">
+                                <input type="checkbox" id="firewallSwitch" class="chooseBtn2"/>
+                                <label for="firewallSwitch" class="choose-label2"></label>
+                            </div></td>
+                        </tr>
+                        <tr>
+                            <td><span i18n="se-pow">Ping on WAN Port Deactivation</span></td>
+                            <td><div class="switchButton" data-check="checked">
+                                <input type="checkbox" name="sex" id="pingSwitch" class="chooseBtn2"/>
+                                <label for="pingSwitch" class="choose-label2"></label>
+                            </div></td>
+                        </tr>
+                        <tr>
+                            <td><span i18n="se-IP Address Filter">IP Address Filter</span></td>
+                            <td><div class="switchButton" data-check="checked">
+                                <input type="checkbox" id="filterSwitch" class="chooseBtn2"/>
+                                <label for="filterSwitch" class="choose-label2"></label>
+                            </div></td>
+                        </tr>
+                    </table>
+                </div>
+                <!--modify for 将弹窗口打开 jwy 20220519 start-->
+                <div class="filter-row" style="height: 350px; display: none;">
+                    <!--modify for 将弹窗口打开 jwy 20220519 end-->
+                    <div class="diy-scroll apnTableOther"> <!--height: 80%;max-height: 80%-->
+                        <table class="apnTable">
+                            <thead><th i18n="se-IP Address" width="230px">IP Address</th><th i18n="se-IP Port" width="110px">IP Port</th>
+                            <th i18n="se-MAC Address" width="230px">MAC Address</th><th i18n="se-MAC Port" width="109px">MAC Port</th>
+                            <th i18n="se-Protocol" width="100px">Protocol</th><th width="69px"></th></thead>
+                            <tbody id="filterTable">
+                            </tbody>
+                        </table>
+                    </div>
+                    <div style="width: 100%; padding-bottom: 40px">
+                        <button class="btn btnRun" style="display:block; margin: 42px auto 0 auto"  data-toggle="modal" data-target="#addFilterModal"><span i18n="se-Add"> + Add</span></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--添加IP Filter弹框-->
+<!--modify addFilterModal and simPinModal by luolihua 20220524 start-->
+<div class="modal fade" id="addFilterModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="height: 522px;width: 858px;min-width: 858px;margin-top: 0">
+        <div class="modal-content" style="padding: 0; color: #fff;height: 522px;width: 858px;">
+            <div class="modal-body container" style=" margin: 0; max-width: 100%;font-size: 22px">
+                <div class="row justify-content-end">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="margin-top: 23px;margin-right: 42px;display:inline-block">
+                        <svg width="29" height="29" viewBox="0 0 29 29" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 27L27 2M27 27L2 2" stroke="white" stroke-opacity="0.3" stroke-width="3"/></svg>
+                    </button>
+                </div>
+                <div class="row justify-content-center align-items-center" style="height: 365px">
+                    <table style="height: 280px;width: 598px;font-size: 21px">
+                        <tr><td i18n="se-IP Address">IP Address</td><td width="320px"><input class="filter-input" id="ipAddress"></td></tr>
+                        <tr><td i18n="se-LAN Port">LAN Port</td><td><input class="filter-input" id="lanPort" oninput="this.value=this.value.replace(/[^\d]/g,'');if(this.value.length>5)this.value=this.value.slice(0,5)"></td></tr>
+                        <tr><td i18n="se-WAN IP  Address">WAN IP Address</td><td><input class="filter-input" id="wanAddress"></td></tr>
+                        <tr><td i18n="se-WAN IP Port">WAN IP Port</td><td><input class="filter-input" id="wanPort"  oninput="this.value=this.value.replace(/[^\d]/g,'');if(this.value.length>5)this.value=this.value.slice(0,5)"></td></tr>
+                        <tr><td width="278px" i18n="se-Filtering Protocol">Filtering Protocol</td><td>
+                            <!--修改选择框样式 llh 20220615 start-->
+                            <div class="select-container" style="display: inline-block">
+                                <span>
+                                    <svg width="15" height="9" viewBox="0 0 15 9" fill="none">
+                                        <path d="M1.00005 1.36001L6.07791 6.97796C6.87861 7.86382 8.27212 7.85521 9.06182 6.95953L13.9988 1.36002" stroke="white" stroke-width="2"/>
+                                    </svg>
+                                </span>
+                                <input id="filterType" type="text" readonly="readonly" onclick="showAndHideUL(this)"
+                                       onblur="showAndHideUL(this, true)"/>
+                                <ul>
+                                    <li><a href="javascript:" data-value="6">TCP</a></li>
+                                    <li><a href="javascript:" data-value="17">UDP</a></li>
+                                    <li><a href="javascript:" data-value="1">ICMP</a></li>
+                                </ul>
+                            </div>
+                            <!--修改选择框样式 llh 20220615 end-->
+                        </td></tr>
+                    </table>
+                </div>
+                <div class="row justify-content-center" style="margin-top: 10px">
+                    <button class="btn btnRun" onclick="addIPFilter()" i18n="Save">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--SIM PIN弹框-->
+<div class="modal fade" id="simPinModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" style="padding: 0; min-width: 1015px; min-height: 500px; color: #fff">
+            <div class="modal-header">
+                <div style="margin: auto">
+                    <span class="modal-title" i18n="se-SIMPIN">SIM PIM Management</span>
+                    <button type="button" class="close modal-close" data-dismiss="modal" aria-label="Close" style="padding: 0">
+                        <svg width="30" height="15" viewBox="0 0 30 15" fill="none">
+                            <path d="M2 13.4961L13.789 2.19167C14.571 1.44175 15.808 1.45098 16.5788 2.21248L28 13.4961" stroke="white" stroke-opacity="0.5" stroke-width="3" stroke-linecap="round"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div class="modal-body diy-scroll row justify-content-center align-items-center" style="margin: 0; overflow-y: auto;font-size: 22px; color: #fff">
+                <table style="min-width: 328px;border-collapse:separate; border-spacing:0 23px;">
+                    <tr>
+                        <td>
+                            <span i18n="se-dpv">Disable PIN verification</span>
+                            <div class="switchButton" data-check="checked" style="display: inline;margin-left: 38px">
+                                <input type="checkbox" id="pin_switch" class="chooseBtn2" />
+                                <label for="pin_switch" class="choose-label2" style="top: 4px"></label>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="changPIN">
+                        <td style="text-align: center;width: 100%">
+                            <button class="btn btnRun" data-toggle="modal" data-target="#simPinChangeModal" style="width: 328px" i18n="se-changeP">Change PIN Code</button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<!--开启/关闭时输入PIN码弹框-->
+<div class="modal fade" id="simPinInputModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="padding: 0; width:754px; height: 376px; color: #fff;min-width: 754px">
+        <div class="modal-content" style="padding: 0; width: 754px; height: 376px; color: #fff;">
+            <div class="modal-body" style="margin: 0;font-size: 16px;color: #fff">
+                <div class="row justify-content-end">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="margin-top: 23px;margin-right: 42px">
+                        <svg width="29" height="29" viewBox="0 0 29 29" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 27L27 2M27 27L2 2" stroke="white" stroke-opacity="0.3" stroke-width="3"/></svg>
+                    </button>
+                </div>
+                <div class="row align-items-center justify-content-center" style="margin-top: 60px">
+                    <label for="pinInput" i18n="se-PIN code" style="font-size: 21px">PIN Code</label>
+                    <input id="pinInput" type="password" class="filter-input" style="width: 320px;margin-left: 20px;color: #fff">
+                </div>
+                <div class="row" style="font-size: 12px;color: #ffffff4d;margin-left: 274px"><label i18n="ra">Remaining attempts:</label><label id="remainNumber">3</label></div>
+                <div class="row justify-content-center align-items-center" style="height: 85px;color: red;font-size: 20px" id="pinTip"></div>
+                <div class="row justify-content-center">
+                    <button type="button" class="btn btnRun" onclick="savePIN()" i18n="OK">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--修改PIN Code弹框-->
+<div class="modal fade normalModal" id="simPinChangeModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" >
+    <div class="modal-dialog modal-dialog-centered" style="width: 858px;height: 500px;min-width: 800px">
+        <div class="modal-content" style="padding: 0; width: 858px; height: 500px; color: #fff">
+            <div class="modal-body diy-scroll" style="margin: 0; font-size: 21px">
+                <div class="row justify-content-end">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="margin-top: 23px;margin-right: 42px">
+                        <svg width="29" height="29" viewBox="0 0 29 29" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 27L27 2M27 27L2 2" stroke="white" stroke-opacity="0.3" stroke-width="3"/></svg>
+                    </button>
+                </div>
+                <div class="row justify-content-center align-items-center" style="height: 330px;width: 100%">
+                    <table class="pwd-table">
+                        <tr style="height: 60px"><td i18n="se-PIN code">PIN Code</td><td width="320px"><input type="password" id="currentPIN" placeholder="4-8 digits"></td></tr>
+                        <tr style="height: 60px"><td i18n="se-New PIN code">New PIN Code</td><td><input type="password" id="newPIN" placeholder="4-8 digits"></td></tr>
+                        <tr style="height: 60px"><td i18n="se-Repeat PIN code">Repeat new PIN Code</td><td><input type="password" id="newPIN2" placeholder="4-8 digits"></td></tr>
+                    </table>
+                </div>
+                <div class="row justify-content-center"><button type="button" class="btn btnRun" onclick="changePINCode()" i18n="Save">Save</button></div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--modify addFilterModal and simPinModal by luolihua 20220524 end-->
+<!--删除IP Filter确认弹框-->
+<div class="modal fade" id="delFilterModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="width: 700px;height: 300px;min-width: 700px">
+        <div class="modal-content" style="padding: 0; color: #fff;width: 700px;height: 300px;">
+            <div class="modal-body" style="margin: 0;font-size: 24px;">
+                <div class="row justify-content-center" style="margin-top: 90px"><span i18n="se-ays">Are you sure to delete the IP Filter?</span></div>
+                <div class="row justify-content-center">
+                    <div style="margin-top: 87px">
+                        <button type="button" class="btn btnRun" data-dismiss="modal" style="margin-right: 33px" i18n="Cancel">Cancel</button>
+                        <button type="button" class="btn btnRun" onclick="delIPFilter()" i18n="Delete">Delete</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--SIM卡提示框-->
+<div class="modal fade" id="simTipModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="height: 300px;width: 700px;min-width: 700px">
+        <div class="modal-content" style="padding: 0; color: #fff;height: 300px;width: 700px;">
+            <div class="modal-body container" style="height: 130px; margin: 0; max-width: 98%;font-size: 24px">
+                <div class="row justify-content-center align-items-center" style="height: 68%"><span i18n="pit">Please insert the SIM card</span></div>
+                <div class="row justify-content-center align-items-center">
+                    <button type="button" class="btn btnRun" data-dismiss="modal" i18n="OK">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--MAC Filter弹框-->
+<div class="modal fade" id="macModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" style="padding: 0; min-width: 1015px; min-height: 500px; color: #fff">
+            <div class="modal-header">
+                <div style="margin: auto">
+                    <span class="modal-title" i18n="se-MAC">MAC Filter</span>
+                    <button type="button" class="close modal-close" data-dismiss="modal" aria-label="Close" style="padding: 0">
+                        <svg width="30" height="15" viewBox="0 0 30 15" fill="none">
+                            <path d="M2 13.4961L13.789 2.19167C14.571 1.44175 15.808 1.45098 16.5788 2.21248L28 13.4961" stroke="white" stroke-opacity="0.5" stroke-width="3" stroke-linecap="round"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div class="modal-body container diy-scroll" style="height: 70%; margin: 0; max-width: 100%;overflow-y: auto;font-size: 22px; color: #fff">
+                <div class="row justify-content-center" style="margin-top: 40px;margin-bottom: 40px">
+                    <span i18n="sy-List of MAC">List of MAC Filter</span>
+                </div>
+                <div class="row">
+                    <table class="macTable">
+                        <thead><tr><th i18n="sy-Device Name">Device Name</th><th i18n="sy-MAC Address">MAC Address</th></tr></thead>
+                        <tbody id="macTable"style="text-align:center">
+                        </tbody>
+                    </table>
+                </div>
+                <div class="row justify-content-center" style="padding-bottom: 30px">
+                    <button class="btn btnRun" id="addMAC"style="margin-top:80px" data-toggle="modal" data-target="#addMACModal"><span i18n="net-Add"> + Add</span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--添加MAC 地址弹框-->
+<div class="modal fade addApn apnModals" id="addMACModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="width: 1100px;height: 580px;min-width: 800px">
+        <div class="modal-content" style="width: 1100px;height: 580px;background: rgba(59, 59, 71, 0.7);margin-top: 0">
+            <div class="modal-body container addApnModal diy-scroll" style="font-size: 16px;color: #fff">
+                <div class="row justify-content-end">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="margin-right: 25px;margin-top: 17px">
+                        <svg width="25" height="25" viewBox="0 0 29 29" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 27L27 2M27 27L2 2" stroke="white" stroke-opacity="0.3" stroke-width="3"/></svg>
+                    </button>
+                </div>
+                <table class="addmacTable">
+                    <thead><tr><th i18n="sy-Device Name">Device Name</th><th i18n="sy-MAC Address">MAC Address</th></tr></thead>
+                    <tbody id="addmacTable" style="text-align:center">
+<!--                        <tr><td  class="td-left" width="380px">test</td><td class="td-right" width="380px">test</td><td width="90px">-->
+<!--                            <button class="btn btn1">+</button>-->
+<!--                        </td></tr>-->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<!--删除MAC确认弹框-->
+<div class="modal fade apnModals" id="delmacModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="width: 700px;height: 300px;min-width: 700px">
+        <div class="modal-content" style="padding: 0; color: #fff;width: 700px;height: 300px;">
+            <div class="modal-body" id="deletemodal" style="margin: 0;font-size: 24px;">
+                <div class="row justify-content-center" style="margin-top: 90px"><span i18n="se-dywt">Do you wish to remove it from MAC Filter?</span></div>
+                <div class="row justify-content-center">
+                    <div style="margin-top: 87px">
+                        <button type="button" class="btn btnRun" data-dismiss="modal" style="margin-right: 33px" i18n="No">No</button>
+                        <button type="button" class="btn btnRun" onclick="deletemac()" i18n="Yes">Yes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="js/jquery.js" charset="UTF-8"></script>
+<!--<script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>-->
+<!--<script src="https://cdn.staticfile.org/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>-->
+<script src="js/bootstrap-min.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/security.js"></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+        switchLanguageToSet();
+        $("[i18n]").css("visibility", "visible")
+    })
+    $("#pinInput,#currentPIN,#newPIN,#newPIN2").attr("oninput", "value=value.replace(/[^\\d]/g,'');if(value.length>8) value=value.slice(0,8)")
+    //设置弹框位于窗口正中间
+    toastr.options.positionClass = 'toast-center-center';
+    $("#simPinInputModal").on("show.bs.modal", function () {
+        $("#pinTip").val('');
+    })
+</script>
+</body>
+</html>
+
