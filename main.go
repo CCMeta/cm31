@@ -15,33 +15,45 @@ import (
 	"github.com/kataras/iris/v12"
 )
 
-type sqlite struct{}
-
-func (db *sqlite) Exec(q string) error { return nil }
-
+// do not remove any comment!!!! prev go:embed!!!!!!!It is for build
+// do not remove any comment!!!! prev go:embed!!!!!!!It is for build
+// do not remove any comment!!!! prev go:embed!!!!!!!It is for build
+//
 //go:embed html/*
 var embed_FS embed.FS
 
-var _props map[string]interface{}
+// custom data for user settings
+var _settings iris.Map
+
+func init_system() {
+	// load settings
+	exe_cmd("touch _settings.toml")
+	_settings = iris.TOML("_settings.toml").Other
+
+	// enable gadget
+	exe_cmd("connmanctl enable gadget && connmanctl tether gadget on")
+	// exe_cmd("connmanctl tether gadget on")
+
+	// enable wifi
+	exe_cmd("connmanctl enable wifi")
+	tether_wifi := fmt.Sprintf("connmanctl tether wifi on \"%v\" wpa2 \"%v\" ",
+		_settings["wifi_ssid"],
+		_settings["wifi_password"],
+	)
+	// println(tether_wifi)
+	exe_cmd(tether_wifi)
+
+	// enable other such as danmon process?
+}
 
 func main() {
+
+	init_system()
 
 	app := iris.Default()
 	assets := iris.PrefixDir("html", http.FS(embed_FS))
 	app.RegisterView(iris.HTML(assets, ".html"))
 	app.HandleDir("/", assets)
-
-	exe_cmd("touch _props.toml")
-	_props = iris.TOML("_props.toml").Other
-	// app.Configure()
-	// config_buf, _ := os.ReadFile("config.json")
-	// config := iris.Map{}
-	// _ = json.Unmarshal(config_buf, &config)
-	// config["data_threshold_status"] = fmt.Sprintf("%v", params["status"])
-	// config["data_threshold_value"] = fmt.Sprintf("%v", params["thresholdValue"])
-	// config["data_threshold_resetDay"] = fmt.Sprintf("%v", params["resetDay"])
-	// config_buf, _ = json.Marshal(config)
-	// os.WriteFile("config.json", config_buf, 0666)
 
 	/*************************Custom Routers****************************/
 
@@ -140,14 +152,14 @@ func dispatcher(ctx iris.Context) {
 		ctx.JSON(iris.Map{
 			"result":        "ok",
 			"status":        1,
-			"apIsolation":   _props["wifi_apIsolation"],
+			"apIsolation":   _settings["wifi_apIsolation"],
 			"mac_addr":      mac_addr,
-			"hideSSID":      _props["wifi_hideSSID"],
-			"SSIDName":      _props["wifi_ssid"],
-			"bandwidthMode": _props["wifi_bandwidthMode"],
-			"channel":       _props["wifi_channel"],
-			"security":      _props["wifi_security"],
-			"password":      _props["wifi_password"],
+			"hideSSID":      _settings["wifi_hideSSID"],
+			"SSIDName":      _settings["wifi_ssid"],
+			"bandwidthMode": _settings["wifi_bandwidthMode"],
+			"channel":       _settings["wifi_channel"],
+			"security":      _settings["wifi_security"],
+			"password":      _settings["wifi_password"],
 			// "autoSleep":     0,
 		})
 	case `ip`:
@@ -390,6 +402,7 @@ func valFilter(val []byte) string {
 }
 
 func exe_cmd(cmd string) []byte {
+	// res, err := exec.Command("sh", "-c", cmd).Output()
 	res, err := exec.Command("sh", "-c", cmd).Output()
 	if err != nil {
 		println(err.Error())
