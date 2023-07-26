@@ -26,6 +26,8 @@ var embed_FS embed.FS
 var _settings iris.Map
 
 func init_system() {
+	println("init_system() Start")
+
 	// load settings
 	exe_cmd("touch _settings.toml")
 	_settings = iris.TOML("_settings.toml").Other
@@ -44,6 +46,7 @@ func init_system() {
 	exe_cmd(tether_wifi)
 
 	// enable other such as danmon process?
+	println("init_system() Finish")
 }
 
 func main() {
