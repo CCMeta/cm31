@@ -135,24 +135,19 @@ func dispatcher(ctx iris.Context) {
 		})
 	case `get_wifi_settings`:
 
-		hideSSID := exe_cmd("getprop gsm.slot1.num.pin1")
-		security := exe_cmd("getprop gsm.slot1.num.pin1")
-		// SSIDName := exe_cmd("getprop gsm.slot1.num.pin1")
 		mac_addr := exe_cmd("getprop gsm.slot1.num.pin1")
-		password := exe_cmd("getprop gsm.slot1.num.pin1")
-		bandwidthMode := exe_cmd("getprop gsm.slot1.num.pin1")
-		channel := exe_cmd("getprop gsm.slot1.num.pin1")
+
 		ctx.JSON(iris.Map{
 			"result":        "ok",
 			"status":        1,
-			"apIsolation":   0,
+			"apIsolation":   _props["wifi_apIsolation"],
 			"mac_addr":      mac_addr,
-			"hideSSID":      hideSSID,
-			"SSIDName":      _props["ssid"],
-			"bandwidthMode": bandwidthMode,
-			"channel":       channel,
-			"security":      security,
-			"password":      password,
+			"hideSSID":      _props["wifi_hideSSID"],
+			"SSIDName":      _props["wifi_ssid"],
+			"bandwidthMode": _props["wifi_bandwidthMode"],
+			"channel":       _props["wifi_channel"],
+			"security":      _props["wifi_security"],
+			"password":      _props["wifi_password"],
 			// "autoSleep":     0,
 		})
 	case `ip`:
