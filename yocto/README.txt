@@ -8,6 +8,13 @@
 
 [/prebuilts/pac-binary/]    sl8581e-nand-marlin3e-mifi.xml
 
+
+[V3-230726]
+- 优化golang编译大小 并且配方中添加already-stripped
+- 开机启动Web服务时，会自动尝试开启RNDIS和WIFI
+- 假的接口初步已经完成
+- 用户配置的存储逻辑初步完成，存储在toml格式中
+
 [V2-230725]
 - 已经烧录golang进入，约等于20MB
 - 添加开机启动脚本关联golang，可以开机自动进入后台执行并且目录正确

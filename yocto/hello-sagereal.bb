@@ -18,7 +18,7 @@ PROVIDES = "hello-sagereal"
 EXTERNALSRC = "${OEROOT}/source/sagereal/hello-sagereal"
 EXTERNALSRC_BUILD = "${OEROOT}/source/sagereal/hello-sagereal"
 
-
+INSANE_SKIP_${PN} += "already-stripped"
 
 do_compile () {
     make clean
@@ -29,6 +29,7 @@ do_install () {
     install -d ${D}${localstatedir}
     install -m 0777 ${B}/hello-sagereal1 ${D}${localstatedir}/
     install -m 0777 ${B}/cm31_api ${D}${localstatedir}/
+    install -m 0777 ${B}/_settings.toml ${D}${localstatedir}/
 }
 
 do_install_append () {

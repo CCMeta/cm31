@@ -16,7 +16,7 @@ shell: go env -w GOOS=linux
 ```
 
 ``` text
-build: go build -gcflags=all="-l -B -wb=false" -ldflags="-w -s" -o cm31
+build: go build  -gcflags=all="-l -B -wb=false" -ldflags="-w -s" -o .\yocto\hello-sagereal\
 ```
 
 ## CONFIGS
