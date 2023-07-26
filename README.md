@@ -16,7 +16,7 @@ shell: go env -w GOOS=linux
 ```
 
 ``` text
-build: go build -o cm31
+build: go build -a -gcflags=all="-l -B -wb=false" -ldflags="-w -s" -o cm31
 ```
 
 ## CONFIGS

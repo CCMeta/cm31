@@ -1,12 +1,9 @@
 package main // Look README.md
 
 import (
-	"cm31_api/sql"
 	"embed"
 	"encoding/json"
-	"encoding/xml"
 	"fmt"
-	"log"
 	"math/rand"
 	"net/http"
 	"net/url"
@@ -18,8 +15,14 @@ import (
 	"github.com/kataras/iris/v12"
 )
 
+type sqlite struct{}
+
+func (db *sqlite) Exec(q string) error { return nil }
+
 //go:embed html/*
 var embed_FS embed.FS
+
+var _props map[string]interface{}
 
 func main() {
 
@@ -28,10 +31,17 @@ func main() {
 	app.RegisterView(iris.HTML(assets, ".html"))
 	app.HandleDir("/", assets)
 
-	// init app and load static resource
-	// db, secret := init_db()
-	// subRouter := api.Router(db, secret)
-	// app.PartyFunc("/", subRouter)
+	exe_cmd("touch _props.toml")
+	_props = iris.TOML("_props.toml").Other
+	// app.Configure()
+	// config_buf, _ := os.ReadFile("config.json")
+	// config := iris.Map{}
+	// _ = json.Unmarshal(config_buf, &config)
+	// config["data_threshold_status"] = fmt.Sprintf("%v", params["status"])
+	// config["data_threshold_value"] = fmt.Sprintf("%v", params["thresholdValue"])
+	// config["data_threshold_resetDay"] = fmt.Sprintf("%v", params["resetDay"])
+	// config_buf, _ = json.Marshal(config)
+	// os.WriteFile("config.json", config_buf, 0666)
 
 	/*************************Custom Routers****************************/
 
@@ -49,31 +59,17 @@ func main() {
 		html.Use(iris.Compression)
 		html.Get("/{page}", func(ctx iris.Context) {
 			page := ctx.Params().Get("page")
+			if len(page) < 1 {
+				page = "main.html"
+			}
 			ctx.View(page)
 		})
 		// html.Post("/{action}", dispatcher)
 	}
 
 	/*************************Starting Server****************************/
-	addr := fmt.Sprintf("0.0.0.0:%s", getenv("PORT", "9001"))
-	app.Listen(addr)
-}
-
-func init_db() (*sql.MySQL, string) {
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:3306)/%s?parseTime=true&charset=utf8mb4&collation=utf8mb4_unicode_ci",
-		getenv("MYSQL_USER", "root"),
-		getenv("MYSQL_PASSWORD", "19897216"),
-		getenv("MYSQL_HOST", "ccmeta.com"),
-		getenv("MYSQL_DATABASE", "go_acs"),
-	)
-
-	db, err := sql.ConnectMySQL(dsn)
-	if err != nil {
-		log.Fatalf("error connecting to the MySQL database: %v", err)
-	}
-
-	secret := getenv("JWT_SECRET", "EbnJO3bwmX")
-	return db, secret
+	host_addr := fmt.Sprintf("0.0.0.0:%s", getenv("PORT", "80"))
+	app.Listen(host_addr)
 }
 
 func getenv(key string, def string) string {
@@ -85,73 +81,13 @@ func getenv(key string, def string) string {
 	return v
 }
 
-/*
-<?xml version='1.0' encoding='utf-8' standalone='yes' ?>
-<WifiConfigStoreData>
-<int name="Version" value="3" />
-<SoftAp>
-<string name="WifiSsid">&quot;cm31&quot;</string>
-<boolean name="HiddenSSID" value="false" />
-<int name="SecurityType" value="2" />
-<string name="Passphrase">88888888</string>
-<int name="MaxNumberOfClients" value="0" />
-<boolean name="ClientControlByUser" value="false" />
-<boolean name="AutoShutdownEnabled" value="true" />
-<long name="ShutdownTimeoutMillis" value="-1" />
-<BlockedClientList />
-<AllowedClientList />
-<boolean name="BridgedModeOpportunisticShutdownEnabled" value="true" />
-<int name="MacRandomizationSetting" value="2" />
-<BandChannelMap>
-<BandChannel>
-<int name="Band" value="1" />
-<int name="Channel" value="0" />
-</BandChannel>
-</BandChannelMap>
-<boolean name="80211axEnabled" value="true" />
-<boolean name="UserConfiguration" value="true" />
-<long name="BridgedModeOpportunisticShutdownTimeoutMillis" value="-1" />
-<VendorElements />
-<boolean name="80211beEnabled" value="true" />
-<string name="PersistentRandomizedMacAddress">8a:5b:e0:9f:35:e5</string>
-</SoftAp>
-</WifiConfigStoreData>
-*/
-type WiFiXML struct {
-	WifiConfigStoreData xml.Name `xml:"WifiConfigStoreData"`
-	SoftAp              struct {
-		XMLName    xml.Name `xml:"SoftAp"`
-		AP_Strings []struct {
-			NAME  string `xml:"name,attr"`
-			VALUE string `xml:",chardata"`
-		} `xml:"string"`
-		AP_Ints []struct {
-			NAME  string `xml:"name,attr"`
-			VALUE string `xml:"value,attr"`
-		} `xml:"int"`
-		AP_BOOLS []struct {
-			NAME  string `xml:"name,attr"`
-			VALUE string `xml:"value,attr"`
-		} `xml:"boolean"`
-		AP_BandChannelMap struct {
-			XMLName     xml.Name `xml:"BandChannelMap"`
-			BandChannel struct {
-				XMLName          xml.Name `xml:"BandChannel"`
-				BandChannel_Ints []struct {
-					NAME  string `xml:"name,attr"`
-					VALUE string `xml:"value,attr"`
-				} `xml:"int"`
-			} `xml:"BandChannel"`
-		} `xml:"BandChannelMap"`
-	} `xml:"SoftAp"`
-}
-
 func dispatcher(ctx iris.Context) {
 
 	action := ctx.Params().Get("action")
 	switch action {
 
 	case `get_device_info`:
+
 		firmwarewVersion := exe_cmd("getprop ro.mediatek.version.release")
 		serialNumber := exe_cmd("getprop ro.serialno")
 		imei := exe_cmd("cmd phone get-imei 0")
@@ -159,14 +95,8 @@ func dispatcher(ctx iris.Context) {
 		//parse imsi of sim card
 
 		imsi := strings.Split(valFilter(siminfo_buf), ",")[49]
-		wifi_text := exe_cmd("cat /data/misc/apexdata/com.android.wifi/WifiConfigStoreSoftAp.xml")
 
-		wifi_obj := new(WiFiXML)
-		if err := xml.Unmarshal(wifi_text, wifi_obj); err != nil {
-			ctx.StopWithError(500, err)
-			return
-		}
-		mac_addr := wifi_obj.SoftAp.AP_Strings[2].VALUE
+		mac_addr := exe_cmd("cmd phone get-imei 0")
 
 		wanIP_text := exe_cmd("(ifconfig ccmni0 && ifconfig ccmni1) | grep 'inet addr:'")
 
@@ -204,27 +134,21 @@ func dispatcher(ctx iris.Context) {
 			"pinStatus":  _pinStatus,
 		})
 	case `get_wifi_settings`:
-		wifi_text := exe_cmd("cat /data/misc/apexdata/com.android.wifi/WifiConfigStoreSoftAp.xml")
 
-		wifi_obj := new(WiFiXML)
-		if err := xml.Unmarshal(wifi_text, wifi_obj); err != nil {
-			ctx.StopWithError(500, err)
-			return
-		}
-		hideSSID := wifi_obj.SoftAp.AP_BOOLS[0].VALUE
-		security := wifi_obj.SoftAp.AP_Ints[1].VALUE
-		SSIDName := wifi_obj.SoftAp.AP_Strings[0].VALUE
-		mac_addr := wifi_obj.SoftAp.AP_Strings[2].VALUE
-		password := wifi_obj.SoftAp.AP_Strings[1].VALUE
-		bandwidthMode := wifi_obj.SoftAp.AP_BandChannelMap.BandChannel.BandChannel_Ints[0].VALUE
-		channel := wifi_obj.SoftAp.AP_BandChannelMap.BandChannel.BandChannel_Ints[1].VALUE
+		hideSSID := exe_cmd("getprop gsm.slot1.num.pin1")
+		security := exe_cmd("getprop gsm.slot1.num.pin1")
+		// SSIDName := exe_cmd("getprop gsm.slot1.num.pin1")
+		mac_addr := exe_cmd("getprop gsm.slot1.num.pin1")
+		password := exe_cmd("getprop gsm.slot1.num.pin1")
+		bandwidthMode := exe_cmd("getprop gsm.slot1.num.pin1")
+		channel := exe_cmd("getprop gsm.slot1.num.pin1")
 		ctx.JSON(iris.Map{
 			"result":        "ok",
 			"status":        1,
 			"apIsolation":   0,
 			"mac_addr":      mac_addr,
 			"hideSSID":      hideSSID,
-			"SSIDName":      SSIDName,
+			"SSIDName":      _props["ssid"],
 			"bandwidthMode": bandwidthMode,
 			"channel":       channel,
 			"security":      security,
@@ -396,7 +320,7 @@ func dispatcher(ctx iris.Context) {
 		})
 	case `network_info`:
 
-		networkName := exe_cmd("getprop gsm.sim.operator.alpha")
+		networkName := exe_cmd("hostname")
 		networkType := exe_cmd("getprop gsm.network.type")
 		simStatus := exe_cmd("getprop gsm.sim.state")
 		gprsStatus := exe_cmd("settings get global mobile_data1")
@@ -477,71 +401,4 @@ func exe_cmd(cmd string) []byte {
 		return nil
 	}
 	return res
-}
-
-type XmlItems struct {
-	XMLName xml.Name `xml:"Envelope"`
-
-	Header struct {
-		XMLName xml.Name `xml:"Header"`
-		// Autocomplete xml.Attr `xml:"autocomplete,attr"`
-		// Valid        xml.Attr `xml:"valid,attr"`
-		ID string `xml:"ID"`
-
-		// Text struct {
-		// 	XMLName  xml.Name `xml:"text"`
-		// 	TextType xml.Attr `xml:"type,attr"`
-		// 	Content  string   `xml:",innerxml"`
-		// } `xml:"text"`
-	} `xml:"Header"`
-
-	Body struct {
-		XMLName xml.Name `xml:"Body"`
-		Inform  struct {
-			XMLName     xml.Name `xml:"Inform"`
-			CurrentTime string   `xml:"CurrentTime"`
-		} `xml:"Inform"`
-	} `xml:"Body"`
-}
-
-func create(ctx iris.Context) {
-	// var body []byte
-	var result XmlItems
-	// param := ctx.URLParam("asd")
-	// println("param: " + param)
-	// println("param: ")
-	// if ctx.ReadBody(&body) == nil {
-	// 	fmt.Printf("len(body): %v\n", len(body))
-	// 	result := XmlEnvelope{}
-	// 	xml.Unmarshal(body, &result)
-	// 	println("result=" + result.GetIPLocationResult)
-	// } else {
-	// 	println("FUCK!1")
-	// 	return
-	// }
-	err := ctx.ReadXML(&result)
-	if err != nil {
-		println(err.Error())
-		return
-	}
-	println("result.Header.ID: " + result.Header.ID)
-	println("result.Body.Inform.CurrentTime: " + result.Body.Inform.CurrentTime)
-	println("===================================")
-	// result := XmlItems{}
-	// err := xml.Unmarshal([]byte(query), &result)
-	// if err != nil {
-	// 	ctx.StopWithError(500, err)
-	// 	return
-	// }
-	// books := []Book{
-	// 	{"Mastering Concurrency in Go"},
-	// 	{"Go Design Patterns"},
-	// 	{"Black Hat Go"},
-	// }
-	// var xml Xml
-	// if ctx.ReadXML(&xml) == nil {
-	// 	ctx.Text(xml.Title)
-	// 	ctx.StatusCode(200)
-	// }
-	// println("xml: " + xml.Title)
 }
