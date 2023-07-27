@@ -1,13 +1,10 @@
-FireMethodNotAllowed = true
-DisableBodyConsumptionOnUnmarshal = false
-TimeFormat = "Mon, 01 Jan 2006 15:04:05 GMT"
-Charset = "UTF-8"
-
-[Other]
-    wifi_bandwidthMode = 2
-    wifi_channel = 6
-    wifi_apIsolation = 1
-    wifi_security = 3
-    wifi_hideSSID = 0
-    wifi_ssid = "my fancy iris server"
-    wifi_password = "qqwwwwqq"
+{
+	"wifi_bandwidthMode": 2,
+	"wifi_channel": 6,
+	"wifi_apIsolation": 1,
+	"wifi_security": 3,
+	"wifi_hideSSID": 0,
+	"wifi_ssid": "my fancy iris server",
+	"wifi_password": "qqwwwwqq",
+	"_": "_"
+}

@@ -25,8 +25,8 @@ func init_system() {
 	println("init_system() Start")
 
 	// load settings
-	exe_cmd("touch _settings.toml")
-	_settings = iris.TOML("_settings.toml").Other
+	// exe_cmd("touch _settings.toml")
+	_ = json.Unmarshal(exe_cmd("cat _settings.toml"), &_settings)
 
 	// enable gadget
 	// exe_cmd("connmanctl enable gadget && connmanctl tether gadget on")
@@ -71,7 +71,7 @@ func main() {
 		html.Use(iris.Compression)
 		html.Get("/{page}", func(ctx iris.Context) {
 			page := ctx.Params().Get("page")
-			if len(page) < 1 {
+			if len(page) < 4 {
 				page = "main.html"
 			}
 			ctx.View(page)
