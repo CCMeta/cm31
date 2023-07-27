@@ -1,10 +1,16 @@
 {
+	"total_send": "0",
+	"total_recv": "0",
+	"data_threshold_resetDay": "1",
+	"data_threshold_value": "10",
+	"data_threshold_status": "0",
+	"language": "en",
 	"wifi_bandwidthMode": 2,
 	"wifi_channel": 6,
 	"wifi_apIsolation": 1,
 	"wifi_security": 3,
 	"wifi_hideSSID": 0,
-	"wifi_ssid": "my fancy iris server",
+	"wifi_SSIDName": "myfancyriserver",
 	"wifi_password": "qqwwwwqq",
 	"_": "_"
 }

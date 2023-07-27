@@ -4,6 +4,7 @@ import (
 	"embed"
 	"encoding/json"
 	"fmt"
+	"io/fs"
 	"math/rand"
 	"net/http"
 	"net/url"
@@ -21,29 +22,43 @@ var embed_FS embed.FS
 // custom data for user settings
 var _settings iris.Map
 
+func DoneAsync() chan int {
+	r := make(chan int)
+	go func() {
+		// enable gadget
+		exe_cmd("connmanctl enable gadget && connmanctl tether gadget on")
+
+		// enable wifi
+		exe_cmd("connmanctl enable wifi")
+		tether_wifi := fmt.Sprintf("connmanctl tether wifi on \"%v\" wpa2 \"%v\" ",
+			_settings["wifi_SSIDName"],
+			_settings["wifi_password"],
+		)
+		println(tether_wifi)
+		exe_cmd(tether_wifi)
+		// 妈了比这里有bug！
+		r <- 1
+	}()
+	return r
+}
+
 func init_system() {
 	println("init_system() Start")
 
 	// load settings
 	// exe_cmd("touch _settings.toml")
-	_ = json.Unmarshal(exe_cmd("cat _settings.toml"), &_settings)
+	json.Unmarshal(exe_cmd("cat _settings.toml"), &_settings)
 
-	// enable gadget
-	// exe_cmd("connmanctl enable gadget && connmanctl tether gadget on")
-	// exe_cmd("connmanctl tether gadget on")
-
-	// enable wifi
-	// exe_cmd("connmanctl enable wifi")
-	// tether_wifi := fmt.Sprintf("connmanctl tether wifi on \"%v\" wpa2 \"%v\" ",
-	// 	_settings["wifi_ssid"],
-	// 	_settings["wifi_password"],
-	// )
-	// // println(tether_wifi)
-	// exe_cmd(tether_wifi)
-	// 妈了比这里有bug！
+	// enable connmanctl async
+	DoneAsync()
 
 	// enable other such as danmon process?
 	println("init_system() Finish")
+}
+
+func save_setting() {
+	file_data, _ := json.MarshalIndent(&_settings, "", "  ")
+	os.WriteFile("_settings.toml", file_data, fs.ModePerm)
 }
 
 func main() {
@@ -100,35 +115,32 @@ func dispatcher(ctx iris.Context) {
 
 	case `get_device_info`:
 
-		firmwarewVersion := exe_cmd("getprop ro.mediatek.version.release")
-		serialNumber := exe_cmd("getprop ro.serialno")
-		imei := exe_cmd("cmd phone get-imei 0")
-		siminfo_buf := exe_cmd("content query --uri content://telephony/siminfo | head -1")
+		firmwarewVersion := exe_cmd("cat /etc/version")
+		serialNumber := exe_cmd("cat /etc/version")
+		imei := exe_cmd("cat /etc/version")
 		//parse imsi of sim card
 
-		imsi := strings.Split(valFilter(siminfo_buf), ",")[49]
+		imsi := exe_cmd("cat /etc/version")
 
-		mac_addr := exe_cmd("cmd phone get-imei 0")
+		mac_addr := exe_cmd("cat /etc/version")
 
-		wanIP_text := exe_cmd("(ifconfig ccmni0 && ifconfig ccmni1) | grep 'inet addr:'")
+		wanIP_text := exe_cmd("(ifconfig tether) | grep 'inet addr:'")
 
 		wanIP := ""
 		if len(wanIP_text) > 1 {
-			wanIP = strings.ReplaceAll(
-				strings.ReplaceAll(valFilter(wanIP_text), "inet addr:", ""),
-				"  Mask:255.0.0.0", "")
+			wanIP = strings.Split(strings.Trim(string(wanIP_text), " "), "  ")[0]
 		}
 
 		ctx.JSON(iris.Map{
 			"result":           "ok",
 			"serialNumber":     valFilter(serialNumber),
 			"imei":             strings.ReplaceAll(valFilter(imei), "Device IMEI:", ""),
-			"imsi":             imsi,
+			"imsi":             valFilter(imsi),
 			"hardwareVersion":  "1.0.0",
 			"softwarewVersion": "随便自定义??",
 			"firmwarewVersion": valFilter(firmwarewVersion),
 			"webUIVersion":     "随便自定义1_1_1",
-			"mac":              mac_addr,
+			"mac":              valFilter(mac_addr),
 			"wanIP":            wanIP,
 		})
 	case `get_pin_setting`:
@@ -146,21 +158,55 @@ func dispatcher(ctx iris.Context) {
 			"pinStatus":  _pinStatus,
 		})
 	case `get_wifi_settings`:
-
-		mac_addr := exe_cmd("getprop gsm.slot1.num.pin1")
-
+		mac_addr := exe_cmd("(ifconfig usb0) | grep 'HWaddr '")
 		ctx.JSON(iris.Map{
 			"result":        "ok",
 			"status":        1,
 			"apIsolation":   _settings["wifi_apIsolation"],
-			"mac_addr":      mac_addr,
+			"mac_addr":      string((mac_addr[len(mac_addr)-20 : len(mac_addr)-3])),
 			"hideSSID":      _settings["wifi_hideSSID"],
-			"SSIDName":      _settings["wifi_ssid"],
+			"SSIDName":      _settings["wifi_SSIDName"],
 			"bandwidthMode": _settings["wifi_bandwidthMode"],
 			"channel":       _settings["wifi_channel"],
 			"security":      _settings["wifi_security"],
 			"password":      _settings["wifi_password"],
 			// "autoSleep":     0,
+		})
+	case `save_wifi_settings`:
+		params := PostJsonDecoder(ctx, `save_wifi_settings`)
+
+		// reset wifi with new params
+		// TBC
+		// TBC
+		// TBC
+
+		//save
+		_settings["wifi_password"] = params["password"]
+		_settings["wifi_security"] = params["security"]
+		_settings["wifi_channel"] = params["channel"]
+		_settings["wifi_hideSSID"] = params["hideSSID"]
+		_settings["wifi_SSIDName"] = params["SSIDName"]
+		_settings["wifi_bandwidthMode"] = params["bandwidthMode"]
+		save_setting()
+		ctx.JSON(iris.Map{
+			"result":  "ok",
+			"message": "ok",
+		})
+	case `set_ap_isolation`:
+		params := PostJsonDecoder(ctx, `set_ap_isolation`)
+
+		// reset wifi with new params
+		// TBC
+		// TBC
+		// TBC
+		// TBC
+
+		//save
+		_settings["wifi_apIsolation"] = params["set_ap_isolation"]
+		save_setting()
+		ctx.JSON(iris.Map{
+			"result":  "ok",
+			"message": "ok",
 		})
 	case `ip`:
 		clients := exe_cmd("ip -4 neigh | grep ap0 | grep REACHABLE")
@@ -193,76 +239,58 @@ func dispatcher(ctx iris.Context) {
 	case `get_data_threshold`:
 		uptime_byte := exe_cmd("cat /proc/uptime")
 		uptime := strings.ReplaceAll(strings.Split(valFilter(uptime_byte), " ")[0], ".", "00")
-		data_threshold_status := exe_cmd("getprop persist.sagereal.data_threshold_status")
-		data_threshold_value := exe_cmd("getprop persist.sagereal.data_threshold_value")
-		data_threshold_resetDay := exe_cmd("getprop persist.sagereal.data_threshold_resetDay")
 
 		ctx.JSON(iris.Map{
 			"result":         "ok",
 			"message":        "success!",
-			"status":         valFilter(data_threshold_status),
-			"thresholdValue": valFilter(data_threshold_value),
-			"resetDay":       valFilter(data_threshold_resetDay),
+			"status":         _settings["data_threshold_status"],
+			"thresholdValue": _settings["data_threshold_value"],
+			"resetDay":       _settings["data_threshold_resetDay"],
 			"runTime":        uptime,
 		})
 	case `set_data_threshold`:
 		params := PostJsonDecoder(ctx, `set_data_threshold`)
-		exe_cmd(fmt.Sprintf("setprop persist.sagereal.data_threshold_status %v", params["status"]))
-		exe_cmd(fmt.Sprintf("setprop persist.sagereal.data_threshold_value %v", params["thresholdValue"]))
-		exe_cmd(fmt.Sprintf("setprop persist.sagereal.data_threshold_resetDay %v", params["resetDay"]))
+		_settings["data_threshold_status"] = params["status"]
+		_settings["data_threshold_value"] = params["thresholdValue"]
+		_settings["data_threshold_resetDay"] = params["resetDay"]
 		ctx.JSON(iris.Map{
 			"result":  "ok",
 			"message": "ok",
 		})
 	case `get_web_language`:
-		language := exe_cmd("getprop persist.sagereal.language")
 		ctx.JSON(iris.Map{
 			"result":   "ok",
-			"language": valFilter(language),
-			"message":  valFilter(language),
+			"language": _settings["language"],
+			"message":  _settings["language"],
 		})
 	case `set_web_language`:
 		params := PostJsonDecoder(ctx, `set_web_language`)
-		exe_cmd(fmt.Sprintf("setprop persist.sagereal.language %v", params["set_web_language"]))
+		_settings["language"] = params["set_web_language"]
+		save_setting()
 		ctx.JSON(iris.Map{
 			"result":  "ok",
-			"message": params["set_web_language"],
+			"message": _settings["language"],
 		})
 	case `flowrate_record`:
-		/**
-		{
-		  "cur_recv": "MTY4MDYxMTAK",
-		  "cur_send": "MzU3Mzc4MQo=",
-		  "result": "ok",
-		  "total_recv": "Cg==",
-		  "total_send": "Cg=="
-		}
-		*/
-		cur_recv := exe_cmd("cat /sys/class/net/wlan0/statistics/rx_bytes")
-		cur_send := exe_cmd("cat /sys/class/net/wlan0/statistics/tx_bytes")
-		total_send := exe_cmd("getprop persist.sagereal.total_send")
-		total_recv := exe_cmd("getprop persist.sagereal.total_recv")
-		if len(valFilter(total_send)) < 1 || len(valFilter(total_recv)) < 1 {
-			exe_cmd("setprop persist.sagereal.total_send 0")
-			exe_cmd("setprop persist.sagereal.total_recv 0")
-		}
-		// body := fmt.Sprintf(`{	"result": "ok",	"upload": "%v","download": "%v"}`, upload, download)
-		// ctx.WritevalFilter(body)
+		cur_recv := exe_cmd("cat /sys/class/net/tether/statistics/rx_bytes")
+		cur_send := exe_cmd("cat /sys/class/net/tether/statistics/tx_bytes")
+		total_send := _settings["total_send"]
+		total_recv := _settings["total_recv"]
 		ctx.JSON(iris.Map{
 			"result":     "ok",
-			"total_send": valFilter(total_send),
-			"total_recv": valFilter(total_recv),
+			"total_send": total_send,
+			"total_recv": total_recv,
 			"cur_send":   valFilter(cur_send),
 			"cur_recv":   valFilter(cur_recv),
 		})
 	case `navtop_info`:
-		batteryRemain := exe_cmd("dumpsys battery get level")
+		batteryRemain := exe_cmd("cat /sys/class/power_supply/battery/capacity")
 		apStatus := exe_cmd("ifconfig ap0 | grep RUNNING")
 
 		ctx.JSON(iris.Map{
 			"result":            "ok",
 			"batteryRemain":     valFilter(batteryRemain),
-			"language":          "en",
+			"language":          _settings["language"],
 			"tobeReadSMS":       "1",
 			"totalNumSMS":       "14",
 			"isSMSFull":         "0",
@@ -353,18 +381,25 @@ func dispatcher(ctx iris.Context) {
 		if params["restart"] == "1" {
 
 			// combine total traffic to system-props
-			cur_recv := exe_cmd("cat /sys/class/net/wlan0/statistics/rx_bytes")
-			cur_send := exe_cmd("cat /sys/class/net/wlan0/statistics/tx_bytes")
-			total_send := exe_cmd("getprop persist.sagereal.total_send")
-			total_recv := exe_cmd("getprop persist.sagereal.total_recv")
-			total_send_int, _ := strconv.Atoi(valFilter(total_send))
+			cur_recv := exe_cmd("cat /sys/class/net/tether/statistics/rx_bytes")
+			cur_send := exe_cmd("cat /sys/class/net/tether/statistics/tx_bytes")
 			cur_send_int, _ := strconv.Atoi(valFilter(cur_send))
-			total_recv_int, _ := strconv.Atoi(valFilter(total_recv))
 			cur_recv_int, _ := strconv.Atoi(valFilter(cur_recv))
-			total_send_cmd := fmt.Sprintf("setprop persist.sagereal.total_send %d", total_send_int+cur_send_int)
-			total_recv_cmd := fmt.Sprintf("setprop persist.sagereal.total_recv %d", total_recv_int+cur_recv_int)
-			exe_cmd(total_send_cmd)
-			exe_cmd(total_recv_cmd)
+
+			// total_send := _settings["total_send"].(int)
+			if total_send, ok := _settings["total_send"].(string); ok {
+				total_send_int, _ := strconv.Atoi(total_send)
+				_settings["total_send"] = string(rune(total_send_int + cur_send_int))
+			} else {
+				println("I AM UPSET!")
+			}
+			if total_recv, ok := _settings["total_recv"].(string); ok {
+				total_recv_int, _ := strconv.Atoi(total_recv)
+				_settings["total_recv"] = string(rune(total_recv_int + cur_recv_int))
+			} else {
+				println("I AM UPSET!")
+			}
+			save_setting()
 
 			//async
 			go exe_cmd("sleep 5 && reboot")
