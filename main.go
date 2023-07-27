@@ -15,10 +15,6 @@ import (
 	"github.com/kataras/iris/v12"
 )
 
-// do not remove any comment!!!! prev go:embed!!!!!!!It is for build
-// do not remove any comment!!!! prev go:embed!!!!!!!It is for build
-// do not remove any comment!!!! prev go:embed!!!!!!!It is for build
-//
 //go:embed html/*
 var embed_FS embed.FS
 
@@ -33,17 +29,18 @@ func init_system() {
 	_settings = iris.TOML("_settings.toml").Other
 
 	// enable gadget
-	exe_cmd("connmanctl enable gadget && connmanctl tether gadget on")
+	// exe_cmd("connmanctl enable gadget && connmanctl tether gadget on")
 	// exe_cmd("connmanctl tether gadget on")
 
 	// enable wifi
-	exe_cmd("connmanctl enable wifi")
-	tether_wifi := fmt.Sprintf("connmanctl tether wifi on \"%v\" wpa2 \"%v\" ",
-		_settings["wifi_ssid"],
-		_settings["wifi_password"],
-	)
-	// println(tether_wifi)
-	exe_cmd(tether_wifi)
+	// exe_cmd("connmanctl enable wifi")
+	// tether_wifi := fmt.Sprintf("connmanctl tether wifi on \"%v\" wpa2 \"%v\" ",
+	// 	_settings["wifi_ssid"],
+	// 	_settings["wifi_password"],
+	// )
+	// // println(tether_wifi)
+	// exe_cmd(tether_wifi)
+	// 妈了比这里有bug！
 
 	// enable other such as danmon process?
 	println("init_system() Finish")
