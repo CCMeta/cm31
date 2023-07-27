@@ -389,13 +389,13 @@ func dispatcher(ctx iris.Context) {
 			// total_send := _settings["total_send"].(int)
 			if total_send, ok := _settings["total_send"].(string); ok {
 				total_send_int, _ := strconv.Atoi(total_send)
-				_settings["total_send"] = string(rune(total_send_int + cur_send_int))
+				_settings["total_send"] = strconv.Itoa(total_send_int + cur_send_int)
 			} else {
 				println("I AM UPSET!")
 			}
 			if total_recv, ok := _settings["total_recv"].(string); ok {
 				total_recv_int, _ := strconv.Atoi(total_recv)
-				_settings["total_recv"] = string(rune(total_recv_int + cur_recv_int))
+				_settings["total_recv"] = strconv.Itoa(total_recv_int + cur_recv_int)
 			} else {
 				println("I AM UPSET!")
 			}
