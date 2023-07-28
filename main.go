@@ -37,7 +37,6 @@ func DoneAsync() chan int {
 		)
 		println(tether_wifi)
 		exe_cmd(tether_wifi)
-		// 妈了比这里有bug！
 		r <- 1
 	}()
 	return r
@@ -50,14 +49,31 @@ func init_system() {
 	// exe_cmd("touch _settings.toml")
 	json.Unmarshal(exe_cmd("cat _settings.toml"), &_settings)
 
-	//load setting RAM
+	//load setting store in RAM
 	go func() {
-		dbus_dest := "org.ofono"
-		dbus_method := "org.ofono.SimManager.GetProperties"
-		dbus_path := "/ril_0"
-		result := valFilter(exe_cmd(fmt.Sprintf("dbus-send --system --print-reply=literal --dest=%v %v %v", dbus_dest, dbus_path, dbus_method)))
-		_settings["sys_iccid"] = regexp.MustCompile(`CardIdentifier         variant             (.*?)      \)`).FindStringSubmatch(result)[1]
-		_settings["sys_imsi"] = regexp.MustCompile(`SubscriberIdentity         variant             (.*?)      \)`).FindStringSubmatch(result)[1]
+		//initial
+		exe_result := ""
+		dbus_method := ""
+
+		//SimManager
+		dbus_method = "org.ofono.SimManager.GetProperties"
+		exe_result = exe_dbus(dbus_method)
+		_settings["sys_iccid"] = dbus_regexp(exe_result,
+			`string "CardIdentifier"         variant             string "(.*?)"      \)`,
+		)
+		_settings["sys_imsi"] = dbus_regexp(exe_result,
+			`string "SubscriberIdentity"         variant             string "(.*?)"      \)`,
+		)
+
+		//NetworkRegistration
+		dbus_method = "org.ofono.NetworkRegistration.GetProperties"
+		exe_result = exe_dbus(dbus_method)
+		_settings["sys_networkName"] = dbus_regexp(exe_result,
+			`string "Name"         variant             string "(.*?)"      \)`,
+		)
+		_settings["sys_signalStrength"] = dbus_regexp(exe_result,
+			`string "StrengthDbm"         variant             int32 (.*?)      \)`,
+		)
 		save_setting()
 	}()
 
@@ -66,6 +82,21 @@ func init_system() {
 
 	// enable other such as danmon process?
 	println("init_system() Finish")
+}
+
+func dbus_regexp(exe_result string, reg string) string {
+	regexp_result := regexp.MustCompile(reg).FindStringSubmatch(exe_result)
+	if len(regexp_result) > 1 {
+		return regexp_result[1]
+	}
+	return ""
+}
+
+func exe_dbus(dbus_method string) string {
+	dbus_dest := "org.ofono"
+	dbus_path := "/ril_0"
+	result := valFilter(exe_cmd(fmt.Sprintf("dbus-send --system --print-reply --dest=%v %v %v", dbus_dest, dbus_path, dbus_method)))
+	return strings.ReplaceAll(result, "\n", "")
 }
 
 func save_setting() {

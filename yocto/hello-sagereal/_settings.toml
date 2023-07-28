@@ -1,4 +1,6 @@
 {
+	"sys_signalStrength": "", 
+	"sys_networkName": "",
 	"sys_iccid": "",
 	"sys_imsi": "",
 	"total_send": "0",
