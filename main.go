@@ -74,6 +74,8 @@ func init_system() {
 		_settings["sys_signalStrength"] = dbus_regexp(exe_result,
 			`string "StrengthDbm"         variant             int32 (.*?)      \)`,
 		)
+
+		// we truly need to save this miscs to file keep it to end???
 		save_setting()
 	}()
 
@@ -393,19 +395,16 @@ func dispatcher(ctx iris.Context) {
 			"networkMode":   _networkType,
 		})
 	case `network_info`:
-
-		networkName := exe_cmd("hostname")
 		networkType := exe_cmd("getprop gsm.network.type")
 		simStatus := exe_cmd("getprop gsm.sim.state")
 		gprsStatus := exe_cmd("settings get global mobile_data1")
-		signalStrength := exe_cmd("getprop vendor.ril.nw.signalstrength.lte.1")
 		ctx.JSON(iris.Map{
 			"result":         "ok",
-			"networkName":    valFilter(networkName),
+			"networkName":    _settings["sys_networkName"],
 			"networkType":    valFilter(networkType),
 			"simStatus":      strings.Contains(valFilter(simStatus), "LOADED"),
 			"gprsStatus":     valFilter(gprsStatus),
-			"signalStrength": strings.Split(valFilter(signalStrength), ",")[0],
+			"signalStrength": _settings["sys_signalStrength"],
 		})
 	case `network_speed`:
 		upload := rand.Int31()
