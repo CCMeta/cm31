@@ -10,6 +10,7 @@ import (
 	"net/url"
 	"os"
 	"os/exec"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -45,9 +46,20 @@ func DoneAsync() chan int {
 func init_system() {
 	println("init_system() Start")
 
-	// load settings
+	// load settings.json
 	// exe_cmd("touch _settings.toml")
 	json.Unmarshal(exe_cmd("cat _settings.toml"), &_settings)
+
+	//load setting RAM
+	go func() {
+		dbus_dest := "org.ofono"
+		dbus_method := "org.ofono.SimManager.GetProperties"
+		dbus_path := "/ril_0"
+		result := valFilter(exe_cmd(fmt.Sprintf("dbus-send --system --print-reply=literal --dest=%v %v %v", dbus_dest, dbus_path, dbus_method)))
+		_settings["sys_iccid"] = regexp.MustCompile(`CardIdentifier         variant             (.*?)      \)`).FindStringSubmatch(result)[1]
+		_settings["sys_imsi"] = regexp.MustCompile(`SubscriberIdentity         variant             (.*?)      \)`).FindStringSubmatch(result)[1]
+		save_setting()
+	}()
 
 	// enable connmanctl async
 	DoneAsync()
@@ -116,11 +128,7 @@ func dispatcher(ctx iris.Context) {
 	case `get_device_info`:
 
 		firmwarewVersion := exe_cmd("cat /etc/version")
-		serialNumber := exe_cmd("cat /etc/version")
-		imei := exe_cmd("cat /etc/version")
 		//parse imsi of sim card
-
-		imsi := exe_cmd("cat /etc/version")
 
 		mac_addr := exe_cmd("cat /etc/version")
 
@@ -133,9 +141,9 @@ func dispatcher(ctx iris.Context) {
 
 		ctx.JSON(iris.Map{
 			"result":           "ok",
-			"serialNumber":     valFilter(serialNumber),
-			"imei":             strings.ReplaceAll(valFilter(imei), "Device IMEI:", ""),
-			"imsi":             valFilter(imsi),
+			"serialNumber":     _settings["sys_iccid"],
+			"imei":             _settings["sys_imsi"],
+			"imsi":             _settings["sys_imsi"],
 			"hardwareVersion":  "1.0.0",
 			"softwarewVersion": "随便自定义??",
 			"firmwarewVersion": valFilter(firmwarewVersion),

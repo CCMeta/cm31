@@ -1,4 +1,6 @@
 {
+	"sys_iccid": "",
+	"sys_imsi": "",
 	"total_send": "0",
 	"total_recv": "0",
 	"data_threshold_resetDay": "1",
