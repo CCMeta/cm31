@@ -37,7 +37,7 @@ func DoneAsync() chan int {
 		)
 		println(tether_wifi)
 		exe_cmd(tether_wifi)
-		r <- 1
+		r <- (1) // This <- is so ugly
 	}()
 	return r
 }
@@ -52,26 +52,26 @@ func init_system() {
 	//load setting store in RAM
 	go func() {
 		//initial
-		exe_result := ""
+		dbus_result := ""
 		dbus_method := ""
 
 		//SimManager
 		dbus_method = "org.ofono.SimManager.GetProperties"
-		exe_result = exe_dbus(dbus_method)
-		_settings["sys_iccid"] = dbus_regexp(exe_result,
+		dbus_result = exe_dbus(dbus_method)
+		_settings["sys_iccid"] = dbus_regexp(dbus_result,
 			`string "CardIdentifier"         variant             string "(.*?)"      \)`,
 		)
-		_settings["sys_imsi"] = dbus_regexp(exe_result,
+		_settings["sys_imsi"] = dbus_regexp(dbus_result,
 			`string "SubscriberIdentity"         variant             string "(.*?)"      \)`,
 		)
 
 		//NetworkRegistration
 		dbus_method = "org.ofono.NetworkRegistration.GetProperties"
-		exe_result = exe_dbus(dbus_method)
-		_settings["sys_networkName"] = dbus_regexp(exe_result,
+		dbus_result = exe_dbus(dbus_method)
+		_settings["sys_networkName"] = dbus_regexp(dbus_result,
 			`string "Name"         variant             string "(.*?)"      \)`,
 		)
-		_settings["sys_signalStrength"] = dbus_regexp(exe_result,
+		_settings["sys_signalStrength"] = dbus_regexp(dbus_result,
 			`string "StrengthDbm"         variant             int32 (.*?)      \)`,
 		)
 
@@ -99,7 +99,7 @@ func exe_dbus(dbus_method string) string {
 	dbus_path := "/ril_0"
 	result := valFilter(exe_cmd(fmt.Sprintf("dbus-send --system --print-reply --dest=%v %v %v", dbus_dest, dbus_path, dbus_method)))
 	return strings.ReplaceAll(result, "\n", "")
-}
+} //
 
 func save_setting() {
 	file_data, _ := json.MarshalIndent(&_settings, "", "  ")
@@ -131,7 +131,7 @@ func main() {
 		html.Use(iris.Compression)
 		html.Get("/{page}", func(ctx iris.Context) {
 			page := ctx.Params().Get("page")
-			if len(page) < 4 {
+			if !strings.ContainsAny(page, ".html") {
 				page = "main.html"
 			}
 			ctx.View(page)
@@ -154,6 +154,10 @@ func getenv(key string, def string) string {
 }
 
 func dispatcher(ctx iris.Context) {
+
+	//initial for dbus
+	dbus_result := ""
+	dbus_method := ""
 
 	action := ctx.Params().Get("action")
 	switch action {
@@ -370,41 +374,90 @@ func dispatcher(ctx iris.Context) {
 			"result": "ok",
 		})
 	case `network_setting`:
-		roamingStatus := exe_cmd("settings get global data_roaming1")
-		networkType := exe_cmd("settings get global preferred_network_mode")
-		gprsStatus := exe_cmd("settings get global mobile_data1")
-		_networkType := ""
-		switch valFilter(networkType) {
-		case "9":
-			_networkType = "0"
-		case "11":
-			_networkType = "1"
-		case "3":
-			_networkType = "2"
-		case "33,33":
-			_networkType = "33"
+		//RadioSettings
+		dbus_method = "org.ofono.RadioSettings.GetProperties"
+		dbus_result = exe_dbus(dbus_method)
+		networkType := dbus_regexp(dbus_result,
+			`string "TechnologyPreference"         variant             string "(.*?)"      \)`,
+		)
+
+		//ConnectionManager
+		dbus_method = "org.ofono.ConnectionManager.GetProperties"
+		dbus_result = exe_dbus(dbus_method)
+		roamingStatus := dbus_regexp(dbus_result,
+			`string "RoamingAllowed"         variant             boolean (.*?)      \)`,
+		)
+		switch roamingStatus {
+		case "false":
+			roamingStatus = "0"
 		default:
-			_networkType = valFilter(networkType)
+			roamingStatus = "1"
+		}
+		// TBC
+		gprsStatus := exe_cmd("settings get global mobile_data1")
+		//
+		//
+		//
+		//
+
+		switch networkType {
+		case "LTE/GSM/WCDMA auto":
+			networkType = "0"
+		case "LTE only":
+			networkType = "1"
+		case "GSM/WCDMA auto":
+			networkType = "2"
+		default:
 			// ctx.StopWithText(500, "param error"+valFilter(networkType))
 			// return
 		}
 		ctx.JSON(iris.Map{
 			"result":        "ok",
 			"gprsStatus":    valFilter(gprsStatus),
-			"roamingStatus": valFilter(roamingStatus),
-			"networkMode":   _networkType,
+			"roamingStatus": roamingStatus,
+			"networkMode":   networkType,
 		})
 	case `network_info`:
-		networkType := exe_cmd("getprop gsm.network.type")
-		simStatus := exe_cmd("getprop gsm.sim.state")
-		gprsStatus := exe_cmd("settings get global mobile_data1")
+		//NetworkRegistration
+		dbus_method = "org.ofono.NetworkRegistration.GetProperties"
+		dbus_result = exe_dbus(dbus_method)
+		networkName := dbus_regexp(dbus_result,
+			`string "Name"         variant             string "(.*?)"      \)`,
+		)
+		networkType := dbus_regexp(dbus_result,
+			`string "Technology"         variant             string "(.*?)"      \)`,
+		)
+		signalStrength := dbus_regexp(dbus_result,
+			`string "StrengthDbm"         variant             int32 (.*?)      \)`,
+		)
+		//powered: 1, status: 3, pin_required: 0, IMSI: 460110113516405, ICCID: 89860316244593211737, MCC: 460, MNC: 11, msisdn: /, pin_lock(0), retries: 3-10-0-0-0
+		// "simStatusInfo": "SIM OK", //SIM OK, SIM Registration Failed, SIM PIN Blocked, No SIM Card
+		//SimManager
+		dbus_method = "org.ofono.SimManager.GetProperties"
+		dbus_result = exe_dbus(dbus_method)
+		powered := dbus_regexp(dbus_result,
+			`string "Powered"         variant             boolean (.*?)      \)`,
+		)
+		present := dbus_regexp(dbus_result,
+			`string "Present"         variant             boolean (.*?)      \)`,
+		)
+		pinRequired := dbus_regexp(dbus_result,
+			`string "PinRequired"         variant             string "(.*?)"      \)`,
+		)
+		simStatus := 7
+		if powered == "true" &&
+			present == "true" &&
+			pinRequired == "none" {
+			simStatus = 0
+		}
+
 		ctx.JSON(iris.Map{
-			"result":         "ok",
-			"networkName":    _settings["sys_networkName"],
-			"networkType":    valFilter(networkType),
-			"simStatus":      strings.Contains(valFilter(simStatus), "LOADED"),
-			"gprsStatus":     valFilter(gprsStatus),
-			"signalStrength": _settings["sys_signalStrength"],
+			"result":      "ok",
+			"networkName": networkName,
+			"networkType": networkType,
+			//0 ok, 2 registion failed, 3 pin blocked, 7 sim not insert
+			"simStatus":      simStatus,
+			"signalStrength": signalStrength,
 		})
 	case `network_speed`:
 		upload := rand.Int31()
