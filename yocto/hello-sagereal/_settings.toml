@@ -9,6 +9,7 @@
 	"data_threshold_value": "10",
 	"data_threshold_status": "0",
 	"language": "en",
+	"wifi_status": 1,
 	"wifi_bandwidthMode": 2,
 	"wifi_channel": 6,
 	"wifi_apIsolation": 1,

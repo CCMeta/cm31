@@ -58,20 +58,20 @@ func init_system() {
 		//SimManager
 		dbus_method = "org.ofono.SimManager.GetProperties"
 		dbus_result = exe_dbus(dbus_method)
-		_settings["sys_iccid"] = dbus_regexp(dbus_result,
+		_settings["sys_iccid"] = parser_regexp(dbus_result,
 			`string "CardIdentifier"         variant             string "(.*?)"      \)`,
 		)
-		_settings["sys_imsi"] = dbus_regexp(dbus_result,
+		_settings["sys_imsi"] = parser_regexp(dbus_result,
 			`string "SubscriberIdentity"         variant             string "(.*?)"      \)`,
 		)
 
 		//NetworkRegistration
 		dbus_method = "org.ofono.NetworkRegistration.GetProperties"
 		dbus_result = exe_dbus(dbus_method)
-		_settings["sys_networkName"] = dbus_regexp(dbus_result,
+		_settings["sys_networkName"] = parser_regexp(dbus_result,
 			`string "Name"         variant             string "(.*?)"      \)`,
 		)
-		_settings["sys_signalStrength"] = dbus_regexp(dbus_result,
+		_settings["sys_signalStrength"] = parser_regexp(dbus_result,
 			`string "StrengthDbm"         variant             int32 (.*?)      \)`,
 		)
 
@@ -86,7 +86,7 @@ func init_system() {
 	println("init_system() Finish")
 }
 
-func dbus_regexp(exe_result string, reg string) string {
+func parser_regexp(exe_result string, reg string) string {
 	regexp_result := regexp.MustCompile(reg).FindStringSubmatch(exe_result)
 	if len(regexp_result) > 1 {
 		return regexp_result[1]
@@ -94,10 +94,13 @@ func dbus_regexp(exe_result string, reg string) string {
 	return ""
 }
 
-func exe_dbus(dbus_method string) string {
+func exe_dbus(dbus_method string, args ...string) string {
 	dbus_dest := "org.ofono"
 	dbus_path := "/ril_0"
-	result := valFilter(exe_cmd(fmt.Sprintf("dbus-send --system --print-reply --dest=%v %v %v", dbus_dest, dbus_path, dbus_method)))
+	if len(args) == 0 {
+		args = append(args, "")
+	}
+	result := valFilter(exe_cmd(fmt.Sprintf("dbus-send --system --print-reply --dest=%v %v %v %v", dbus_dest, dbus_path, dbus_method, args[0])))
 	return strings.ReplaceAll(result, "\n", "")
 } //
 
@@ -158,34 +161,45 @@ func dispatcher(ctx iris.Context) {
 	//initial for dbus
 	dbus_result := ""
 	dbus_method := ""
+	dbus_args := ""
 
 	action := ctx.Params().Get("action")
 	switch action {
 
 	case `get_device_info`:
+		//Modem
+		dbus_method = "org.ofono.Modem.GetProperties"
+		dbus_result = exe_dbus(dbus_method)
+		imei := parser_regexp(dbus_result,
+			`string "Serial"         variant             string "(.*?)"      \)`,
+		)
+		revision := parser_regexp(dbus_result,
+			`string "Revision"         variant             string "(.*?)"      \)`,
+		)
 
-		firmwarewVersion := exe_cmd("cat /etc/version")
+		firmwarewVersion := valFilter(exe_cmd("cat /etc/version"))
 		//parse imsi of sim card
 
-		mac_addr := exe_cmd("cat /etc/version")
+		mac_addr := parser_regexp(
+			valFilter(exe_cmd("ifconfig tether")),
+			`Link encap:Ethernet  HWaddr (.*?)\n`,
+		)
 
-		wanIP_text := exe_cmd("(ifconfig tether) | grep 'inet addr:'")
-
-		wanIP := ""
-		if len(wanIP_text) > 1 {
-			wanIP = strings.Split(strings.Trim(string(wanIP_text), " "), "  ")[0]
-		}
+		wanIP := parser_regexp(
+			valFilter(exe_cmd(`ifconfig tether`)),
+			`inet addr:(.*?)  `,
+		)
 
 		ctx.JSON(iris.Map{
 			"result":           "ok",
 			"serialNumber":     _settings["sys_iccid"],
-			"imei":             _settings["sys_imsi"],
+			"imei":             imei,
 			"imsi":             _settings["sys_imsi"],
-			"hardwareVersion":  "1.0.0",
+			"hardwareVersion":  revision,
 			"softwarewVersion": "随便自定义??",
-			"firmwarewVersion": valFilter(firmwarewVersion),
+			"firmwarewVersion": firmwarewVersion,
 			"webUIVersion":     "随便自定义1_1_1",
-			"mac":              valFilter(mac_addr),
+			"mac":              mac_addr,
 			"wanIP":            wanIP,
 		})
 	case `get_pin_setting`:
@@ -203,12 +217,10 @@ func dispatcher(ctx iris.Context) {
 			"pinStatus":  _pinStatus,
 		})
 	case `get_wifi_settings`:
-		mac_addr := exe_cmd("(ifconfig usb0) | grep 'HWaddr '")
 		ctx.JSON(iris.Map{
 			"result":        "ok",
-			"status":        1,
+			"status":        _settings["wifi_status"],
 			"apIsolation":   _settings["wifi_apIsolation"],
-			"mac_addr":      string((mac_addr[len(mac_addr)-20 : len(mac_addr)-3])),
 			"hideSSID":      _settings["wifi_hideSSID"],
 			"SSIDName":      _settings["wifi_SSIDName"],
 			"bandwidthMode": _settings["wifi_bandwidthMode"],
@@ -226,6 +238,7 @@ func dispatcher(ctx iris.Context) {
 		// TBC
 
 		//save
+		_settings["wifi_status"] = params["status"]
 		_settings["wifi_password"] = params["password"]
 		_settings["wifi_security"] = params["security"]
 		_settings["wifi_channel"] = params["channel"]
@@ -258,28 +271,28 @@ func dispatcher(ctx iris.Context) {
 		ctx.WriteString(valFilter(clients))
 	case `connected_devices`:
 		//ip neigh show dev ap0
-		clients_buf := exe_cmd("ip -4 neigh show")
-		devices := []iris.Map{}
-		clients_list := strings.Split(valFilter(clients_buf), "\n")
+		// clients_buf := exe_cmd("ip -4 neigh show")
+		// devices := []iris.Map{}
+		// clients_list := strings.Split(valFilter(clients_buf), "\n")
 
-		for i, v := range clients_list {
-			client_map := strings.Split(v, " ")
-			if len(client_map) > 2 {
-				device := iris.Map{
-					"index":    i,
-					"hostName": client_map[2],
-					"ip_addr":  client_map[0],
-					"mac_addr": client_map[2],
-					"usbShare": "0",
-				}
-				devices = append(devices, device)
-			}
-		}
+		// for i, v := range clients_list {
+		// 	client_map := strings.Split(v, " ")
+		// 	if len(client_map) > 2 {
+		// 		device := iris.Map{
+		// 			"index":    i,
+		// 			"hostName": client_map[2],
+		// 			"ip_addr":  client_map[0],
+		// 			"mac_addr": client_map[2],
+		// 			"usbShare": "0",
+		// 		}
+		// 		devices = append(devices, device)
+		// 	}
+		// }
 
 		ctx.JSON(iris.Map{
-			"result":   "ok",
-			"totalNum": len(devices),
-			"devices":  devices,
+			"result": "ok",
+			// "totalNum": len(devices),
+			// "devices":  devices,
 		})
 	case `get_data_threshold`:
 		uptime_byte := exe_cmd("cat /proc/uptime")
@@ -288,9 +301,9 @@ func dispatcher(ctx iris.Context) {
 		ctx.JSON(iris.Map{
 			"result":         "ok",
 			"message":        "success!",
-			"status":         _settings["data_threshold_status"],
-			"thresholdValue": _settings["data_threshold_value"],
-			"resetDay":       _settings["data_threshold_resetDay"],
+			"status":         fmt.Sprint(_settings["data_threshold_status"]),
+			"thresholdValue": fmt.Sprint(_settings["data_threshold_value"]),
+			"resetDay":       fmt.Sprint(_settings["data_threshold_resetDay"]),
 			"runTime":        uptime,
 		})
 	case `set_data_threshold`:
@@ -298,6 +311,7 @@ func dispatcher(ctx iris.Context) {
 		_settings["data_threshold_status"] = params["status"]
 		_settings["data_threshold_value"] = params["thresholdValue"]
 		_settings["data_threshold_resetDay"] = params["resetDay"]
+		save_setting()
 		ctx.JSON(iris.Map{
 			"result":  "ok",
 			"message": "ok",
@@ -330,7 +344,7 @@ func dispatcher(ctx iris.Context) {
 		})
 	case `navtop_info`:
 		batteryRemain := exe_cmd("cat /sys/class/power_supply/battery/capacity")
-		apStatus := exe_cmd("ifconfig ap0 | grep RUNNING")
+		apStatus := exe_cmd("ifconfig wlan0 | grep RUNNING")
 
 		ctx.JSON(iris.Map{
 			"result":            "ok",
@@ -349,27 +363,43 @@ func dispatcher(ctx iris.Context) {
 	case `set_network_config`:
 		params := PostJsonDecoder(ctx, `set_network_config`)
 
-		// 11 = 4G
-		// 9 = 4G/3G
-		// 3 = 3G
+		networkType := ""
 		switch params["networkMode"] {
 		case "0":
-			params["networkMode"] = "9"
+			networkType = "LTE/GSM/WCDMA auto"
 		case "1":
-			params["networkMode"] = "11"
+			networkType = "LTE only"
 		case "2":
-			params["networkMode"] = "3"
+			networkType = "GSM/WCDMA auto"
 		default:
 			ctx.StopWithText(500, "param error")
 			return
 		}
 
-		gprsStatus := fmt.Sprintf("settings put global mobile_data1 %v", params["gprsStatus"])
-		roamingStatus := fmt.Sprintf("settings put global data_roaming1 %v", params["roamingStatus"])
-		networkType := fmt.Sprintf("settings put global preferred_network_mode %v", params["networkMode"])
-		exe_cmd(gprsStatus)
-		exe_cmd(networkType)
-		exe_cmd(roamingStatus)
+		roamingStatus := fmt.Sprint(params["roamingStatus"])
+		switch roamingStatus {
+		case "0":
+			roamingStatus = "false"
+		case "1":
+			roamingStatus = "true"
+		default:
+			println("roamingStatus = %v", roamingStatus)
+			ctx.StopWithText(500, "param error")
+			return
+		}
+
+		//RadioSettings
+		dbus_method = "org.ofono.ConnectionManager.SetProperty"
+		dbus_args = fmt.Sprintf(`string:"RoamingAllowed" variant:boolean:%v`, roamingStatus)
+		exe_dbus(dbus_method, dbus_args)
+
+		//ConnectionManager
+		dbus_method = "org.ofono.RadioSettings.SetProperty"
+		dbus_args = fmt.Sprintf(`string:"TechnologyPreference" variant:string:"%v"`, networkType)
+		exe_dbus(dbus_method, dbus_args)
+
+		// gprsStatus := fmt.Sprintf("settings put global mobile_data1 %v", params["gprsStatus"])
+		// exe_cmd(gprsStatus)
 		ctx.JSON(iris.Map{
 			"result": "ok",
 		})
@@ -377,14 +407,14 @@ func dispatcher(ctx iris.Context) {
 		//RadioSettings
 		dbus_method = "org.ofono.RadioSettings.GetProperties"
 		dbus_result = exe_dbus(dbus_method)
-		networkType := dbus_regexp(dbus_result,
+		networkType := parser_regexp(dbus_result,
 			`string "TechnologyPreference"         variant             string "(.*?)"      \)`,
 		)
 
 		//ConnectionManager
 		dbus_method = "org.ofono.ConnectionManager.GetProperties"
 		dbus_result = exe_dbus(dbus_method)
-		roamingStatus := dbus_regexp(dbus_result,
+		roamingStatus := parser_regexp(dbus_result,
 			`string "RoamingAllowed"         variant             boolean (.*?)      \)`,
 		)
 		switch roamingStatus {
@@ -394,7 +424,7 @@ func dispatcher(ctx iris.Context) {
 			roamingStatus = "1"
 		}
 		// TBC
-		gprsStatus := exe_cmd("settings get global mobile_data1")
+		// gprsStatus := exe_cmd("settings get global mobile_data1")
 		//
 		//
 		//
@@ -408,12 +438,10 @@ func dispatcher(ctx iris.Context) {
 		case "GSM/WCDMA auto":
 			networkType = "2"
 		default:
-			// ctx.StopWithText(500, "param error"+valFilter(networkType))
-			// return
 		}
 		ctx.JSON(iris.Map{
-			"result":        "ok",
-			"gprsStatus":    valFilter(gprsStatus),
+			"result": "ok",
+			// "gprsStatus":    valFilter(gprsStatus),
 			"roamingStatus": roamingStatus,
 			"networkMode":   networkType,
 		})
@@ -421,13 +449,13 @@ func dispatcher(ctx iris.Context) {
 		//NetworkRegistration
 		dbus_method = "org.ofono.NetworkRegistration.GetProperties"
 		dbus_result = exe_dbus(dbus_method)
-		networkName := dbus_regexp(dbus_result,
+		networkName := parser_regexp(dbus_result,
 			`string "Name"         variant             string "(.*?)"      \)`,
 		)
-		networkType := dbus_regexp(dbus_result,
+		networkType := parser_regexp(dbus_result,
 			`string "Technology"         variant             string "(.*?)"      \)`,
 		)
-		signalStrength := dbus_regexp(dbus_result,
+		signalStrength := parser_regexp(dbus_result,
 			`string "StrengthDbm"         variant             int32 (.*?)      \)`,
 		)
 		//powered: 1, status: 3, pin_required: 0, IMSI: 460110113516405, ICCID: 89860316244593211737, MCC: 460, MNC: 11, msisdn: /, pin_lock(0), retries: 3-10-0-0-0
@@ -435,13 +463,13 @@ func dispatcher(ctx iris.Context) {
 		//SimManager
 		dbus_method = "org.ofono.SimManager.GetProperties"
 		dbus_result = exe_dbus(dbus_method)
-		powered := dbus_regexp(dbus_result,
+		powered := parser_regexp(dbus_result,
 			`string "Powered"         variant             boolean (.*?)      \)`,
 		)
-		present := dbus_regexp(dbus_result,
+		present := parser_regexp(dbus_result,
 			`string "Present"         variant             boolean (.*?)      \)`,
 		)
-		pinRequired := dbus_regexp(dbus_result,
+		pinRequired := parser_regexp(dbus_result,
 			`string "PinRequired"         variant             string "(.*?)"      \)`,
 		)
 		simStatus := 7
@@ -457,7 +485,7 @@ func dispatcher(ctx iris.Context) {
 			"networkType": networkType,
 			//0 ok, 2 registion failed, 3 pin blocked, 7 sim not insert
 			"simStatus":      simStatus,
-			"signalStrength": signalStrength,
+			"signalStrength": "-" + signalStrength,
 		})
 	case `network_speed`:
 		upload := rand.Int31()
@@ -477,19 +505,12 @@ func dispatcher(ctx iris.Context) {
 			cur_send_int, _ := strconv.Atoi(valFilter(cur_send))
 			cur_recv_int, _ := strconv.Atoi(valFilter(cur_recv))
 
-			// total_send := _settings["total_send"].(int)
-			if total_send, ok := _settings["total_send"].(string); ok {
-				total_send_int, _ := strconv.Atoi(total_send)
-				_settings["total_send"] = strconv.Itoa(total_send_int + cur_send_int)
-			} else {
-				println("I AM UPSET!")
-			}
-			if total_recv, ok := _settings["total_recv"].(string); ok {
-				total_recv_int, _ := strconv.Atoi(total_recv)
-				_settings["total_recv"] = strconv.Itoa(total_recv_int + cur_recv_int)
-			} else {
-				println("I AM UPSET!")
-			}
+			total_send_int, _ := strconv.Atoi(fmt.Sprint(_settings["total_send"]))
+			_settings["total_send"] = strconv.Itoa(total_send_int + cur_send_int)
+
+			total_recv_int, _ := strconv.Atoi(fmt.Sprint(_settings["total_recv"]))
+			_settings["total_recv"] = strconv.Itoa(total_recv_int + cur_recv_int)
+
 			save_setting()
 
 			//async

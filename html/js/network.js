@@ -106,7 +106,7 @@ function GetNetwork() {
                     default: break;
                 }
                 data.signalStrength = parseInt(data.signalStrength)
-                $strengthText.text(data.signalStrength > -75 ? 5 : data.signalStrength > -85 ? 4 : data.signalStrength > -95 ? 3 : data.signalStrength > -99 ? 2 : 1);
+                $strengthText.text(data.signalStrength > -85 ? 5 : data.signalStrength > -95 ? 4 : data.signalStrength > -105 ? 3 : data.signalStrength > -115 ? 2 : 1);
                 if (data.simStatusInfo === "No SIM") { simStatus = 0; }
             }
         },
