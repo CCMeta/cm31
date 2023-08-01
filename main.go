@@ -2,6 +2,7 @@ package main // Look README.md
 
 import (
 	"embed"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io/fs"
@@ -117,6 +118,12 @@ func main() {
 			if !strings.ContainsAny(page, ".html") {
 				page = "main.html"
 			}
+			if page != "login.html" {
+				is_login := session_checker(ctx)
+				if !is_login {
+					ctx.Redirect("/login.html")
+				}
+			}
 			ctx.View(page)
 		})
 		// html.Post("/{action}", dispatcher)
@@ -135,8 +142,41 @@ func dispatcher(ctx iris.Context) {
 	dbus_args := ""
 
 	action := ctx.Params().Get("action")
+	// session check
 	switch action {
+	case `get_web_language`:
+	case `get_pin_setting`:
+	case `login`:
+	default:
+		is_login := session_checker(ctx)
+		if !is_login {
+			return
+		}
+	}
+	// main
+	switch action {
+	case `login`:
+		params := postJsonDecoder(ctx, `web_login`)
+		println(`fmt.Sprint(params["passwd"])`, fmt.Sprint(params["passwd"]))
+		println(`fmt.Sprint(params["passwd"])`, len(fmt.Sprint(params["passwd"])))
+		pwd, err := base64.RawStdEncoding.DecodeString(strings.Trim(fmt.Sprint(params["passwd"]), "="))
+		if err != nil {
+			println(err.Error())
+		}
 
+		sid := ""
+		if string(pwd) == fmt.Sprint(g_settings["pwd"]) {
+			g_settings["sid"] = rand.Int31()
+			save_setting()
+			sid = fmt.Sprint(g_settings["sid"])
+			println(`sid = fmt.Sprint(g_settings["sid"])`)
+		}
+
+		ctx.JSON(iris.Map{
+			"result":  "ok",
+			"message": "success!",
+			"session": sid,
+		})
 	case `get_device_info`:
 		//Modem
 		dbus_method = "org.ofono.Modem.GetProperties"
@@ -537,6 +577,11 @@ func dispatcher(ctx iris.Context) {
 	}
 
 	ctx.StatusCode(200)
+}
+
+func session_checker(ctx iris.Context) bool {
+	sid, _ := ctx.Request().Cookie("SessionId")
+	return sid.Value == fmt.Sprint(g_settings["sid"])
 }
 
 // Toolkit for parse URL query param only post method
