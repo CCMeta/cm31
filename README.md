@@ -21,9 +21,6 @@ build: go build  -gcflags=all="-l -B -wb=false" -ldflags="-w -s" -o .\yocto\hell
 
 ## CONFIGS
 
-- persist.sagereal.total_send
-- persist.sagereal.total_recv
-- persist.sagereal.data_threshold_status
-- persist.sagereal.data_threshold_value
-- persist.sagereal.data_threshold_resetDay
-- persist.sagereal.language
+- copy \cm31\yocto\hello-sagereal\cm31_api to Device path /var/cm31/
+- The config file is .toml but content is json. LOL.
+  
