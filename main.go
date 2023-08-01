@@ -492,8 +492,8 @@ func dispatcher(ctx iris.Context) {
 			"result": "ok",
 			"params": params["restart"],
 		})
-	case `reset`:
-		params := postJsonDecoder(ctx, `reset`)
+	case `reset_factory`:
+		params := postJsonDecoder(ctx, `reset_factory`)
 		if params["reset"] == "1" {
 			exe_cmd("sleep 5 && fw_setenv mode boot-recovery && fw_setenv wipe-data 1 && reboot -f")
 		}
