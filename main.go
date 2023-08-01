@@ -263,8 +263,9 @@ func dispatcher(ctx iris.Context) {
 		_settings["wifi_apIsolation"] = params["set_ap_isolation"]
 		save_setting()
 		ctx.JSON(iris.Map{
-			"result":  "ok",
-			"message": "ok",
+			"result":      "ok",
+			"message":     "ok",
+			"apIsolation": _settings["wifi_apIsolation"],
 		})
 	case `ip`:
 		clients := exe_cmd("ip -4 neigh | grep ap0 | grep REACHABLE")

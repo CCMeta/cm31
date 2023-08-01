@@ -388,7 +388,7 @@
                 else {$security.val("WPA2");$security.attr("data-value", "3")}
                 //修改选择框设置 llh 20220615 end
                 if(data.security === 0) {$(".wifi-pwd").css("visibility", "hidden");} else {$(".wifi-pwd").css("visibility", "visible");}
-                if(data.apIsolation===1){$iso.addClass("open");} else {$iso.removeClass("open");}
+                if(data.apIsolation==1){$iso.addClass("open");} else {$iso.removeClass("open");}
                 checkedWifi();
             },
             error: function () {
