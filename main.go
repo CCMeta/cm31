@@ -507,6 +507,19 @@ func dispatcher(ctx iris.Context) {
 		if params["reset"] == "1" {
 			exe_cmd("sleep 5 && fw_setenv mode boot-recovery && fw_setenv wipe-data 1 && reboot -f")
 		}
+		ctx.JSON(iris.Map{
+			"result": "ok",
+		})
+	case `clear_flowrate`:
+		params := postJsonDecoder(ctx, `clear_flowrate`)
+		if params["clear_flowrate"] == "1" {
+			g_settings["total_send"] = "0"
+			g_settings["total_recv"] = "0"
+			save_setting()
+		}
+		ctx.JSON(iris.Map{
+			"result": "ok",
+		})
 	default:
 		ctx.WriteString("REQUEST IS FAILED BY action = " + action)
 	}
