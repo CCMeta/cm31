@@ -184,18 +184,30 @@ func dispatcher(ctx iris.Context) {
 			"wanIP":            wanIP,
 		})
 	case `get_pin_setting`:
-		pinRemain := exe_cmd("getprop vendor.gsm.sim.retry.pin1")
-		pinEnabled := exe_cmd("getprop gsm.slot1.num.pin1")
-		pinStatus := exe_cmd("getprop gsm.slot1.num.pin1")
-		_pinRemain, _ := strconv.Atoi(parser_byte(pinRemain[:len(pinRemain)-1]))
-		_pinEnabled, _ := strconv.Atoi(parser_byte(pinEnabled[:len(pinEnabled)-1]))
-		_pinStatus, _ := strconv.Atoi(parser_byte(pinStatus[:len(pinStatus)-1]))
+		//SimManager
+		dbus_method = "org.ofono.SimManager.GetProperties"
+		dbus_result = exe_dbus(dbus_method)
+
+		_pinEnabled := parser_regexp(dbus_result,
+			`string "LockedPins"         variant             array (.*?)      \)`,
+		)
+		// println("_pinEnabled", _pinEnabled)
+
+		_pinStatus := parser_regexp(dbus_result,
+			`string "PinRequired"         variant             string "(.*?)"      \)`,
+		)
+		// println("_pinStatus", _pinStatus)
+
+		_pinRemain := parser_regexp(dbus_result,
+			`string "Retries"         variant             array (.*?)      \)`,
+		)
+		// println("_pinRemain", _pinRemain)
 
 		ctx.JSON(iris.Map{
 			"result":     "ok",
 			"pinRemain":  _pinRemain,
-			"pinEnabled": _pinEnabled,
-			"pinStatus":  _pinStatus,
+			"pinEnabled": strings.Count(_pinEnabled, `string "pin"`),
+			"pinStatus":  1 - strings.Count(_pinStatus, `none`),
 		})
 	case `get_wifi_settings`:
 		ctx.JSON(iris.Map{
