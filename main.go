@@ -21,9 +21,10 @@ import (
 var embed_FS embed.FS
 
 // custom data for user settings
-var _settings iris.Map
+var g_settings iris.Map
 
-func DoneAsync() chan int {
+// Part of init_system
+func init_connman() chan int {
 	r := make(chan int)
 	go func() {
 		// enable gadget
@@ -32,8 +33,8 @@ func DoneAsync() chan int {
 		// enable wifi
 		exe_cmd("connmanctl enable wifi")
 		tether_wifi := fmt.Sprintf("connmanctl tether wifi on \"%v\" wpa2 \"%v\" ",
-			_settings["wifi_SSIDName"],
-			_settings["wifi_password"],
+			g_settings["wifi_SSIDName"],
+			g_settings["wifi_password"],
 		)
 		println(tether_wifi)
 		exe_cmd(tether_wifi)
@@ -42,12 +43,13 @@ func DoneAsync() chan int {
 	return r
 }
 
+// Need init before run application
 func init_system() {
 	println("init_system() Start")
 
 	// load settings.json
 	// exe_cmd("touch _settings.toml")
-	json.Unmarshal(exe_cmd("cat _settings.toml"), &_settings)
+	json.Unmarshal(exe_cmd("cat _settings.toml"), &g_settings)
 
 	//load setting store in RAM
 	go func() {
@@ -58,20 +60,20 @@ func init_system() {
 		//SimManager
 		dbus_method = "org.ofono.SimManager.GetProperties"
 		dbus_result = exe_dbus(dbus_method)
-		_settings["sys_iccid"] = parser_regexp(dbus_result,
+		g_settings["sys_iccid"] = parser_regexp(dbus_result,
 			`string "CardIdentifier"         variant             string "(.*?)"      \)`,
 		)
-		_settings["sys_imsi"] = parser_regexp(dbus_result,
+		g_settings["sys_imsi"] = parser_regexp(dbus_result,
 			`string "SubscriberIdentity"         variant             string "(.*?)"      \)`,
 		)
 
 		//NetworkRegistration
 		dbus_method = "org.ofono.NetworkRegistration.GetProperties"
 		dbus_result = exe_dbus(dbus_method)
-		_settings["sys_networkName"] = parser_regexp(dbus_result,
+		g_settings["sys_networkName"] = parser_regexp(dbus_result,
 			`string "Name"         variant             string "(.*?)"      \)`,
 		)
-		_settings["sys_signalStrength"] = parser_regexp(dbus_result,
+		g_settings["sys_signalStrength"] = parser_regexp(dbus_result,
 			`string "StrengthDbm"         variant             int32 (.*?)      \)`,
 		)
 
@@ -80,35 +82,13 @@ func init_system() {
 	}()
 
 	// enable connmanctl async
-	DoneAsync()
+	init_connman()
 
 	// enable other such as danmon process?
 	println("init_system() Finish")
 }
 
-func parser_regexp(exe_result string, reg string) string {
-	regexp_result := regexp.MustCompile(reg).FindStringSubmatch(exe_result)
-	if len(regexp_result) > 1 {
-		return regexp_result[1]
-	}
-	return ""
-}
-
-func exe_dbus(dbus_method string, args ...string) string {
-	dbus_dest := "org.ofono"
-	dbus_path := "/ril_0"
-	if len(args) == 0 {
-		args = append(args, "")
-	}
-	result := valFilter(exe_cmd(fmt.Sprintf("dbus-send --system --print-reply --dest=%v %v %v %v", dbus_dest, dbus_path, dbus_method, args[0])))
-	return strings.ReplaceAll(result, "\n", "")
-} //
-
-func save_setting() {
-	file_data, _ := json.MarshalIndent(&_settings, "", "  ")
-	os.WriteFile("_settings.toml", file_data, fs.ModePerm)
-}
-
+// Run application
 func main() {
 
 	init_system()
@@ -143,19 +123,10 @@ func main() {
 	}
 
 	/*************************Starting Server****************************/
-	host_addr := fmt.Sprintf("0.0.0.0:%s", getenv("PORT", "80"))
-	app.Listen(host_addr)
+	app.Listen("0.0.0.0:80")
 }
 
-func getenv(key string, def string) string {
-	v := os.Getenv(key)
-	if v == "" {
-		return def
-	}
-
-	return v
-}
-
+// mainline to dispatch HTTP request and into case, then response
 func dispatcher(ctx iris.Context) {
 
 	//initial for dbus
@@ -177,24 +148,24 @@ func dispatcher(ctx iris.Context) {
 			`string "Revision"         variant             string "(.*?)"      \)`,
 		)
 
-		firmwarewVersion := valFilter(exe_cmd("cat /etc/version"))
+		firmwarewVersion := parser_byte(exe_cmd("cat /etc/version"))
 		//parse imsi of sim card
 
 		mac_addr := parser_regexp(
-			valFilter(exe_cmd("ifconfig tether")),
+			parser_byte(exe_cmd("ifconfig tether")),
 			`Link encap:Ethernet  HWaddr (.*?)\n`,
 		)
 
 		wanIP := parser_regexp(
-			valFilter(exe_cmd(`ifconfig tether`)),
+			parser_byte(exe_cmd(`ifconfig tether`)),
 			`inet addr:(.*?)  `,
 		)
 
 		ctx.JSON(iris.Map{
 			"result":           "ok",
-			"serialNumber":     _settings["sys_iccid"],
+			"serialNumber":     g_settings["sys_iccid"],
 			"imei":             imei,
-			"imsi":             _settings["sys_imsi"],
+			"imsi":             g_settings["sys_imsi"],
 			"hardwareVersion":  revision,
 			"softwarewVersion": "随便自定义??",
 			"firmwarewVersion": firmwarewVersion,
@@ -206,9 +177,9 @@ func dispatcher(ctx iris.Context) {
 		pinRemain := exe_cmd("getprop vendor.gsm.sim.retry.pin1")
 		pinEnabled := exe_cmd("getprop gsm.slot1.num.pin1")
 		pinStatus := exe_cmd("getprop gsm.slot1.num.pin1")
-		_pinRemain, _ := strconv.Atoi(valFilter(pinRemain[:len(pinRemain)-1]))
-		_pinEnabled, _ := strconv.Atoi(valFilter(pinEnabled[:len(pinEnabled)-1]))
-		_pinStatus, _ := strconv.Atoi(valFilter(pinStatus[:len(pinStatus)-1]))
+		_pinRemain, _ := strconv.Atoi(parser_byte(pinRemain[:len(pinRemain)-1]))
+		_pinEnabled, _ := strconv.Atoi(parser_byte(pinEnabled[:len(pinEnabled)-1]))
+		_pinStatus, _ := strconv.Atoi(parser_byte(pinStatus[:len(pinStatus)-1]))
 
 		ctx.JSON(iris.Map{
 			"result":     "ok",
@@ -219,18 +190,18 @@ func dispatcher(ctx iris.Context) {
 	case `get_wifi_settings`:
 		ctx.JSON(iris.Map{
 			"result":        "ok",
-			"status":        _settings["wifi_status"],
-			"apIsolation":   _settings["wifi_apIsolation"],
-			"hideSSID":      _settings["wifi_hideSSID"],
-			"SSIDName":      _settings["wifi_SSIDName"],
-			"bandwidthMode": _settings["wifi_bandwidthMode"],
-			"channel":       _settings["wifi_channel"],
-			"security":      _settings["wifi_security"],
-			"password":      _settings["wifi_password"],
+			"status":        g_settings["wifi_status"],
+			"apIsolation":   g_settings["wifi_apIsolation"],
+			"hideSSID":      g_settings["wifi_hideSSID"],
+			"SSIDName":      g_settings["wifi_SSIDName"],
+			"bandwidthMode": g_settings["wifi_bandwidthMode"],
+			"channel":       g_settings["wifi_channel"],
+			"security":      g_settings["wifi_security"],
+			"password":      g_settings["wifi_password"],
 			// "autoSleep":     0,
 		})
 	case `save_wifi_settings`:
-		params := PostJsonDecoder(ctx, `save_wifi_settings`)
+		params := postJsonDecoder(ctx, `save_wifi_settings`)
 
 		// reset wifi with new params
 		// TBC
@@ -238,20 +209,20 @@ func dispatcher(ctx iris.Context) {
 		// TBC
 
 		//save
-		_settings["wifi_status"] = params["status"]
-		_settings["wifi_password"] = params["password"]
-		_settings["wifi_security"] = params["security"]
-		_settings["wifi_channel"] = params["channel"]
-		_settings["wifi_hideSSID"] = params["hideSSID"]
-		_settings["wifi_SSIDName"] = params["SSIDName"]
-		_settings["wifi_bandwidthMode"] = params["bandwidthMode"]
+		g_settings["wifi_status"] = params["status"]
+		g_settings["wifi_password"] = params["password"]
+		g_settings["wifi_security"] = params["security"]
+		g_settings["wifi_channel"] = params["channel"]
+		g_settings["wifi_hideSSID"] = params["hideSSID"]
+		g_settings["wifi_SSIDName"] = params["SSIDName"]
+		g_settings["wifi_bandwidthMode"] = params["bandwidthMode"]
 		save_setting()
 		ctx.JSON(iris.Map{
 			"result":  "ok",
 			"message": "ok",
 		})
 	case `set_ap_isolation`:
-		params := PostJsonDecoder(ctx, `set_ap_isolation`)
+		params := postJsonDecoder(ctx, `set_ap_isolation`)
 
 		// reset wifi with new params
 		// TBC
@@ -260,21 +231,21 @@ func dispatcher(ctx iris.Context) {
 		// TBC
 
 		//save
-		_settings["wifi_apIsolation"] = params["set_ap_isolation"]
+		g_settings["wifi_apIsolation"] = params["set_ap_isolation"]
 		save_setting()
 		ctx.JSON(iris.Map{
 			"result":      "ok",
 			"message":     "ok",
-			"apIsolation": _settings["wifi_apIsolation"],
+			"apIsolation": g_settings["wifi_apIsolation"],
 		})
 	case `ip`:
 		clients := exe_cmd("ip -4 neigh | grep ap0 | grep REACHABLE")
-		ctx.WriteString(valFilter(clients))
+		ctx.WriteString(parser_byte(clients))
 	case `connected_devices`:
 		//ip neigh show dev ap0
 		// clients_buf := exe_cmd("ip -4 neigh show")
 		// devices := []iris.Map{}
-		// clients_list := strings.Split(valFilter(clients_buf), "\n")
+		// clients_list := strings.Split(parser_byte(clients_buf), "\n")
 
 		// for i, v := range clients_list {
 		// 	client_map := strings.Split(v, " ")
@@ -297,21 +268,21 @@ func dispatcher(ctx iris.Context) {
 		})
 	case `get_data_threshold`:
 		uptime_byte := exe_cmd("cat /proc/uptime")
-		uptime := strings.ReplaceAll(strings.Split(valFilter(uptime_byte), " ")[0], ".", "00")
+		uptime := strings.ReplaceAll(strings.Split(parser_byte(uptime_byte), " ")[0], ".", "00")
 
 		ctx.JSON(iris.Map{
 			"result":         "ok",
 			"message":        "success!",
-			"status":         fmt.Sprint(_settings["data_threshold_status"]),
-			"thresholdValue": fmt.Sprint(_settings["data_threshold_value"]),
-			"resetDay":       fmt.Sprint(_settings["data_threshold_resetDay"]),
+			"status":         fmt.Sprint(g_settings["data_threshold_status"]),
+			"thresholdValue": fmt.Sprint(g_settings["data_threshold_value"]),
+			"resetDay":       fmt.Sprint(g_settings["data_threshold_resetDay"]),
 			"runTime":        uptime,
 		})
 	case `set_data_threshold`:
-		params := PostJsonDecoder(ctx, `set_data_threshold`)
-		_settings["data_threshold_status"] = params["status"]
-		_settings["data_threshold_value"] = params["thresholdValue"]
-		_settings["data_threshold_resetDay"] = params["resetDay"]
+		params := postJsonDecoder(ctx, `set_data_threshold`)
+		g_settings["data_threshold_status"] = params["status"]
+		g_settings["data_threshold_value"] = params["thresholdValue"]
+		g_settings["data_threshold_resetDay"] = params["resetDay"]
 		save_setting()
 		ctx.JSON(iris.Map{
 			"result":  "ok",
@@ -320,28 +291,28 @@ func dispatcher(ctx iris.Context) {
 	case `get_web_language`:
 		ctx.JSON(iris.Map{
 			"result":   "ok",
-			"language": _settings["language"],
-			"message":  _settings["language"],
+			"language": g_settings["language"],
+			"message":  g_settings["language"],
 		})
 	case `set_web_language`:
-		params := PostJsonDecoder(ctx, `set_web_language`)
-		_settings["language"] = params["set_web_language"]
+		params := postJsonDecoder(ctx, `set_web_language`)
+		g_settings["language"] = params["set_web_language"]
 		save_setting()
 		ctx.JSON(iris.Map{
 			"result":  "ok",
-			"message": _settings["language"],
+			"message": g_settings["language"],
 		})
 	case `flowrate_record`:
 		cur_recv := exe_cmd("cat /sys/class/net/tether/statistics/rx_bytes")
 		cur_send := exe_cmd("cat /sys/class/net/tether/statistics/tx_bytes")
-		total_send := _settings["total_send"]
-		total_recv := _settings["total_recv"]
+		total_send := g_settings["total_send"]
+		total_recv := g_settings["total_recv"]
 		ctx.JSON(iris.Map{
 			"result":     "ok",
 			"total_send": total_send,
 			"total_recv": total_recv,
-			"cur_send":   valFilter(cur_send),
-			"cur_recv":   valFilter(cur_recv),
+			"cur_send":   parser_byte(cur_send),
+			"cur_recv":   parser_byte(cur_recv),
 		})
 	case `navtop_info`:
 		batteryRemain := exe_cmd("cat /sys/class/power_supply/battery/capacity")
@@ -349,8 +320,8 @@ func dispatcher(ctx iris.Context) {
 
 		ctx.JSON(iris.Map{
 			"result":            "ok",
-			"batteryRemain":     valFilter(batteryRemain),
-			"language":          _settings["language"],
+			"batteryRemain":     parser_byte(batteryRemain),
+			"language":          g_settings["language"],
 			"tobeReadSMS":       "1",
 			"totalNumSMS":       "14",
 			"isSMSFull":         "0",
@@ -359,10 +330,10 @@ func dispatcher(ctx iris.Context) {
 			"cur_send":          "8029",
 			"cur_recv":          "5014",
 			"threshold_percent": "90",
-			"apStatus":          strings.Contains(valFilter(apStatus), "RUNNING"),
+			"apStatus":          strings.Contains(parser_byte(apStatus), "RUNNING"),
 		})
 	case `set_network_config`:
-		params := PostJsonDecoder(ctx, `set_network_config`)
+		params := postJsonDecoder(ctx, `set_network_config`)
 
 		networkType := ""
 		switch params["networkMode"] {
@@ -442,7 +413,7 @@ func dispatcher(ctx iris.Context) {
 		}
 		ctx.JSON(iris.Map{
 			"result": "ok",
-			// "gprsStatus":    valFilter(gprsStatus),
+			// "gprsStatus":    parser_byte(gprsStatus),
 			"roamingStatus": roamingStatus,
 			"networkMode":   networkType,
 		})
@@ -497,20 +468,20 @@ func dispatcher(ctx iris.Context) {
 			"download": download,
 		})
 	case `restart`:
-		params := PostJsonDecoder(ctx, `restart`)
+		params := postJsonDecoder(ctx, `restart`)
 		if params["restart"] == "1" {
 
 			// combine total traffic to system-props
 			cur_recv := exe_cmd("cat /sys/class/net/tether/statistics/rx_bytes")
 			cur_send := exe_cmd("cat /sys/class/net/tether/statistics/tx_bytes")
-			cur_send_int, _ := strconv.Atoi(valFilter(cur_send))
-			cur_recv_int, _ := strconv.Atoi(valFilter(cur_recv))
+			cur_send_int, _ := strconv.Atoi(parser_byte(cur_send))
+			cur_recv_int, _ := strconv.Atoi(parser_byte(cur_recv))
 
-			total_send_int, _ := strconv.Atoi(fmt.Sprint(_settings["total_send"]))
-			_settings["total_send"] = strconv.Itoa(total_send_int + cur_send_int)
+			total_send_int, _ := strconv.Atoi(fmt.Sprint(g_settings["total_send"]))
+			g_settings["total_send"] = strconv.Itoa(total_send_int + cur_send_int)
 
-			total_recv_int, _ := strconv.Atoi(fmt.Sprint(_settings["total_recv"]))
-			_settings["total_recv"] = strconv.Itoa(total_recv_int + cur_recv_int)
+			total_recv_int, _ := strconv.Atoi(fmt.Sprint(g_settings["total_recv"]))
+			g_settings["total_recv"] = strconv.Itoa(total_recv_int + cur_recv_int)
 
 			save_setting()
 
@@ -521,6 +492,11 @@ func dispatcher(ctx iris.Context) {
 			"result": "ok",
 			"params": params["restart"],
 		})
+	case `reset`:
+		params := postJsonDecoder(ctx, `reset`)
+		if params["reset"] == "1" {
+			exe_cmd("sleep 5 && fw_setenv mode boot-recovery && fw_setenv wipe-data 1 && reboot -f")
+		}
 	default:
 		ctx.WriteString("REQUEST IS FAILED BY action = " + action)
 	}
@@ -528,11 +504,12 @@ func dispatcher(ctx iris.Context) {
 	ctx.StatusCode(200)
 }
 
-func PostJsonDecoder(ctx iris.Context, action string) map[string]interface{} {
+// Toolkit for parse URL query param only post method
+func postJsonDecoder(ctx iris.Context, action string) map[string]interface{} {
 	temp := make(iris.Map)
 	var body_buffer []byte
 	body_buffer, _ = ctx.GetBody()
-	values, _ := url.ParseQuery(valFilter(body_buffer))
+	values, _ := url.ParseQuery(parser_byte(body_buffer))
 
 	err := json.Unmarshal([]byte(values.Get(action)), &temp)
 	if err != nil {
@@ -545,10 +522,12 @@ func PostJsonDecoder(ctx iris.Context, action string) map[string]interface{} {
 	return temp
 }
 
-func valFilter(val []byte) string {
+// Toolkit for trans byte to string
+func parser_byte(val []byte) string {
 	return strings.TrimRight(string(val), "\n")
 }
 
+// Toolkit for execute comman command
 func exe_cmd(cmd string) []byte {
 	// res, err := exec.Command("sh", "-c", cmd).Output()
 	res, err := exec.Command("sh", "-c", cmd).Output()
@@ -557,4 +536,30 @@ func exe_cmd(cmd string) []byte {
 		return nil
 	}
 	return res
+}
+
+// Toolkit for parse string key between two words
+func parser_regexp(exe_result string, reg string) string {
+	regexp_result := regexp.MustCompile(reg).FindStringSubmatch(exe_result)
+	if len(regexp_result) > 1 {
+		return regexp_result[1]
+	}
+	return ""
+}
+
+// Toolkit for execute dbus command
+func exe_dbus(dbus_method string, args ...string) string {
+	dbus_dest := "org.ofono"
+	dbus_path := "/ril_0"
+	if len(args) == 0 {
+		args = append(args, "")
+	}
+	result := parser_byte(exe_cmd(fmt.Sprintf("dbus-send --system --print-reply --dest=%v %v %v %v", dbus_dest, dbus_path, dbus_method, args[0])))
+	return strings.ReplaceAll(result, "\n", "")
+} //
+
+// Toolkit for save setting
+func save_setting() {
+	file_data, _ := json.MarshalIndent(&g_settings, "", "  ")
+	os.WriteFile("_settings.toml", file_data, fs.ModePerm)
 }
