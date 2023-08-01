@@ -148,6 +148,16 @@ func dispatcher(ctx iris.Context) {
 			`string "Revision"         variant             string "(.*?)"      \)`,
 		)
 
+		//SimManager
+		dbus_method = "org.ofono.SimManager.GetProperties"
+		dbus_result = exe_dbus(dbus_method)
+		iccid := parser_regexp(dbus_result,
+			`string "CardIdentifier"         variant             string "(.*?)"      \)`,
+		)
+		imsi := parser_regexp(dbus_result,
+			`string "SubscriberIdentity"         variant             string "(.*?)"      \)`,
+		)
+
 		firmwarewVersion := parser_byte(exe_cmd("cat /etc/version"))
 		//parse imsi of sim card
 
@@ -163,9 +173,9 @@ func dispatcher(ctx iris.Context) {
 
 		ctx.JSON(iris.Map{
 			"result":           "ok",
-			"serialNumber":     g_settings["sys_iccid"],
+			"serialNumber":     iccid,
 			"imei":             imei,
-			"imsi":             g_settings["sys_imsi"],
+			"imsi":             imsi,
 			"hardwareVersion":  revision,
 			"softwarewVersion": "随便自定义??",
 			"firmwarewVersion": firmwarewVersion,

@@ -1,6 +1,6 @@
 #!/bin/sh
 
-DIR=/var
+DIR=/var/cm31
 
 do_start() {
       cd $DIR && ./cm31_api &
