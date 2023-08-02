@@ -530,7 +530,9 @@
                     if(data.result==="ok"){
                         sessionCookie = data.session;
                         document.cookie ='SessionId=' + data.session;
-                        window.location.href="main.html";
+                        setTimeout(() => {
+                            window.location.href = "main.html";
+                        }, 300);
                     } else {
                         $("#pwd").val("");$("#tip").html($("#lo-tip4").html());
                     }

@@ -37,7 +37,7 @@ func init_connman() chan int {
 			g_settings["wifi_SSIDName"],
 			g_settings["wifi_password"],
 		)
-		println(tether_wifi)
+		println(`tether_wifi : `, tether_wifi)
 		exe_cmd(tether_wifi)
 		r <- (1) // This <- is so ugly
 	}()
@@ -147,6 +147,7 @@ func dispatcher(ctx iris.Context) {
 	case `get_web_language`:
 	case `get_pin_setting`:
 	case `login`:
+		break
 	default:
 		is_login := session_checker(ctx)
 		if !is_login {
@@ -157,19 +158,16 @@ func dispatcher(ctx iris.Context) {
 	switch action {
 	case `login`:
 		params := postJsonDecoder(ctx, `web_login`)
-		println(`fmt.Sprint(params["passwd"])`, fmt.Sprint(params["passwd"]))
-		println(`fmt.Sprint(params["passwd"])`, len(fmt.Sprint(params["passwd"])))
-		pwd, err := base64.RawStdEncoding.DecodeString(strings.Trim(fmt.Sprint(params["passwd"]), "="))
-		if err != nil {
-			println(err.Error())
-		}
+		// println(`fmt.Sprint(params["passwd"])`, fmt.Sprint(params["passwd"]))
+		// println(`fmt.Sprint(params["passwd"])`, len(fmt.Sprint(params["passwd"])))
+		pwd, _ := base64.RawStdEncoding.DecodeString(strings.Trim(fmt.Sprint(params["passwd"]), "="))
 
 		sid := ""
 		if string(pwd) == fmt.Sprint(g_settings["pwd"]) {
 			g_settings["sid"] = rand.Int31()
 			save_setting()
 			sid = fmt.Sprint(g_settings["sid"])
-			println(`sid = fmt.Sprint(g_settings["sid"])`)
+			// println(`sid = fmt.Sprint(g_settings["sid"])`)
 		}
 
 		ctx.JSON(iris.Map{
@@ -612,7 +610,7 @@ func exe_cmd(cmd string) []byte {
 	// res, err := exec.Command("sh", "-c", cmd).Output()
 	res, err := exec.Command("sh", "-c", cmd).Output()
 	if err != nil {
-		println(err.Error())
+		println(`exe_cmd:`, err.Error())
 		return nil
 	}
 	return res
