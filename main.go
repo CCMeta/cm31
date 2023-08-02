@@ -588,8 +588,8 @@ func dispatcher(ctx iris.Context) {
 }
 
 func session_checker(ctx iris.Context) bool {
-	sid, _ := ctx.Request().Cookie("SessionId")
-	return sid.Value == fmt.Sprint(g_settings["sid"])
+	sid := ctx.GetCookie("SessionId")
+	return sid == fmt.Sprint(g_settings["sid"])
 }
 
 // Toolkit for parse URL query param only post method
