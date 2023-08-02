@@ -30,14 +30,18 @@ func init_connman() chan int {
 	r := make(chan int)
 	go func() {
 		// 20230802 fit unisoc bug, sleep about 3min to wait system init completly
-		time.Sleep(100 * time.Second)
+		time.Sleep(120 * time.Second)
 
 		// enable gadget
-		exe_cmd("connmanctl enable gadget && connmanctl tether gadget on")
+		time.Sleep(10 * time.Second)
+		exe_cmd("connmanctl enable gadget")
+		time.Sleep(10 * time.Second)
+		exe_cmd("connmanctl tether gadget on")
 
-		time.Sleep(100 * time.Second)
 		// enable wifi
+		time.Sleep(10 * time.Second)
 		exe_cmd("connmanctl enable wifi")
+		time.Sleep(10 * time.Second)
 		tether_wifi := fmt.Sprintf("connmanctl tether wifi on \"%v\" wpa2 \"%v\" ",
 			g_settings["wifi_SSIDName"],
 			g_settings["wifi_password"],
