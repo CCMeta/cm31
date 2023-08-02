@@ -407,7 +407,7 @@
             } else if(!reg1.test($ssidName.val())){
                 toastr.warning($("#wifi-tip3").html());
             }else {
-                $("#wifiTipModal").modal("show");
+                // $("#wifiTipModal").modal("show");
                 let hideSSID = $ssidSwitch.prop("checked") ? 0 : 1;
                 // let apIso = $iso.prop("checked") ? 1 : 0;
                 let wifiStatus = $wifiSwitch.prop("checked") ? 1 : 0;
@@ -419,7 +419,7 @@
                             "security":$security.attr("data-value"),"password":$ssidPassword.val(),"autoSleep":0
                         })},
                     success: function (result) {
-                        $("#wifiTipModal").modal("hide");
+                        // $("#wifiTipModal").modal("hide");
                         console.log("SaveWIFIResult:\n" + result);
                         let data = JSON.parse(result);
                         if(data.result==="ok") {
@@ -429,7 +429,9 @@
                         }
                     },
                     error: function () {
-                        $("#wifiTipModal").modal("hide");toastr.error($("#wifi-tip2").html());}
+                        // $("#wifiTipModal").modal("hide");
+                        toastr.error($("#wifi-tip2").html());
+                    }
                 })
             }
         } else {
