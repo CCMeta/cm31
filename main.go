@@ -14,6 +14,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/kataras/iris/v12"
 )
@@ -28,9 +29,13 @@ var g_settings iris.Map
 func init_connman() chan int {
 	r := make(chan int)
 	go func() {
+		// 20230802 fit unisoc bug, sleep about 3min to wait system init completly
+		time.Sleep(100 * time.Second)
+
 		// enable gadget
 		exe_cmd("connmanctl enable gadget && connmanctl tether gadget on")
 
+		time.Sleep(100 * time.Second)
 		// enable wifi
 		exe_cmd("connmanctl enable wifi")
 		tether_wifi := fmt.Sprintf("connmanctl tether wifi on \"%v\" wpa2 \"%v\" ",
@@ -92,6 +97,7 @@ func init_system() {
 // Run application
 func main() {
 
+	// init before app run
 	init_system()
 
 	app := iris.Default()
