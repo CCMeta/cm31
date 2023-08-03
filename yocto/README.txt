@@ -8,6 +8,13 @@
 
 [/prebuilts/pac-binary/]    sl8581e-nand-marlin3e-mifi.xml
 
+[TIPS]
+- 其实修改版本号之后，source里面的东西就会自动重新编译，真的不需要再rm -rf 太麻烦了
+
+[V3-230803]
+- 基本整理了除DHCP之外的所有内容接口
+- 优化了登录
+- 底层接口区域完成
 
 [V3-230726]
 - 优化golang编译大小 并且配方中添加already-stripped
