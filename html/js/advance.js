@@ -150,13 +150,23 @@ $("#startDiag").on("click", function () {
                 timeout = interval;
                 XmlAjax({
                     url: "/api/start_diagnostics",
-                    data:{"start_diagnostics" :JSON.stringify({"diagnosticStatus":1,"ip_address":$("#targetIP").val(),"interval":interval,"count":count})},
+                    data:{"start_diagnostics" :JSON.stringify({"diagnosticStatus":1,"ip_address":$("#targetIP").val(),"interval":interval*0.001,"count":count})},
                     success: function (result) {
                         console.log("StartDiagResult:" + result);
                         let data = JSON.parse(result);
-                        if(data.result==="ok") {
-                            $("#diagResult").val('');
-                            setTimeout(function () {GetDiagResult();},interval);
+                        if (data.result === "ok") {
+                            let val, diagLog = data.diagnosticsResult;
+                            if (diagLog !== "") { val = diagLog.replaceAll(";;", "\n"); }
+                            $("#diagResult").val(val);
+                            $("#diagResult")[0].scrollTop = $("#diagResult")[0].scrollHeight;
+                            if (data.diagnosticStatus === 1) {
+                                diagStatus = 1;
+                                setTimeout(function () { GetDiagResult(); }, timeout);
+                            } else {
+                                diagStatus = 0;
+                            }
+                        } else if (data.result === "fail2") {
+                            toastr.error($("#ad-tip11").html());
                         } else {
                             toastr.error($("#ad-tip2").html());
                         }

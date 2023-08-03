@@ -161,16 +161,33 @@ func dispatcher(ctx iris.Context) {
 	default:
 		is_login := session_checker(ctx)
 		if !is_login {
+			ctx.Redirect("/login.html")
 			return
 		}
 	}
 	// main
 	switch action {
+	case `start_diagnostics`:
+		// start_diagnostics={"diagnosticStatus":1,"ip_address":"8.8.8.8","interval":200,"count":4}&
+		// ping 1217.0.0.21 -i 0.1 -c 3
+		params := postJsonDecoder(ctx, `start_diagnostics`)
+		ip_address := fmt.Sprint(params["ip_address"])
+		interval := fmt.Sprint(params["interval"])
+		count := fmt.Sprint(params["count"])
+		diagnosticsResult := exe_cmd(fmt.Sprintf("ping %v -i %v -c %v", ip_address, interval, count))
+		ctx.JSON(iris.Map{
+			"result":            "ok",
+			"diagnosticsResult": parser_byte(diagnosticsResult),
+			"diagnosticStatus":  0,
+		})
 	case `login_password`:
 		//login_password={"password":"MTIz","newPassword":"YXNk"}&
 		params := postJsonDecoder(ctx, `login_password`)
-		pwd, _ := base64.RawStdEncoding.DecodeString(strings.Trim(fmt.Sprint(params["password"]), "="))
-
+		pwd, err := base64.RawStdEncoding.DecodeString(strings.Trim(fmt.Sprint(params["password"]), "="))
+		if err != nil {
+			println(err.Error())
+			return
+		}
 		if string(pwd) == fmt.Sprint(g_settings["pwd"]) {
 			new_pwd, _ := base64.RawStdEncoding.DecodeString(strings.Trim(fmt.Sprint(params["newPassword"]), "="))
 			g_settings["pwd"] = string(new_pwd)
@@ -189,8 +206,11 @@ func dispatcher(ctx iris.Context) {
 		params := postJsonDecoder(ctx, `web_login`)
 		// println(`fmt.Sprint(params["passwd"])`, fmt.Sprint(params["passwd"]))
 		// println(`fmt.Sprint(params["passwd"])`, len(fmt.Sprint(params["passwd"])))
-		pwd, _ := base64.RawStdEncoding.DecodeString(strings.Trim(fmt.Sprint(params["passwd"]), "="))
-
+		pwd, err := base64.RawStdEncoding.DecodeString(strings.Trim(fmt.Sprint(params["passwd"]), "="))
+		if err != nil {
+			println(err.Error())
+			return
+		}
 		sid := ""
 		if string(pwd) == fmt.Sprint(g_settings["pwd"]) {
 			g_settings["sid"] = rand.Int31()
@@ -637,10 +657,11 @@ func parser_byte(val []byte) string {
 // Toolkit for execute comman command
 func exe_cmd(cmd string) []byte {
 	// res, err := exec.Command("sh", "-c", cmd).Output()
-	res, err := exec.Command("sh", "-c", cmd).Output()
+	res, err := exec.Command("sh", "-c", cmd).CombinedOutput()
 	if err != nil {
 		println(`exe_cmd:`, err.Error())
-		return nil
+		// println(`res:`, len(res))
+		return res
 	}
 	return res
 }
