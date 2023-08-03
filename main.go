@@ -166,6 +166,25 @@ func dispatcher(ctx iris.Context) {
 	}
 	// main
 	switch action {
+	case `login_password`:
+		//login_password={"password":"MTIz","newPassword":"YXNk"}&
+		params := postJsonDecoder(ctx, `login_password`)
+		pwd, _ := base64.RawStdEncoding.DecodeString(strings.Trim(fmt.Sprint(params["password"]), "="))
+
+		if string(pwd) == fmt.Sprint(g_settings["pwd"]) {
+			new_pwd, _ := base64.RawStdEncoding.DecodeString(strings.Trim(fmt.Sprint(params["newPassword"]), "="))
+			g_settings["pwd"] = string(new_pwd)
+			save_setting()
+			ctx.JSON(iris.Map{
+				"result":  "ok",
+				"message": "success!",
+			})
+		} else {
+			ctx.JSON(iris.Map{
+				"result":  "fail",
+				"message": "wrong password",
+			})
+		}
 	case `login`:
 		params := postJsonDecoder(ctx, `web_login`)
 		// println(`fmt.Sprint(params["passwd"])`, fmt.Sprint(params["passwd"]))
