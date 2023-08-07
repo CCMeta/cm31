@@ -60,8 +60,8 @@ func init_system() {
 	println("init_system() Start")
 
 	// load settings.json
-	// exe_cmd("touch _settings.toml")
-	json.Unmarshal(exe_cmd("cat _settings.toml"), &g_settings)
+	// exe_cmd("touch _settings.json")
+	json.Unmarshal(exe_cmd("cat _settings.json"), &g_settings)
 
 	//load setting store in RAM
 	go func() {
@@ -741,5 +741,5 @@ func exe_dbus(dbus_method string, args ...string) string {
 // Toolkit for save setting
 func save_setting() {
 	file_data, _ := json.MarshalIndent(&g_settings, "", "  ")
-	os.WriteFile("_settings.toml", file_data, fs.ModePerm)
+	os.WriteFile("_settings.json", file_data, fs.ModePerm)
 }

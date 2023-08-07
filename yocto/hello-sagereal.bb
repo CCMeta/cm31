@@ -29,7 +29,7 @@ do_install () {
     install -d ${D}${localstatedir}/cm31
     install -m 0777 ${B}/hello-sagereal1 ${D}${localstatedir}/cm31/
     install -m 0777 ${B}/cm31_api ${D}${localstatedir}/cm31/
-    install -m 0777 ${B}/_settings.toml ${D}${localstatedir}/cm31/
+    install -m 0666 ${B}/_settings.json ${D}${localstatedir}/cm31/
 }
 
 do_install_append () {
