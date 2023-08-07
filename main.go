@@ -42,12 +42,16 @@ func init_connman() chan int {
 		time.Sleep(10 * time.Second)
 		exe_cmd("connmanctl enable wifi")
 		time.Sleep(10 * time.Second)
-		tether_wifi := fmt.Sprintf("connmanctl tether wifi on \"%v\" wpa2 \"%v\" ",
-			g_settings["wifi_SSIDName"],
-			g_settings["wifi_password"],
-		)
-		println(`tether_wifi : `, tether_wifi)
-		exe_cmd(tether_wifi)
+		exe_cmd(`connmanctl apmanager disable wlan0`)
+		exe_cmd(fmt.Sprintf(`connmanctl apmanager set wlan0 SSID %v`, g_settings[`wifi_SSIDName`]))
+		exe_cmd(fmt.Sprintf(`connmanctl apmanager set wlan0 Passphrase %v`, g_settings[`wifi_password`]))
+		exe_cmd(`connmanctl apmanager enable wlan0`)
+		// tether_wifi := fmt.Sprintf("connmanctl tether wifi on \"%v\" wpa2 \"%v\" ",
+		// 	g_settings["wifi_SSIDName"],
+		// 	g_settings["wifi_password"],
+		// )
+		// println(`tether_wifi : `, tether_wifi)
+		// exe_cmd(tether_wifi)
 		r <- (1) // This <- is so ugly
 	}()
 	return r
@@ -312,11 +316,6 @@ func dispatcher(ctx iris.Context) {
 	case `save_wifi_settings`:
 		params := postJsonDecoder(ctx, `save_wifi_settings`)
 
-		// reset wifi with new params
-		// TBC
-		// TBC
-		// TBC
-
 		//save
 		g_settings["wifi_status"] = params["status"]
 		g_settings["wifi_password"] = params["password"]
@@ -326,6 +325,17 @@ func dispatcher(ctx iris.Context) {
 		g_settings["wifi_SSIDName"] = params["SSIDName"]
 		g_settings["wifi_bandwidthMode"] = params["bandwidthMode"]
 		save_setting()
+
+		// reset wifi with new params
+		go func() {
+			// enable wifi
+			exe_cmd(`connmanctl apmanager disable wlan0`)
+			exe_cmd(fmt.Sprintf(`connmanctl apmanager set wlan0 SSID %v`, g_settings[`wifi_SSIDName`]))
+			exe_cmd(fmt.Sprintf(`connmanctl apmanager set wlan0 Passphrase %v`, g_settings[`wifi_password`]))
+			// time.Sleep(10 * time.Second)
+			exe_cmd(`connmanctl apmanager enable wlan0`)
+		}()
+
 		ctx.JSON(iris.Map{
 			"result":  "ok",
 			"message": "ok",
@@ -553,11 +563,27 @@ func dispatcher(ctx iris.Context) {
 		pinRequired := parser_regexp(dbus_result,
 			`string "PinRequired"         variant             string "(.*?)"      \)`,
 		)
-		simStatus := 7
+
+		// default status
+		simStatusInfo := "SIM Registration Failed"
+		simStatus := 2
 		if powered == "true" &&
 			present == "true" &&
 			pinRequired == "none" {
+			// status = OK
 			simStatus = 0
+			simStatusInfo = "SIM OK"
+		} else if powered == "true" &&
+			present == "false" &&
+			pinRequired == "none" {
+			// status = NO SIM
+			simStatus = 7
+			simStatusInfo = "No SIM"
+		} else if powered == "true" &&
+			present == "true" {
+			// status = PIN
+			simStatus = 3
+			simStatusInfo = "SIM PIN Blocked"
 		}
 
 		ctx.JSON(iris.Map{
@@ -566,6 +592,7 @@ func dispatcher(ctx iris.Context) {
 			"networkType": networkType,
 			//0 ok, 2 registion failed, 3 pin blocked, 7 sim not insert
 			"simStatus":      simStatus,
+			"simStatusInfo":  simStatusInfo,
 			"signalStrength": "-" + signalStrength,
 		})
 	case `network_speed`:
