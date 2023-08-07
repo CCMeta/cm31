@@ -32,20 +32,18 @@ func init_connman() chan int {
 		// 20230802 fit unisoc bug, sleep about 3min to wait system init completly
 		time.Sleep(120 * time.Second)
 
+		// enable wifi
+		time.Sleep(10 * time.Second)
+		exe_cmd("connmanctl enable wifi")
+		time.Sleep(10 * time.Second)
+		restart_wifi()
+
 		// enable gadget
 		time.Sleep(10 * time.Second)
 		exe_cmd("connmanctl enable gadget")
 		time.Sleep(10 * time.Second)
 		exe_cmd("connmanctl tether gadget on")
 
-		// enable wifi
-		time.Sleep(10 * time.Second)
-		exe_cmd("connmanctl enable wifi")
-		time.Sleep(10 * time.Second)
-		exe_cmd(`connmanctl apmanager disable wlan0`)
-		exe_cmd(fmt.Sprintf(`connmanctl apmanager set wlan0 SSID %v`, g_settings[`wifi_SSIDName`]))
-		exe_cmd(fmt.Sprintf(`connmanctl apmanager set wlan0 Passphrase %v`, g_settings[`wifi_password`]))
-		exe_cmd(`connmanctl apmanager enable wlan0`)
 		// tether_wifi := fmt.Sprintf("connmanctl tether wifi on \"%v\" wpa2 \"%v\" ",
 		// 	g_settings["wifi_SSIDName"],
 		// 	g_settings["wifi_password"],
@@ -317,6 +315,7 @@ func dispatcher(ctx iris.Context) {
 		params := postJsonDecoder(ctx, `save_wifi_settings`)
 
 		//save
+		g_settings["wifi_band"] = params["band"]
 		g_settings["wifi_status"] = params["status"]
 		g_settings["wifi_password"] = params["password"]
 		g_settings["wifi_security"] = params["security"]
@@ -324,17 +323,12 @@ func dispatcher(ctx iris.Context) {
 		g_settings["wifi_hideSSID"] = params["hideSSID"]
 		g_settings["wifi_SSIDName"] = params["SSIDName"]
 		g_settings["wifi_bandwidthMode"] = params["bandwidthMode"]
+		// g_settings["wifi_5G_bandwidthMode"] = params["5G_bandwidthMode"]
+		// g_settings["wifi_5G_channel"] = params["5G_channel"]
+		// g_settings["wifi_5G_security"] = params["5G_security"]
 		save_setting()
-
 		// reset wifi with new params
-		go func() {
-			// enable wifi
-			exe_cmd(`connmanctl apmanager disable wlan0`)
-			exe_cmd(fmt.Sprintf(`connmanctl apmanager set wlan0 SSID %v`, g_settings[`wifi_SSIDName`]))
-			exe_cmd(fmt.Sprintf(`connmanctl apmanager set wlan0 Passphrase %v`, g_settings[`wifi_password`]))
-			// time.Sleep(10 * time.Second)
-			exe_cmd(`connmanctl apmanager enable wlan0`)
-		}()
+		go restart_wifi()
 
 		ctx.JSON(iris.Map{
 			"result":  "ok",
@@ -650,6 +644,38 @@ func dispatcher(ctx iris.Context) {
 	}
 
 	ctx.StatusCode(200)
+}
+
+// struct of restart wifi
+func restart_wifi() {
+	exe_cmd(`connmanctl apmanager disable wlan0`)
+	const _PREFIX = "connmanctl apmanager set wlan0"
+
+	time.Sleep(1 * time.Second)
+	exe_cmd(fmt.Sprintf(`%v SSID %v`, _PREFIX, g_settings[`wifi_SSIDName`]))
+	exe_cmd(fmt.Sprintf(`%v Passphrase %v`, _PREFIX, g_settings[`wifi_password`]))
+	if fmt.Sprint(g_settings[`wifi_band`]) == "5GHz" {
+		exe_cmd(fmt.Sprintf(`%v Band %v`, _PREFIX, g_settings[`wifi_band`]))
+		exe_cmd(fmt.Sprintf(`%v Mode %v`, _PREFIX, g_settings[`wifi_5G_mode`]))
+		exe_cmd(fmt.Sprintf(`%v Bandwidth %v`, _PREFIX, `20MHz`))
+		exe_cmd(fmt.Sprintf(`%v Channel %v`, _PREFIX, g_settings[`wifi_5G_channel`]))
+		// exe_cmd(fmt.Sprintf(`%v Protocol %v`, g_settings[`wifi_5G_security`]))
+		// 0 : "none"
+		// 1 : "wpa2"
+		// where is wpa3
+	} else {
+		exe_cmd(fmt.Sprintf(`%v Band %v`, _PREFIX, g_settings[`wifi_band`]))
+		exe_cmd(fmt.Sprintf(`%v Mode %v`, _PREFIX, g_settings[`wifi_mode`]))
+		exe_cmd(fmt.Sprintf(`%v Bandwidth %v`, _PREFIX, `20MHz`))
+		exe_cmd(fmt.Sprintf(`%v Channel %v`, _PREFIX, g_settings[`wifi_channel`]))
+		// exe_cmd(fmt.Sprintf(`%v Protocol %v`, g_settings[`wifi_security`]))
+		// 0 : "none"
+		// 1 : "wpa2"
+		// where is wpa3
+	}
+	time.Sleep(1 * time.Second)
+
+	exe_cmd(`connmanctl apmanager enable wlan0`)
 }
 
 func session_checker(ctx iris.Context) bool {
