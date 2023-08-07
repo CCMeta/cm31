@@ -574,8 +574,7 @@ func dispatcher(ctx iris.Context) {
 			simStatus = 0
 			simStatusInfo = "SIM OK"
 		} else if powered == "true" &&
-			present == "false" &&
-			pinRequired == "none" {
+			present == "false" {
 			// status = NO SIM
 			simStatus = 7
 			simStatusInfo = "No SIM"
