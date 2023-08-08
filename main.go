@@ -681,6 +681,31 @@ func dispatcher(ctx iris.Context) {
 			"message":       "success!",
 			"operateResult": operateResult,
 		})
+	case `change_pin`:
+		/*
+			LockPin enable
+			UnlockPin disable
+			EnterPin verify
+			ResetPin fuckpuk
+			ChangePin change
+		*/
+		params := postJsonDecoder(ctx, `change_pin`)
+		//{"pinEnabled":1,"pinCode":"1234"}
+		old_pin := params[`pinOldCode`]
+		new_pin := params[`pinNewCode`]
+		dbus_method = "org.ofono.SimManager.ChangePin"
+		dbus_args = fmt.Sprintf(`string:"pin" string:"%v" string:"%v"`, old_pin, new_pin)
+		dbus_result = exe_dbus(dbus_method, dbus_args)
+		operateResult := `0`
+		if strings.Contains(dbus_result, "Operation failed") {
+			println(`dbus_result`, dbus_result)
+			operateResult = `5`
+		}
+		ctx.JSON(iris.Map{
+			"result":        "ok",
+			"message":       "success!",
+			"operateResult": operateResult,
+		})
 	default:
 		ctx.WriteString("REQUEST IS FAILED BY action = " + action)
 	}
