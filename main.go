@@ -315,7 +315,7 @@ func dispatcher(ctx iris.Context) {
 		params := postJsonDecoder(ctx, `save_wifi_settings`)
 
 		//save
-		g_settings["wifi_band"] = params["band"]
+		// g_settings["wifi_band"] = params["band"]
 		g_settings["wifi_status"] = params["status"]
 		g_settings["wifi_password"] = params["password"]
 		g_settings["wifi_security"] = params["security"]
@@ -653,9 +653,25 @@ func restart_wifi() {
 
 	time.Sleep(1 * time.Second)
 	exe_cmd(fmt.Sprintf(`%v SSID %v`, _PREFIX, g_settings[`wifi_SSIDName`]))
+	exe_cmd(fmt.Sprintf(`%v Hidden %v`, _PREFIX, fmt.Sprint(g_settings[`wifi_hideSSID`]) == `1`))
 	exe_cmd(fmt.Sprintf(`%v Passphrase %v`, _PREFIX, g_settings[`wifi_password`]))
+	exe_cmd(fmt.Sprintf(`%v Band %v`, _PREFIX, g_settings[`wifi_band`]))
+	/*
+	   CountryCode = CN
+	   ACS = False
+	   AutoStart = False
+	   ACL = Blacklist
+	   MaxStaion = 0
+	   BroadcastInterval = 100ms
+	   UplinkLimit = 0
+	   DownlinkLimit = 0
+	   RSSIAlarm = -100dBm
+	   StationList = [  ]
+	   Blacklist = [  ]
+	   Whitelist = [  ]
+	   UseWPS = True
+	*/
 	if fmt.Sprint(g_settings[`wifi_band`]) == "5GHz" {
-		exe_cmd(fmt.Sprintf(`%v Band %v`, _PREFIX, g_settings[`wifi_band`]))
 		exe_cmd(fmt.Sprintf(`%v Mode %v`, _PREFIX, g_settings[`wifi_5G_mode`]))
 		exe_cmd(fmt.Sprintf(`%v Bandwidth %v`, _PREFIX, `20MHz`))
 		exe_cmd(fmt.Sprintf(`%v Channel %v`, _PREFIX, g_settings[`wifi_5G_channel`]))
@@ -664,7 +680,6 @@ func restart_wifi() {
 		// 1 : "wpa2"
 		// where is wpa3
 	} else {
-		exe_cmd(fmt.Sprintf(`%v Band %v`, _PREFIX, g_settings[`wifi_band`]))
 		exe_cmd(fmt.Sprintf(`%v Mode %v`, _PREFIX, g_settings[`wifi_mode`]))
 		exe_cmd(fmt.Sprintf(`%v Bandwidth %v`, _PREFIX, `20MHz`))
 		exe_cmd(fmt.Sprintf(`%v Channel %v`, _PREFIX, g_settings[`wifi_channel`]))
@@ -675,7 +690,9 @@ func restart_wifi() {
 	}
 	time.Sleep(1 * time.Second)
 
-	exe_cmd(`connmanctl apmanager enable wlan0`)
+	if fmt.Sprint(g_settings[`wifi_status`]) == `1` {
+		exe_cmd(`connmanctl apmanager enable wlan0`)
+	}
 }
 
 func session_checker(ctx iris.Context) bool {
@@ -711,7 +728,7 @@ func exe_cmd(cmd string) []byte {
 	// res, err := exec.Command("sh", "-c", cmd).Output()
 	res, err := exec.Command("sh", "-c", cmd).CombinedOutput()
 	if err != nil {
-		println(`exe_cmd:`, err.Error())
+		fmt.Printf(`[ERROR] CMD: %v ---- ERROR: %v`, cmd, err.Error())
 		// println(`res:`, len(res))
 		return res
 	}
