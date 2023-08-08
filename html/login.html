@@ -398,7 +398,7 @@
                 pinStatus = data.pinStatus; pinRemain = data.pinRemain;
                 //pinStatus和pinEnabled都为1时弹框
                 if(pinStatus===1 && data.pinEnabled===1){
-                    $("#setTipModal").modal("hide");
+                    // $("#setTipModal").modal("hide");
                     $("#PINCheckModal").modal("show");
                     if(pinRemain===2){
                         $("#pinNumber").html(2);
@@ -409,7 +409,7 @@
                         if(haveGetPin){$("#pinTip").html($("#lo-tip5").html());}
                     }
                 } else if(pinStatus===2 && data.pinEnabled===1) {
-                    $("#setTipModal").modal("hide");
+                    // $("#setTipModal").modal("hide");
                     $("#PUKModal").modal("show");
                 } else {
                     //再次获取语言
@@ -434,7 +434,7 @@
                     })
                     //如果PIN为关闭状态，弹出登录弹框
                     setTimeout(function () {
-                        $("#setTipModal").modal("hide");
+                        // $("#setTipModal").modal("hide");
                         localStorage.setItem("pin","unlock");
                         $("#PINCheckModal").modal("hide");
                         $("#LoginModal").modal("show");
@@ -452,10 +452,10 @@
                 $("#pinTip").html($("#lo-tip9").html());
             } else {
                 haveGetPin = true;
-                $("#setTipModal").modal("show");
+                // $("#setTipModal").modal("show");
                 //先输入PIN码解锁，然后设置PIN状态
                 XmlAjax({
-                    url:"/api/login",
+                    url:"/api/operate_pin",
                     data:{"operate_pin": JSON.stringify({"pinCode":pin})},
                     success:function (result) {
                         console.log("PINCheckResult:" + result);
@@ -487,16 +487,16 @@
                     pinStatus = data.pinStatus; pinRemain = data.pinRemain;
                     //pinStatus和pinEnabled都为1时弹框
                     if(pinStatus===1 && data.pinEnabled===1){
-                        $("#setTipModal").modal("hide");
+                        // $("#setTipModal").modal("hide");
                         $("#PINCheckModal").modal("show");
                         if(pinRemain===2){$("#pinNumber").html(2);$("#pinTip").html($("#lo-tip5").html());}
                         else if(pinRemain===1){$("#pinNumber").html(1);$("#pinTip").html($("#lo-tip5").html());}
                     } else if(pinStatus===2 && data.pinEnabled===1) {
-                        $("#setTipModal").modal("hide");
+                        // $("#setTipModal").modal("hide");
                         $("#PUKModal").modal("show");
                     } else {
                         XmlAjax({
-                            url:"/api/login",
+                            url:"/api/operate_pin",
                             data:{"operate_pin": JSON.stringify({"pinEnabled":pinSwitch,"pinCode":pin})},
                             success:function (result) {
                                 console.log("PINCheckResult:" + result);
@@ -506,7 +506,7 @@
                         })
                     }
                 } else {
-                    $("#setTipModal").modal("hide");
+                    // $("#setTipModal").modal("hide");
                     toastr.error($("#lo-tip8").html());
                 }
             }

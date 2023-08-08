@@ -127,7 +127,7 @@ func main() {
 		html.Use(iris.Compression)
 		html.Get("/{page}", func(ctx iris.Context) {
 			page := ctx.Params().Get("page")
-			if !strings.ContainsAny(page, ".html") {
+			if !strings.Contains(page, ".html") {
 				page = "main.html"
 			}
 			if page != "login.html" {
@@ -159,6 +159,7 @@ func dispatcher(ctx iris.Context) {
 	case `get_web_language`:
 	case `get_pin_setting`:
 	case `login`:
+	case `operate_pin`:
 		break
 	default:
 		is_login := session_checker(ctx)
@@ -271,32 +272,6 @@ func dispatcher(ctx iris.Context) {
 			"webUIVersion":     "随便自定义1_1_1",
 			"mac":              mac_addr,
 			"wanIP":            wanIP,
-		})
-	case `get_pin_setting`:
-		//SimManager
-		dbus_method = "org.ofono.SimManager.GetProperties"
-		dbus_result = exe_dbus(dbus_method)
-
-		_pinEnabled := parser_regexp(dbus_result,
-			`string "LockedPins"         variant             array (.*?)      \)`,
-		)
-		// println("_pinEnabled", _pinEnabled)
-
-		_pinStatus := parser_regexp(dbus_result,
-			`string "PinRequired"         variant             string "(.*?)"      \)`,
-		)
-		// println("_pinStatus", _pinStatus)
-
-		_pinRemain := parser_regexp(dbus_result,
-			`string "Retries"         variant             array (.*?)      \)`,
-		)
-		// println("_pinRemain", _pinRemain)
-
-		ctx.JSON(iris.Map{
-			"result":     "ok",
-			"pinRemain":  _pinRemain,
-			"pinEnabled": strings.Count(_pinEnabled, `string "pin"`),
-			"pinStatus":  1 - strings.Count(_pinStatus, `none`),
 		})
 	case `get_wifi_settings`:
 		ctx.JSON(iris.Map{
@@ -639,6 +614,73 @@ func dispatcher(ctx iris.Context) {
 		ctx.JSON(iris.Map{
 			"result": "ok",
 		})
+	case `get_pin_setting`:
+		//SimManager
+		dbus_method = "org.ofono.SimManager.GetProperties"
+		dbus_result = exe_dbus(dbus_method)
+
+		_pinEnabled := parser_regexp(dbus_result,
+			`string "LockedPins"         variant             array (.*?)      \)`,
+		)
+		// println("_pinEnabled", _pinEnabled)
+
+		_pinStatus := parser_regexp(dbus_result,
+			`string "PinRequired"         variant             string "(.*?)"      \)`,
+		)
+		// println("_pinStatus", _pinStatus)
+
+		_pinRemain := parser_regexp(dbus_result,
+			`string "Retries"         variant             array \[               dict entry\(                  string \"pin\"                  byte (.*?)               \)            \]      \)`,
+		)
+		pinRemain, err := strconv.Atoi(_pinRemain)
+		if err != nil {
+			// no value
+			pinRemain = 0
+		}
+		// println("_pinRemain", _pinRemain)
+
+		ctx.JSON(iris.Map{
+			"result":     "ok",
+			"pinRemain":  pinRemain,
+			"pinEnabled": strings.Count(_pinEnabled, `string "pin"`),
+			"pinStatus":  1 - strings.Count(_pinStatus, `none`),
+		})
+	case `operate_pin`:
+		/*
+			LockPin enable
+			UnlockPin disable
+			EnterPin verify
+			ResetPin fuckpuk
+			ChangePin change
+		*/
+		params := postJsonDecoder(ctx, `operate_pin`)
+		//{"pinEnabled":1,"pinCode":"1234"}
+		pincode := params[`pinCode`]
+		// println(`fmt.Sprint(params[pinEnabled]`, fmt.Sprint(params[`pinEnabled`]))
+		switch fmt.Sprint(params[`pinEnabled`]) {
+		case `0`:
+			// to disable pin lock
+			dbus_method = "org.ofono.SimManager.UnlockPin"
+		case `1`:
+			// to enable pin lock
+			dbus_method = "org.ofono.SimManager.LockPin"
+		default:
+			// to verify pin lock. this value is nil should be.
+			dbus_method = "org.ofono.SimManager.EnterPin"
+		}
+		dbus_args = fmt.Sprintf(`string:"pin" string:"%v"`, pincode)
+		dbus_result = exe_dbus(dbus_method, dbus_args)
+
+		operateResult := `0`
+		if strings.Contains(dbus_result, "Operation failed") {
+			println(`dbus_result`, dbus_result)
+			operateResult = `5`
+		}
+		ctx.JSON(iris.Map{
+			"result":        "ok",
+			"message":       "success!",
+			"operateResult": operateResult,
+		})
 	default:
 		ctx.WriteString("REQUEST IS FAILED BY action = " + action)
 	}
@@ -728,7 +770,8 @@ func exe_cmd(cmd string) []byte {
 	// res, err := exec.Command("sh", "-c", cmd).Output()
 	res, err := exec.Command("sh", "-c", cmd).CombinedOutput()
 	if err != nil {
-		fmt.Printf(`[ERROR] CMD: %v ---- ERROR: %v`, cmd, err.Error())
+		fmt.Println()
+		fmt.Printf(`[ERROR] CMD: %v ---- ERROR: %v \n`, cmd, err.Error())
 		// println(`res:`, len(res))
 		return res
 	}

@@ -244,9 +244,10 @@ function savePIN() {
     if(code.length < 4 || code.length > 8 ) {
         toastr.warning($("#sec-tip7").html());
     } else {
+        const pinEnabled = $("#pin_switch").prop("checked") ? 1 : 0
         XmlAjax({
             url: "/api/operate_pin",
-            data: {"operate_pin" :JSON.stringify({"pinEnabled": $("#pin_switch").prop("checked") ? 1 : 0,"pinCode": code})},
+            data: { "operate_pin": JSON.stringify({ "pinEnabled": pinEnabled,"pinCode": code})},
             success: function (result) {
                 console.log("setPINResult:" + result);
                 let data = JSON.parse(result);
@@ -255,7 +256,7 @@ function savePIN() {
                     $("#remainNumber").html(data.falseRemain);
                     if(operateResult === "0") {
                         //操作成功
-                        if(data.functionType == "2") {
+                        if (pinEnabled === 0) {
                             //关闭成功
                             $(".changPIN").css("display", 'none');
                             toastr.success($("#sec-tip11").html());
