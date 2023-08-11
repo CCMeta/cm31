@@ -796,7 +796,7 @@ func exe_cmd(cmd string) []byte {
 	res, err := exec.Command("sh", "-c", cmd).CombinedOutput()
 	if err != nil {
 		fmt.Println()
-		fmt.Printf(`[ERROR] CMD: %v ---- ERROR: %v \n`, cmd, err.Error())
+		fmt.Printf("[ERROR] CMD: %v \n MSG: %v \n", cmd, err.Error())
 		// println(`res:`, len(res))
 		return res
 	}
