@@ -1,11 +1,17 @@
 #!/bin/sh
 
 do_start() {
+      connmanctl enable gadget
+      sleep 1
+      connmanctl tether gadget on
+      sleep 1
       connmanctl enable wifi
+      sleep 1
       connmanctl apmanager disable wlan0
       connmanctl apmanager set wlan0 SSID cm31_wifi
       connmanctl apmanager set wlan0 Mode n
       connmanctl apmanager set wlan0 Passphrase 12345678
+      sleep 1
       connmanctl apmanager enable wlan0
 }
 

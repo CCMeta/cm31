@@ -762,6 +762,7 @@ func restart_wifi() {
 	}
 }
 
+// check context session right or not
 func session_checker(ctx iris.Context) bool {
 	sid := ctx.GetCookie("SessionId")
 	return sid == fmt.Sprint(g_settings["sid"])
@@ -821,7 +822,7 @@ func exe_dbus(dbus_method string, args ...string) string {
 	}
 	result := parser_byte(exe_cmd(fmt.Sprintf("dbus-send --system --print-reply --dest=%v %v %v %v", dbus_dest, dbus_path, dbus_method, args[0])))
 	return strings.ReplaceAll(result, "\n", "")
-} //
+}
 
 // Toolkit for save setting
 func save_setting() {
