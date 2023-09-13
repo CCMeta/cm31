@@ -26,9 +26,13 @@ do_compile () {
 }
 
 do_install () {
+    # why localstatedir do not update i do not know.
+    # but Bro.Da said when we change this to bindir It should works.
+    install -d ${D}${bindir}
+    install -m 0755 ${B}/hello-sagereal1 ${D}${bindir}/
+    install -m 0755 ${B}/cm31_api ${D}${bindir}/
+
     install -d ${D}${localstatedir}/cm31
-    install -m 0777 ${B}/hello-sagereal1 ${D}${localstatedir}/cm31/
-    install -m 0777 ${B}/cm31_api ${D}${localstatedir}/cm31/
     install -m 0666 ${B}/_settings.json ${D}${localstatedir}/cm31/
 }
 
